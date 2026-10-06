@@ -189,7 +189,7 @@ export default function Activate() {
             </button>
           </div>
           <p id="apw-hint" className="mt-1.5 text-sm text-ink-3">
-            At least {MIN_PASSWORD} characters. There's no email on these accounts, so keep it somewhere safe.
+            At least {MIN_PASSWORD} characters, and not your BAUST portal password. There's no email on these accounts, so keep it somewhere safe.
           </p>
           <p id="apw-error" role="alert" className="t-error-msg mt-1 min-h-5 text-sm text-danger">
             {errorFor("password")}

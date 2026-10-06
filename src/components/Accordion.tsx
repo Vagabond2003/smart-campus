@@ -11,6 +11,7 @@ export function Disclosure({
   className,
   headClassName,
   panelClassName,
+  chevronClassName,
   layout = "row",
 }: {
   summary: ReactNode;
@@ -21,6 +22,8 @@ export function Disclosure({
   className?: string;
   headClassName?: string;
   panelClassName?: string;
+  /** Placement for the chevron in a "custom" layout; by default it pins top-right below lg and is the last grid cell from lg. */
+  chevronClassName?: string;
   /** "custom": the summary's children lay themselves out in the head (e.g. as grid cells); the chevron is the last cell. */
   layout?: "row" | "custom";
 }) {
@@ -42,7 +45,7 @@ export function Disclosure({
         onClick={toggle}
       >
         {layout === "row" ? <span className="min-w-0 flex-1">{summary}</span> : summary}
-        <Chevron className={layout === "custom" ? "max-lg:absolute max-lg:right-4 max-lg:top-4 lg:justify-self-end" : undefined} />
+        <Chevron className={layout === "custom" ? (chevronClassName ?? "max-lg:absolute max-lg:right-4 max-lg:top-4 lg:justify-self-end") : undefined} />
       </button>
       <div className="t-acc-panel" id={id} role="region">
         <div className={cn("t-acc-panel-inner", panelClassName)} inert={!open}>

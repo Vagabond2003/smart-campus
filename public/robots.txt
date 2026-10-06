@@ -1,0 +1,4 @@
+# Smart Campus is an unofficial concept that borrows BAUST's name. Every page is served with
+# "noindex", so crawlers may read pages but search engines won't list them.
+User-agent: *
+Allow: /

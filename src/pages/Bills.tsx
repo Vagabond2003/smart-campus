@@ -102,13 +102,16 @@ export default function Bills() {
               />
             </div>
 
-            <div className="panel overflow-hidden">
-              <div className="hidden grid-cols-[6.5rem_minmax(0,1fr)_7rem_7rem_7rem_8rem_2rem] gap-3 border-b border-line bg-surface-2 px-5 py-2.5 lg:grid" aria-hidden>
-                {["Date", "Description", "Fee", "Paid", "Adjusted", "Balance", ""].map((h, i) => (
-                  <span key={i} className={cn("caps text-ink-2", i >= 2 && i <= 5 && "text-right")}>
-                    {h}
-                  </span>
-                ))}
+            <div className="ledger panel overflow-hidden">
+              <div className="ledger-row ledger-head border-b border-line bg-surface-2" aria-hidden>
+                <span className="caps text-ink-2">Date</span>
+                <span className="caps text-ink-2">Description</span>
+                <span className="ledger-split caps text-right text-ink-2">Fee</span>
+                <span className="ledger-split caps text-right text-ink-2">Paid</span>
+                <span className="ledger-split caps text-right text-ink-2">Adjusted</span>
+                <span className="ledger-merged caps text-right text-ink-2">Amount</span>
+                <span className="caps text-right text-ink-2">Balance</span>
+                <span />
               </div>
               <ul aria-label="Statement, newest first">
                 {entries.map((e) => (
@@ -128,20 +131,40 @@ export default function Bills() {
   );
 }
 
-const cols = "lg:grid-cols-[6.5rem_minmax(0,1fr)_7rem_7rem_7rem_8rem_2rem]";
-
+/** One ledger column. Phones show it as a label/value pair (and skip it when zero); wider statements put it in its column. */
 function Amount({ v, label }: { v: number; label: string }) {
   return (
-    <span className={cn("justify-between gap-2 text-sm lg:block lg:text-right", v ? "flex" : "hidden lg:block")}>
-      <span className="text-ink-3 lg:sr-only">{label}</span>
+    <span className={cn("ledger-pair ledger-split", !v && "is-zero")}>
+      <span className="ledger-pair-label">{label}</span>
       {v ? <Money value={v} className="text-ink" /> : <span className="text-ink-3">—</span>}
+    </span>
+  );
+}
+
+/** Mid-width statements fold fee, paid and adjusted into one signed amount: what the entry did to the balance. */
+function Change({ entry: e }: { entry: LedgerEntry }) {
+  const change = e.fee - e.paid - e.adjusted;
+  const label = e.fee ? "Fee" : e.paid ? "Paid" : "Adjusted";
+  return (
+    <span className="ledger-pair ledger-merged">
+      <span className="ledger-pair-label">{label}</span>
+      <Money value={change} className="text-ink" />
+    </span>
+  );
+}
+
+function BalanceAfter({ value }: { value: number }) {
+  return (
+    <span className="ledger-pair">
+      <span className="ledger-pair-label">Balance after</span>
+      <Money value={value} className="font-[640] text-ink" />
     </span>
   );
 }
 
 function PlainRow({ entry: e }: { entry: LedgerEntry }) {
   return (
-    <div className={cn("grid grid-cols-1 gap-x-3 gap-y-1.5 px-4 py-3 lg:items-center lg:px-5", cols)}>
+    <div className="ledger-row">
       <span className="num text-sm text-ink-2">{fmt.long(e.date)}</span>
       <span className="min-w-0 text-sm text-ink">
         <span className="mr-2 align-middle">{e.kind === "payment" ? <Signal tone="ok">Payment</Signal> : <Signal tone="neutral">Adjustment</Signal>}</span>
@@ -151,15 +174,13 @@ function PlainRow({ entry: e }: { entry: LedgerEntry }) {
       <Amount v={e.fee} label="Fee" />
       <Amount v={e.paid} label="Paid" />
       <Amount v={e.adjusted} label="Adjusted" />
-      <span className="flex justify-between gap-2 text-sm lg:block lg:text-right">
-        <span className="text-ink-3 lg:sr-only">Balance after</span>
-        <Money value={e.balance} className="font-[640] text-ink" />
-      </span>
-      <span className="lg:text-right">
+      <Change entry={e} />
+      <BalanceAfter value={e.balance} />
+      <span className="ledger-action">
         {e.kind === "payment" ? (
-          <Link to={`/bills/receipts/${e.id}`} className="inline-grid size-8 place-items-center rounded-md text-ink-2 hover:bg-surface-2 hover:text-ink max-lg:inline-flex max-lg:w-auto max-lg:gap-1.5 max-lg:text-sm max-lg:font-[560] max-lg:text-link" aria-label="View receipt">
+          <Link to={`/bills/receipts/${e.id}`} className="ledger-receipt" aria-label="View receipt">
             <ReceiptText size={16} strokeWidth={1.75} aria-hidden />
-            <span className="lg:hidden">Receipt</span>
+            <span className="ledger-receipt-text">Receipt</span>
           </Link>
         ) : null}
       </span>
@@ -173,7 +194,8 @@ function BillRow({ entry: e, bill, balance, payments, onPay }: { entry: LedgerEn
     <Disclosure
       layout="custom"
       className="relative"
-      headClassName={cn("grid grid-cols-1 gap-x-3 gap-y-1.5 px-4 py-3 pr-11 hover:bg-surface-2/50 lg:items-center lg:px-5", cols)}
+      headClassName="ledger-row has-chevron hover:bg-surface-2/50"
+      chevronClassName="ledger-chevron"
       summary={
         <span className="contents">
           <span className="num text-sm text-ink-2">{fmt.long(e.date)}</span>
@@ -185,14 +207,12 @@ function BillRow({ entry: e, bill, balance, payments, onPay }: { entry: LedgerEn
           <Amount v={e.fee} label="Fee" />
           <Amount v={e.paid} label="Paid" />
           <Amount v={e.adjusted} label="Adjusted" />
-          <span className="flex justify-between gap-2 text-sm lg:block lg:text-right">
-            <span className="text-ink-3 lg:sr-only">Balance after</span>
-            <Money value={e.balance} className="font-[640] text-ink" />
-          </span>
+          <Change entry={e} />
+          <BalanceAfter value={e.balance} />
         </span>
       }
     >
-      <div className="grid gap-5 border-t border-dashed border-line bg-surface-2/40 px-4 py-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:px-5 lg:pl-[8.5rem]">
+      <div className="ledger-detail border-t border-dashed border-line bg-surface-2/40">
         <div>
           <h4 className="text-sm font-[640] text-ink">Fee breakdown</h4>
           <dl className="mt-2 flex flex-col">

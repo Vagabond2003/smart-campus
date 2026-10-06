@@ -2,7 +2,16 @@
 
 A from-scratch redesign of BAUST's **Smart Campus** student portal, backed by Firebase. Every person, ID, phone number, mark and amount in it is **synthetic sample data**; nothing comes from a real student record.
 
+> **Unofficial.** This is a personal concept, not BAUST's portal, and it isn't affiliated with or endorsed by Bangladesh Army University of Science and Technology. Never enter your real BAUST password on it.
+
 **Live:** https://smart-campus-baust.web.app
+
+![The dashboard on a laptop: the departure board, the term line, today's classes, academic standing, dues and course posts](docs/screenshots/dashboard-desktop.png)
+
+<p>
+  <img src="docs/screenshots/sign-in-desktop.png" alt="The sign-in page, with its unofficial-concept notice under the BAUST name" height="420">
+  <img src="docs/screenshots/dashboard-phone-dark.png" alt="The dashboard on a phone in dark mode, with a class in progress" height="420">
+</p>
 
 ## Try it
 
@@ -83,7 +92,7 @@ npm run deploy           # build, then deploy hosting, Firestore rules and the s
 
 ### Analytics
 
-Analytics stays off until the project has a measurement ID:
+Analytics runs only in production builds served from a real domain: never in `npm run dev`, against the emulators, or on `localhost`. To switch it on for your own Firebase project:
 
 1. Enable Google Analytics in the Firebase console (Project settings → Integrations).
 2. Run `npx firebase apps:sdkconfig WEB <app-id>` and copy `measurementId` into `.env.local` as `VITE_FIREBASE_MEASUREMENT_ID`.
@@ -119,3 +128,7 @@ Page views come from GA4's enhanced measurement, which follows in-app navigation
 ## Demo-only behaviour
 
 Payments are simulated: no money moves and no provider is contacted. File downloads and assignment submission are simulated too. The 75% attendance line and the CGPA rule are illustrative, not BAUST policy.
+
+## License
+
+The code is released under the [MIT License](LICENSE). BAUST's name and crest belong to Bangladesh Army University of Science and Technology and aren't covered by it; they appear only so the concept is recognisable.

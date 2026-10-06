@@ -48,6 +48,8 @@ let analytics: { instance: Analytics; log: Log } | null = null;
  */
 export async function initAnalytics() {
   if (!app || !config.measurementId || env.DEV || useEmulators) return;
+  // A production build previewed on this machine isn't a real visit.
+  if (["localhost", "127.0.0.1", "[::1]"].includes(window.location.hostname)) return;
   try {
     const { getAnalytics, isSupported, logEvent } = await import("firebase/analytics");
     if (!(await isSupported())) return;

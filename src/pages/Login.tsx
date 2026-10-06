@@ -82,7 +82,9 @@ export default function Login() {
   return (
     <AuthFrame>
       <h1 className="text-2xl font-[700] tracking-[-0.02em] text-ink">Sign in</h1>
-      <p className="mt-1.5 text-[0.9375rem] text-ink-2">Use your student ID and portal password.</p>
+      <p className="mt-1.5 text-[0.9375rem] text-ink-2">
+        {mode === "firebase" ? "Use the ID and password you set up on this concept site, not your BAUST portal password." : "This copy runs on sample data. Sign in with the sample account below."}
+      </p>
 
       <form onSubmit={onSubmit} noValidate className="mt-8 flex flex-col gap-5">
         <div className={cn("t-input-wrap", error?.field === "id" && "is-error")}>

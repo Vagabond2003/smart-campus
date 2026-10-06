@@ -1,4 +1,5 @@
 import { type ReactNode } from "react";
+import { TriangleAlert } from "lucide-react";
 import { calendar as C, now } from "../lib/clock";
 import { cn } from "../lib/cn";
 import { fmt, until } from "../lib/format";
@@ -27,11 +28,21 @@ export function AuthFrame({ children }: { children: ReactNode }) {
   return (
     <div className="grid min-h-dvh bg-ground lg:grid-cols-[minmax(0,1.08fr)_minmax(0,1fr)]">
       <section className="relative flex flex-col justify-between gap-10 bg-rail px-5 pb-6 pt-[calc(env(safe-area-inset-top)+1.5rem)] text-rail-ink sm:px-10 lg:px-14 lg:py-12" data-on-rail aria-label="Bangladesh Army University of Science and Technology">
-        <div className="flex items-center gap-4">
-          <img src="/crest-192.webp" alt="BAUST crest" width={56} height={58} className="no-outline size-12 shrink-0 object-contain lg:size-14" />
-          <div className="min-w-0 leading-tight">
-            <p className="text-[0.9375rem] font-[640]">Bangladesh Army University of Science and Technology</p>
-            <p className="text-sm text-rail-ink-2">Saidpur Cantonment, Nilphamari</p>
+        <div>
+          <div className="flex items-center gap-4">
+            <img src="/crest-192.webp" alt="BAUST crest" width={56} height={58} className="no-outline size-12 shrink-0 object-contain lg:size-14" />
+            <div className="min-w-0 leading-tight">
+              <p className="text-[0.9375rem] font-[640]">Bangladesh Army University of Science and Technology</p>
+              <p className="text-sm text-rail-ink-2">Saidpur Cantonment, Nilphamari</p>
+            </div>
+          </div>
+          {/* Always visible, at every size: this site borrows BAUST's name and crest but isn't BAUST's. */}
+          <div role="note" className="concept-plate mt-5">
+            <TriangleAlert size={16} strokeWidth={2} className="mt-px shrink-0" aria-hidden />
+            <p>
+              <span className="concept-plate-title">Unofficial concept</span>
+              <span className="concept-plate-body">This is not the BAUST portal. Never enter your BAUST password here.</span>
+            </p>
           </div>
         </div>
 
@@ -45,7 +56,7 @@ export function AuthFrame({ children }: { children: ReactNode }) {
 
         <div className="hidden items-end justify-between gap-6 lg:flex">
           <p className="caps text-rail-ink-2">Discipline · Knowledge · Morality</p>
-          <p className="sample-mark text-2xs text-rail-ink-2">Concept redesign · synthetic sample data</p>
+          <p className="sample-mark text-2xs text-rail-ink-2">Synthetic sample data · not affiliated with BAUST</p>
         </div>
       </section>
 
