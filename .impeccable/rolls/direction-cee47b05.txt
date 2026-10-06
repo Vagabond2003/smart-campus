@@ -1,0 +1,21 @@
+Direction roll for the Smart Campus redesign (recorded from the session's concept-seed output).
+
+Command: .claude/skills/impeccable/scripts/impeccable concept-seed --scope direction --mode operate
+
+Output header (verbatim):
+DIRECTION CONCEPT SEED (key: cee47b05; mode: operate; source: api; approved pool: c3b204a1eed6; 306/564 human-approved; rerun with --scope direction --mode operate --from cee47b05 --candidate-count 7 to reproduce this roll against this catalog revision)
+ASSIGNED INDEX: 3
+
+Builder's ordered grounded list (ranked before the roll):
+1. Saidpur Line: Bangladesh Railway timetables and departure boards (Saidpur, BAUST's railway-workshop town)
+2. Timing-diagram notation from digital logic coursework
+3. Cantonment Order: Saidpur Cantonment's painted kerbs, green road signboards, parade-ground alignment (assigned by the roll)
+4. Cricket scorecard broadcast graphics
+5. Exam answer script and OMR forms
+6. Banknote and stamp security printing
+7. Rickshaw art
+
+Dealt challengers: variable-font-specimen, wayfinding-cartography-signage-terminal-yellow-wayfinding, pop-culture-shelf-vertical-video-feed-surface, editorial-sequence-montage-botanical-folio-season, vernacular-ephemera-jet-age-ticket-wallet, japanese-high-density-web.
+Verdicts: ticket wallet competitive; the other five declined (kept lines recorded on the decision payload).
+
+Decision: the decision page closed unanswered (exit 4), so the round was re-presented through the structured question tool. The user chose "Saidpur Line" (IMPECCABLE'S PICK). Telemetry ping sent with --kind pick --from cee47b05.

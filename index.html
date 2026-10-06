@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="Smart Campus, the BAUST student portal. Concept redesign running on synthetic sample data." />
+    <meta name="theme-color" content="#006A4E" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0B2C22" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <title>Smart Campus · BAUST</title>
+    <script>
+      // Apply saved display preferences before first paint so there is no theme flash.
+      try {
+        var p = JSON.parse(localStorage.getItem("sc.display") || "{}");
+        var dark = p.theme === "dark" || (p.theme !== "light" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.dataset.theme = dark ? "dark" : "light";
+        document.documentElement.dataset.text = p.text || "m";
+      } catch (e) {
+        document.documentElement.dataset.theme = "light";
+        document.documentElement.dataset.text = "m";
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

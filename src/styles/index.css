@@ -1,0 +1,229 @@
+/* Scan only src/ for classes. Tool state written into the project root (.impeccable/, .gstack/)
+   must never count as a source file: Tailwind full-reloads the page when a scanned file changes. */
+@import "tailwindcss" source("..");
+@import "@fontsource-variable/archivo/wdth.css";
+@import "./transitions-root.css";
+@import "./tokens.css";
+@import "./transitions.css";
+@import "./board.css";
+@import "./components.css";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme inline {
+  --font-sans: "Archivo Variable", "Taka Sign", ui-sans-serif, system-ui, sans-serif;
+
+  --color-ground: var(--ground);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-rail: var(--rail);
+  --color-rail-deep: var(--rail-deep);
+  --color-rail-hover: var(--rail-hover);
+  --color-rail-ink: var(--rail-ink);
+  --color-rail-ink-2: var(--rail-ink-2);
+  --color-rail-line: var(--rail-line);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-press: var(--primary-press);
+  --color-primary-ink: var(--primary-ink);
+  --color-link: var(--link);
+  --color-board: var(--board);
+  --color-board-2: var(--board-2);
+  --color-board-line: var(--board-line);
+  --color-board-text: var(--board-text);
+  --color-amber: var(--amber);
+  --color-amber-dim: var(--amber-dim);
+  --color-ok: var(--ok);
+  --color-ok-wash: var(--ok-wash);
+  --color-caution: var(--caution);
+  --color-caution-wash: var(--caution-wash);
+  --color-caution-fill: var(--caution-fill);
+  --color-danger: var(--danger);
+  --color-danger-wash: var(--danger-wash);
+  --color-danger-line: var(--danger-line);
+
+  --radius-xs: 3px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+
+  /* Fixed rem scale, ratio ≈ 1.2 (Operate surfaces do not use fluid type) */
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1.1rem;
+  --text-sm: 0.8125rem;
+  --text-sm--line-height: 1.25rem;
+  --text-base: 0.9375rem;
+  --text-base--line-height: 1.45rem;
+  --text-md: 1.0625rem;
+  --text-md--line-height: 1.5rem;
+  --text-lg: 1.25rem;
+  --text-lg--line-height: 1.6rem;
+  --text-xl: 1.5rem;
+  --text-xl--line-height: 1.9rem;
+  --text-2xl: 1.875rem;
+  --text-2xl--line-height: 2.25rem;
+  --text-3xl: 2.375rem;
+  --text-3xl--line-height: 2.6rem;
+
+  --shadow-float: var(--shadow-float);
+  --shadow-bar: var(--shadow-bar);
+
+  --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    background: var(--ground);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    -webkit-tap-highlight-color: transparent;
+    scrollbar-color: var(--line-strong) transparent;
+  }
+  body {
+    min-height: 100dvh;
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
+    font-stretch: 100%;
+    font-kerning: normal;
+    caret-color: var(--primary);
+    background: var(--ground);
+  }
+  ::selection {
+    background: var(--amber);
+    color: #121314;
+  }
+  h1, h2, h3, h4 { text-wrap: balance; }
+  p, li, dd { text-wrap: pretty; }
+  a {
+    color: inherit;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+  }
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+  [data-on-rail] :focus-visible,
+  [data-on-board] :focus-visible {
+    outline-color: var(--focus-on-rail);
+  }
+  button, [role="button"], summary { cursor: pointer; }
+  button:disabled { cursor: not-allowed; }
+  img { outline: 1px solid oklch(0 0 0 / 0.1); outline-offset: -1px; }
+  [data-theme="dark"] img { outline-color: oklch(1 0 0 / 0.1); }
+  img.no-outline { outline: none; }
+  * { scrollbar-width: thin; }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb {
+    background: var(--line-strong);
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-track { background: transparent; }
+  input::placeholder, textarea::placeholder { color: var(--ink-3); opacity: 1; }
+  [hidden] { display: none !important; }
+}
+
+@layer components {
+  /* Timetable head voice: condensed capitals, used for column heads, board labels, small section labels */
+  .caps {
+    font-stretch: 78%;
+    font-weight: 620;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: var(--text-2xs);
+    line-height: 1rem;
+  }
+  /* Signboard voice: station-board capitals on Archivo's width axis, for page titles */
+  .signboard {
+    font-stretch: 76%;
+    font-weight: 730;
+    text-transform: uppercase;
+    letter-spacing: 0.012em;
+    line-height: 1.02;
+  }
+  /* Module band: the same voice at heading size, for panel heads and section heads */
+  .band {
+    font-stretch: 80%;
+    font-weight: 690;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: 1.2;
+  }
+  .num { font-variant-numeric: tabular-nums lining-nums; }
+  .display-num {
+    font-variant-numeric: proportional-nums lining-nums;
+    font-stretch: 88%;
+    font-weight: 680;
+    letter-spacing: -0.015em;
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+  }
+  .panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    min-height: 3.25rem;
+    padding: 0.75rem 1rem 0.75rem 1.125rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .hairline { border-color: var(--line); }
+
+  .link {
+    color: var(--link);
+    font-weight: 560;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--link) 35%, transparent);
+    transition: text-decoration-color 150ms ease-out;
+  }
+  .link:hover { text-decoration-color: currentColor; }
+
+  .sample-mark {
+    font-stretch: 78%;
+    font-weight: 620;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .skeleton-bar {
+    display: block;
+    border-radius: var(--radius-sm);
+    background: var(--surface-3);
+  }
+
+  .scroll-x {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@layer utilities {
+  .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+  .pt-safe { padding-top: env(safe-area-inset-top); }
+}
+
+@media print {
+  html, body { background: #fff !important; color: #000 !important; }
+  .no-print { display: none !important; }
+  .print-only { display: block !important; }
+}
+.print-only { display: none; }

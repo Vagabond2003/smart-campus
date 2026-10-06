@@ -1,0 +1,886 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-05T17:03:48+00:00",
+  "title": "Design System: Smart Campus",
+  "extensions": {
+    "colorMeta": {
+      "rail": {
+        "role": "primary",
+        "displayName": "Flag Green (rail)",
+        "canonical": "#006a4e",
+        "oklch": "oklch(46.5% 0.095 167.0)",
+        "cssVar": "--rail",
+        "dark": "#0b2c22",
+        "tonalRamp": [
+          "#000f09",
+          "#002c1e",
+          "#034c37",
+          "#0b6e52",
+          "#398f71",
+          "#5eb292",
+          "#87dcba",
+          "#c3fee5"
+        ]
+      },
+      "rail-deep": {
+        "role": "primary",
+        "displayName": "Rail Deep",
+        "canonical": "#00553e",
+        "oklch": "oklch(39.9% 0.082 167.1)",
+        "cssVar": "--rail-deep",
+        "dark": "#061f17",
+        "tonalRamp": [
+          "#000f08",
+          "#042b1f",
+          "#014c37",
+          "#246c54",
+          "#488d73",
+          "#6aaf94",
+          "#92d9bc",
+          "#c2fee5"
+        ]
+      },
+      "rail-hover": {
+        "role": "primary",
+        "displayName": "Rail Hover",
+        "canonical": "#0a7558",
+        "oklch": "oklch(50.1% 0.099 167.6)",
+        "cssVar": "--rail-hover",
+        "dark": "#12392d",
+        "tonalRamp": [
+          "#000f09",
+          "#022c1f",
+          "#094b38",
+          "#146e53",
+          "#349071",
+          "#59b292",
+          "#83dcbb",
+          "#c1ffe5"
+        ]
+      },
+      "rail-ink-2": {
+        "role": "primary",
+        "displayName": "Rail Ink 2",
+        "canonical": "#c2e3d7",
+        "oklch": "oklch(88.9% 0.038 171.4)",
+        "cssVar": "--rail-ink-2",
+        "dark": "#9cc7b6",
+        "tonalRamp": [
+          "#000f0a",
+          "#0d2a22",
+          "#2a463d",
+          "#47655b",
+          "#67857a",
+          "#87a79b",
+          "#afd0c4",
+          "#d6f7eb"
+        ]
+      },
+      "primary": {
+        "role": "primary",
+        "displayName": "Flag Green",
+        "canonical": "#006a4e",
+        "oklch": "oklch(46.5% 0.095 167.0)",
+        "cssVar": "--primary",
+        "dark": "#2fb184",
+        "tonalRamp": [
+          "#000f09",
+          "#002c1e",
+          "#034c37",
+          "#0b6e52",
+          "#398f71",
+          "#5eb292",
+          "#87dcba",
+          "#c3fee5"
+        ]
+      },
+      "primary-hover": {
+        "role": "primary",
+        "displayName": "Flag Green Hover",
+        "canonical": "#005a42",
+        "oklch": "oklch(41.5% 0.085 167.2)",
+        "cssVar": "--primary-hover",
+        "dark": "#3cc192",
+        "tonalRamp": [
+          "#000f08",
+          "#022c1f",
+          "#084c38",
+          "#206d54",
+          "#448d73",
+          "#67b094",
+          "#90d9bc",
+          "#c0ffe5"
+        ]
+      },
+      "primary-press": {
+        "role": "primary",
+        "displayName": "Flag Green Press",
+        "canonical": "#004d39",
+        "oklch": "oklch(37.3% 0.075 168.3)",
+        "cssVar": "--primary-press",
+        "dark": "#27a077",
+        "tonalRamp": [
+          "#000f09",
+          "#032c1f",
+          "#0b4b39",
+          "#2a6b56",
+          "#4c8c75",
+          "#6eae96",
+          "#96d8be",
+          "#c2fee6"
+        ]
+      },
+      "link": {
+        "role": "primary",
+        "displayName": "Signal Link Green",
+        "canonical": "#00664b",
+        "oklch": "oklch(45.3% 0.093 167.0)",
+        "cssVar": "--link",
+        "dark": "#6fd6ad",
+        "tonalRamp": [
+          "#000f08",
+          "#022c1f",
+          "#074c38",
+          "#126e52",
+          "#3c8f72",
+          "#60b192",
+          "#89dbbb",
+          "#c0ffe4"
+        ]
+      },
+      "board": {
+        "role": "secondary",
+        "displayName": "Board Black",
+        "canonical": "#121314",
+        "oklch": "oklch(18.6% 0.003 248.0)",
+        "cssVar": "--board",
+        "dark": "#050606",
+        "tonalRamp": [
+          "#0a0b0c",
+          "#232425",
+          "#3f4041",
+          "#5c5e5f",
+          "#7c7d7f",
+          "#9d9ea0",
+          "#c6c7c9",
+          "#edeff0"
+        ]
+      },
+      "board-2": {
+        "role": "secondary",
+        "displayName": "Board Black Hover",
+        "canonical": "#1b1d1e",
+        "oklch": "oklch(22.9% 0.004 229.0)",
+        "cssVar": "--board-2",
+        "dark": "#0d0f10",
+        "tonalRamp": [
+          "#0a0b0c",
+          "#222425",
+          "#3e4041",
+          "#5c5e5f",
+          "#7b7e7f",
+          "#9c9fa0",
+          "#c5c8c9",
+          "#eceff0"
+        ]
+      },
+      "board-line": {
+        "role": "secondary",
+        "displayName": "Board Rule",
+        "canonical": "#2b2e30",
+        "oklch": "oklch(29.9% 0.006 236.7)",
+        "cssVar": "--board-line",
+        "dark": "#24272a",
+        "tonalRamp": [
+          "#090c0d",
+          "#222426",
+          "#3d4042",
+          "#5b5e60",
+          "#7a7e80",
+          "#9b9fa1",
+          "#c4c8ca",
+          "#ebeff2"
+        ]
+      },
+      "amber": {
+        "role": "secondary",
+        "displayName": "Board Amber",
+        "canonical": "#ffb000",
+        "oklch": "oklch(81.2% 0.170 76.4)",
+        "cssVar": "--amber",
+        "dark": "#ffb000",
+        "tonalRamp": [
+          "#130900",
+          "#322001",
+          "#563a05",
+          "#7c550e",
+          "#a67206",
+          "#d0900e",
+          "#fcb94c",
+          "#ffebd0"
+        ]
+      },
+      "amber-dim": {
+        "role": "secondary",
+        "displayName": "Amber Dim",
+        "canonical": "#b98a2c",
+        "oklch": "oklch(66.3% 0.121 80.6)",
+        "cssVar": "--amber-dim",
+        "dark": "#a8802e",
+        "tonalRamp": [
+          "#120900",
+          "#312101",
+          "#543b05",
+          "#79570d",
+          "#a27404",
+          "#c5953a",
+          "#f0bf66",
+          "#feecce"
+        ]
+      },
+      "board-text": {
+        "role": "secondary",
+        "displayName": "Board Cream",
+        "canonical": "#f3ead2",
+        "oklch": "oklch(93.8% 0.033 89.9)",
+        "cssVar": "--board-text",
+        "dark": "#f3ead2",
+        "tonalRamp": [
+          "#100a00",
+          "#2a2310",
+          "#473f2b",
+          "#655d48",
+          "#857d67",
+          "#a69e87",
+          "#d0c7af",
+          "#f7eed6"
+        ]
+      },
+      "ground": {
+        "role": "neutral",
+        "displayName": "Platform White",
+        "canonical": "#f4f5f2",
+        "oklch": "oklch(96.9% 0.004 121.6)",
+        "cssVar": "--ground",
+        "dark": "#0c0f0e",
+        "tonalRamp": [
+          "#0b0b0a",
+          "#242422",
+          "#3f403e",
+          "#5d5e5b",
+          "#7d7e7b",
+          "#9e9f9c",
+          "#c7c8c5",
+          "#eeefec"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Panel White",
+        "canonical": "#ffffff",
+        "oklch": "oklch(100.0% 0.000 89.9)",
+        "cssVar": "--surface",
+        "dark": "#141817",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#242424",
+          "#404040",
+          "#5d5d5d",
+          "#7d7d7d",
+          "#9e9e9e",
+          "#c7c7c7",
+          "#eeeeee"
+        ]
+      },
+      "surface-2": {
+        "role": "neutral",
+        "displayName": "Concrete 2",
+        "canonical": "#eceeea",
+        "oklch": "oklch(94.6% 0.006 128.5)",
+        "cssVar": "--surface-2",
+        "dark": "#1a1f1d",
+        "tonalRamp": [
+          "#0a0c09",
+          "#232522",
+          "#3f403d",
+          "#5d5e5b",
+          "#7c7e7a",
+          "#9d9f9b",
+          "#c6c8c4",
+          "#edefeb"
+        ]
+      },
+      "surface-3": {
+        "role": "neutral",
+        "displayName": "Concrete 3",
+        "canonical": "#e3e6e1",
+        "oklch": "oklch(92.1% 0.007 132.4)",
+        "cssVar": "--surface-3",
+        "dark": "#222826",
+        "tonalRamp": [
+          "#0a0c09",
+          "#232521",
+          "#3e413d",
+          "#5c5e5a",
+          "#7b7e7a",
+          "#9d9f9b",
+          "#c5c8c3",
+          "#edf0ea"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "#d9ddd7",
+        "oklch": "oklch(89.3% 0.009 134.9)",
+        "cssVar": "--line",
+        "dark": "#2a312e",
+        "tonalRamp": [
+          "#090c08",
+          "#222521",
+          "#3e413c",
+          "#5b5f5a",
+          "#7b7e79",
+          "#9ca09a",
+          "#c5c9c3",
+          "#ecf0ea"
+        ]
+      },
+      "line-strong": {
+        "role": "neutral",
+        "displayName": "Strong Hairline",
+        "canonical": "#bdc4bd",
+        "oklch": "oklch(81.3% 0.012 145.5)",
+        "cssVar": "--line-strong",
+        "dark": "#3b4440",
+        "tonalRamp": [
+          "#080d08",
+          "#202620",
+          "#3c423c",
+          "#596059",
+          "#797f79",
+          "#9aa19a",
+          "#c2cac2",
+          "#eaf1ea"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Station Ink",
+        "canonical": "#121614",
+        "oklch": "oklch(19.5% 0.007 164.1)",
+        "cssVar": "--ink",
+        "dark": "#e8ece9",
+        "tonalRamp": [
+          "#080c0a",
+          "#212523",
+          "#3c413f",
+          "#5a5f5c",
+          "#797f7c",
+          "#9aa09d",
+          "#c3c9c6",
+          "#eaf0ed"
+        ]
+      },
+      "ink-2": {
+        "role": "neutral",
+        "displayName": "Ink 2",
+        "canonical": "#464f4a",
+        "oklch": "oklch(41.8% 0.014 161.5)",
+        "cssVar": "--ink-2",
+        "dark": "#b2bbb6",
+        "tonalRamp": [
+          "#060d09",
+          "#1e2622",
+          "#39423d",
+          "#57605b",
+          "#76807b",
+          "#97a19c",
+          "#c0cac4",
+          "#e7f2eb"
+        ]
+      },
+      "ink-3": {
+        "role": "neutral",
+        "displayName": "Ink 3",
+        "canonical": "#636c67",
+        "oklch": "oklch(52.2% 0.013 161.7)",
+        "cssVar": "--ink-3",
+        "dark": "#8f9a94",
+        "tonalRamp": [
+          "#060d09",
+          "#1e2622",
+          "#3a423d",
+          "#57605b",
+          "#77807b",
+          "#97a19c",
+          "#c0cac4",
+          "#e7f1ec"
+        ]
+      },
+      "ok": {
+        "role": "tertiary",
+        "displayName": "Proceed Green",
+        "canonical": "#00704f",
+        "oklch": "oklch(48.3% 0.102 164.4)",
+        "cssVar": "--ok",
+        "dark": "#6fd6ad",
+        "tonalRamp": [
+          "#000f08",
+          "#032c1d",
+          "#0a4c35",
+          "#166e50",
+          "#35906d",
+          "#5ab38e",
+          "#84ddb6",
+          "#c1ffe2"
+        ]
+      },
+      "ok-wash": {
+        "role": "tertiary",
+        "displayName": "Proceed Wash",
+        "canonical": "#e2f1ea",
+        "oklch": "oklch(94.5% 0.018 166.4)",
+        "cssVar": "--ok-wash",
+        "dark": "#0f2c22",
+        "tonalRamp": [
+          "#040e09",
+          "#1c2722",
+          "#37433e",
+          "#54615b",
+          "#73817b",
+          "#94a29c",
+          "#bdcbc5",
+          "#e4f3ec"
+        ]
+      },
+      "caution": {
+        "role": "tertiary",
+        "displayName": "Caution Ochre",
+        "canonical": "#7a4f00",
+        "oklch": "oklch(46.4% 0.099 73.2)",
+        "cssVar": "--caution",
+        "dark": "#ffc94d",
+        "tonalRamp": [
+          "#130900",
+          "#341f00",
+          "#583803",
+          "#7f5308",
+          "#a17333",
+          "#c49555",
+          "#efbe7e",
+          "#feebd4"
+        ]
+      },
+      "caution-wash": {
+        "role": "tertiary",
+        "displayName": "Caution Wash",
+        "canonical": "#fff1d1",
+        "oklch": "oklch(96.1% 0.044 87.2)",
+        "cssVar": "--caution-wash",
+        "dark": "#2e2410",
+        "tonalRamp": [
+          "#110a00",
+          "#2d2207",
+          "#4a3e23",
+          "#685c40",
+          "#897c5f",
+          "#aa9d7f",
+          "#d4c6a7",
+          "#fbedcd"
+        ]
+      },
+      "caution-fill": {
+        "role": "tertiary",
+        "displayName": "Caution Fill",
+        "canonical": "#c98300",
+        "oklch": "oklch(66.6% 0.143 71.9)",
+        "cssVar": "--caution-fill",
+        "dark": "#ffb000",
+        "tonalRamp": [
+          "#130900",
+          "#331f02",
+          "#573809",
+          "#815201",
+          "#a96f13",
+          "#d48d1c",
+          "#fcb95f",
+          "#ffebd4"
+        ]
+      },
+      "danger": {
+        "role": "tertiary",
+        "displayName": "Signal Maroon",
+        "canonical": "#8e1b1b",
+        "oklch": "oklch(42.3% 0.150 26.6)",
+        "cssVar": "--danger",
+        "dark": "#ef6a7a",
+        "tonalRamp": [
+          "#1f0001",
+          "#490406",
+          "#7c000a",
+          "#a1302b",
+          "#c7534b",
+          "#ed756b",
+          "#fdb1a8",
+          "#fee9e6"
+        ]
+      },
+      "danger-wash": {
+        "role": "tertiary",
+        "displayName": "Maroon Wash",
+        "canonical": "#f7e5e3",
+        "oklch": "oklch(93.6% 0.020 25.2)",
+        "cssVar": "--danger-wash",
+        "dark": "#331614",
+        "tonalRamp": [
+          "#130807",
+          "#2d201f",
+          "#4a3c3a",
+          "#695a58",
+          "#897977",
+          "#ab9a98",
+          "#d4c3c1",
+          "#fceae8"
+        ]
+      },
+      "danger-line": {
+        "role": "tertiary",
+        "displayName": "Maroon Hairline",
+        "canonical": "#e3b9b4",
+        "oklch": "oklch(82.1% 0.049 26.1)",
+        "cssVar": "--danger-line",
+        "dark": "#5c2723",
+        "tonalRamp": [
+          "#1c0202",
+          "#381a17",
+          "#573532",
+          "#77534f",
+          "#99726e",
+          "#bb938e",
+          "#e6bcb7",
+          "#fee9e6"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Signboard",
+        "purpose": "Page titles and the dashboard greeting, uppercase; 1.875rem below the sm breakpoint. One per page.",
+        "textTransform": "uppercase",
+        "cssClass": ".signboard"
+      },
+      "display-num": {
+        "displayName": "Display Number",
+        "purpose": "The one headline figure of a panel (amount due, attendance %); 1.5rem on profile stats.",
+        "cssClass": ".display-num"
+      },
+      "headline": {
+        "displayName": "Module Band",
+        "purpose": "Panel heads, section heads, the term-line title, the active rail item. Uppercase.",
+        "textTransform": "uppercase",
+        "cssClass": ".band"
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "In-panel headings in sentence case: empty states, post titles."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Base reading text and page descriptions, max 68ch."
+      },
+      "body-sm": {
+        "displayName": "Body Small",
+        "purpose": "Tables, menus, list rows, metadata. The most used size."
+      },
+      "label": {
+        "displayName": "Timetable Head",
+        "purpose": "Column heads, nav group labels, definition keys, routine period heads. Uppercase.",
+        "textTransform": "uppercase",
+        "cssClass": ".caps"
+      },
+      "board-value": {
+        "displayName": "Board Value",
+        "purpose": "Departure board values only, amber or cream, uppercase tabular.",
+        "textTransform": "uppercase"
+      },
+      "board-label": {
+        "displayName": "Board Label",
+        "purpose": "Departure board cell labels in amber-dim, uppercase.",
+        "textTransform": "uppercase"
+      }
+    },
+    "shadows": [
+      {
+        "name": "float",
+        "value": "0 0 0 1px rgb(18 22 20 / 0.06), 0 4px 10px -2px rgb(18 22 20 / 0.08), 0 16px 40px -12px rgb(18 22 20 / 0.18)",
+        "dark": "0 0 0 1px rgb(255 255 255 / 0.06), 0 4px 10px -2px rgb(0 0 0 / 0.4), 0 16px 40px -12px rgb(0 0 0 / 0.6)",
+        "purpose": "Menus, popovers, dialogs, sheets and official document paper. Never panels."
+      },
+      {
+        "name": "bar",
+        "value": "0 -1px 0 0 var(--line), 0 -8px 24px -12px rgb(18 22 20 / 0.12)",
+        "dark": "0 -1px 0 0 var(--line), 0 -8px 24px -12px rgb(0 0 0 / 0.5)",
+        "purpose": "Phone bottom tab bar only."
+      },
+      {
+        "name": "live-halo",
+        "value": "0 0 0 3px rgb(255 176 0 / 0.28)",
+        "purpose": "Spread-only halo on the amber you-are-here and live dots; no offset."
+      },
+      {
+        "name": "field-focus",
+        "value": "0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent)",
+        "purpose": "Field focus halo, paired with an ink border."
+      },
+      {
+        "name": "scrim",
+        "value": "rgb(14 18 16 / 0.42)",
+        "dark": "rgb(0 0 0 / 0.6)",
+        "purpose": "Backdrop behind dialogs and sheets."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-smooth-out",
+        "value": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "purpose": "The only easing for state changes: dropdown, modal, panel, tabs, accordion, toast, success check, shake."
+      },
+      {
+        "name": "ease-out",
+        "value": "ease-out",
+        "purpose": "Tooltips and 120-150ms colour transitions on hover."
+      },
+      {
+        "name": "duration-quick",
+        "value": "150ms",
+        "purpose": "Closes, tooltip appear, button and link colour changes."
+      },
+      {
+        "name": "duration-fast",
+        "value": "250ms",
+        "purpose": "Dropdown and modal open, tabs slide, accordion."
+      },
+      {
+        "name": "duration-medium",
+        "value": "350ms",
+        "purpose": "Panel and toast close; toast open."
+      },
+      {
+        "name": "duration-slow",
+        "value": "400ms",
+        "purpose": "Panel open, skeleton content reveal."
+      },
+      {
+        "name": "duration-very-slow",
+        "value": "500ms",
+        "purpose": "Success check."
+      },
+      {
+        "name": "press-scale",
+        "value": "0.96",
+        "purpose": "Button and icon-button :active scale."
+      },
+      {
+        "name": "board-roll",
+        "value": "GSAP ScrambleText, 0.5s + 12ms per character (capped at 24), linear, revealDelay 0.16",
+        "purpose": "The departure board's character roll; the one authored moment. Pausable; skipped under reduced motion."
+      },
+      {
+        "name": "flip",
+        "value": "GSAP Flip",
+        "purpose": "Reordering lists (attendance summary sort)."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "prefers-reduced-motion: reduce -> transition: none",
+        "purpose": "Every recipe, the board roll, rotation and the live pulse go instant or stop."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px",
+        "purpose": "Rail shell replaces mobile header and tab bar; dashboard goes two-column."
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      },
+      {
+        "name": "board-narrow",
+        "value": "@container board (max-width: 40rem)"
+      },
+      {
+        "name": "board-tight",
+        "value": "@container board (max-width: 30rem)"
+      }
+    ],
+    "layout": {
+      "railWidth": "264px",
+      "topbarHeight": "64px",
+      "tabbarHeight": "64px",
+      "contentMax": "84rem",
+      "panelGap": "20px",
+      "textSizeControl": {
+        "s": "15px",
+        "m": "16px",
+        "l": "18px"
+      }
+    },
+    "themes": {
+      "default": "light",
+      "dark": "[data-theme=\"dark\"] on :root; each colorMeta entry carries its dark value"
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one main action in a view: flag green, white text.",
+      "html": "<button class=\"ds-btn-primary\">Pay ৳ 8,900</button>",
+      "css": ".ds-btn-primary { font-family: var(--font-sans, \"Archivo Variable\", ui-sans-serif, system-ui, sans-serif); display: inline-flex; align-items: center; justify-content: center; height: 40px; padding: 0 16px; gap: 8px; font-size: 0.875rem; font-weight: 570; background: var(--primary, #006a4e); color: var(--primary-ink, #fff); border: 0; border-radius: 6px; cursor: pointer; transition: background-color 150ms ease-out, scale 150ms ease-out; } .ds-btn-primary:hover { background: var(--primary-hover, #005a42); } .ds-btn-primary:active { background: var(--primary-press, #004d39); scale: 0.96; } .ds-btn-primary:focus-visible { outline: 2px solid var(--focus, #121614); outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Supporting actions: white with a strong hairline.",
+      "html": "<button class=\"ds-btn-secondary\">Try again</button>",
+      "css": ".ds-btn-secondary { font-family: var(--font-sans, \"Archivo Variable\", ui-sans-serif, system-ui, sans-serif); display: inline-flex; align-items: center; height: 40px; padding: 0 16px; font-size: 0.875rem; font-weight: 570; background: var(--surface, #fff); color: var(--ink, #121614); border: 1px solid var(--line-strong, #bdc4bd); border-radius: 6px; cursor: pointer; transition: background-color 150ms ease-out, border-color 150ms ease-out, scale 150ms ease-out; } .ds-btn-secondary:hover { background: var(--surface-2, #eceeea); border-color: color-mix(in srgb, var(--ink-3, #636c67) 60%, transparent); } .ds-btn-secondary:active { scale: 0.96; } .ds-btn-secondary:focus-visible { outline: 2px solid var(--focus, #121614); outline-offset: 2px; }"
+    },
+    {
+      "name": "Danger Button",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Resolving bad news, e.g. Register a backlog course.",
+      "html": "<button class=\"ds-btn-danger\">Register</button>",
+      "css": ".ds-btn-danger { font-family: var(--font-sans, \"Archivo Variable\", ui-sans-serif, system-ui, sans-serif); display: inline-flex; align-items: center; height: 40px; padding: 0 16px; font-size: 0.875rem; font-weight: 570; background: var(--danger, #8e1b1b); color: #fff; border: 0; border-radius: 6px; cursor: pointer; transition: filter 150ms ease-out, scale 150ms ease-out; } .ds-btn-danger:hover { filter: brightness(1.1); } .ds-btn-danger:active { scale: 0.96; } .ds-btn-danger:focus-visible { outline: 2px solid var(--focus, #121614); outline-offset: 2px; }"
+    },
+    {
+      "name": "Field",
+      "kind": "input",
+      "refersTo": "field",
+      "description": "Text field with label above; ink border and green halo on focus.",
+      "html": "<label class=\"ds-field-label\" for=\"ds-sid\">Student ID</label><div class=\"ds-field\"><input id=\"ds-sid\" placeholder=\"e.g. 2024 0000 0000\" /></div>",
+      "css": ".ds-field-label { font-family: var(--font-sans, \"Archivo Variable\", ui-sans-serif, system-ui, sans-serif); display: block; margin-bottom: 6px; font-size: 0.8125rem; font-weight: 560; color: var(--ink-2, #464f4a); } .ds-field { display: flex; align-items: center; height: 44px; padding: 0 14px; background: var(--surface, #fff); border: 1px solid var(--line-strong, #bdc4bd); border-radius: 6px; transition: border-color 150ms ease-out, box-shadow 150ms ease-out; } .ds-field:hover { border-color: color-mix(in srgb, var(--ink, #121614) 35%, var(--line-strong, #bdc4bd)); } .ds-field:focus-within { border-color: var(--ink, #121614); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary, #006a4e) 18%, transparent); } .ds-field input { font-family: var(--font-sans, \"Archivo Variable\", ui-sans-serif, system-ui, sans-serif); flex: 1; min-width: 0; height: 100%; border: 0; outline: none; background: transparent; font-size: 0.9375rem; color: var(--ink, #121614); } .ds-field input::placeholder { color: var(--ink-3, #636c67); }"
+    },
+    {
+      "name": "Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "A ruled module: white, 1px hairline, 10px radius, band head with a module link. Never a shadow.",
+      "html": "<section class=\"ds-panel\"><div class=\"ds-panel-head\"><h2>Dues</h2><a href=\"#\">Bills <svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m9 18 6-6-6-6\"/></svg></a></div><div class=\"ds-panel-body\">Balance due on the semester fee, summer 2026<div class=\"ds-panel-num\">৳ 8,900</div></div></section>",
+      "css": ".ds-panel { font-family: var(--font-sans, \"Archivo Variable\", ui-sans-serif, system-ui, sans-serif); background: var(--surface, #fff); border: 1px solid var(--line, #d9ddd7); border-radius: 10px; color: var(--ink, #121614); max-width: 520px; } .ds-panel-head { display: flex; align-items: center; justify-content: space-between; min-height: 52px; padding: 12px 16px 12px 18px; border-bottom: 1px solid var(--line, #d9ddd7); } .ds-panel-head h2 { margin: 0; font-size: 0.9375rem; font-weight: 690; font-stretch: 80%; text-transform: uppercase; letter-spacing: 0.05em; line-height: 1.2; } .ds-panel-head a { display: inline-flex; align-items: center; gap: 4px; font-size: 0.8125rem; font-weight: 560; color: var(--link, #00664b); text-decoration: none; } .ds-panel-head a:hover { text-decoration: underline; } .ds-panel-head a svg { transition: transform 150ms ease-out; } .ds-panel-head a:hover svg { transform: translateX(2px); } .ds-panel-body { padding: 20px; font-size: 0.8125rem; color: var(--ink-2, #464f4a); } .ds-panel-num { margin-top: 6px; font-size: 2.375rem; line-height: 2.6rem; font-weight: 680; font-stretch: 88%; letter-spacing: -0.015em; color: var(--danger, #8e1b1b); }"
+    },
+    {
+      "name": "Signals",
+      "kind": "chip",
+      "refersTo": "signal-ok",
+      "description": "State as railway signal aspects: proceed, caution, danger, now, neutral.",
+      "html": "<span class=\"ds-sig ds-sig-ok\"><i></i>Payment</span> <span class=\"ds-sig ds-sig-caution\"><i></i>Due ৳ 8,900</span> <span class=\"ds-sig ds-sig-danger\"><i></i>Referred</span> <span class=\"ds-sig ds-sig-now\"><i></i>Now</span> <span class=\"ds-sig ds-sig-neutral\"><i></i>Done</span>",
+      "css": ".ds-sig { font-family: var(--font-sans, \"Archivo Variable\", ui-sans-serif, system-ui, sans-serif); display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; } .ds-sig i { width: 6px; height: 6px; border-radius: 999px; background: currentColor; } .ds-sig-ok { background: var(--ok-wash, #e2f1ea); color: var(--ok, #00704f); } .ds-sig-caution { background: var(--caution-wash, #fff1d1); color: var(--caution, #7a4f00); } .ds-sig-caution i { background: var(--caution-fill, #c98300); } .ds-sig-danger { background: var(--danger-wash, #f7e5e3); color: var(--danger, #8e1b1b); } .ds-sig-now { background: var(--amber, #ffb000); color: #121314; } .ds-sig-neutral { background: var(--surface-2, #eceeea); color: var(--ink-2, #464f4a); } .ds-sig-neutral i { background: var(--ink-3, #636c67); }"
+    },
+    {
+      "name": "Departure Board",
+      "kind": "custom",
+      "refersTo": "departure-board",
+      "description": "The signature: board-black strip of fixed tabular cells, dim amber labels over amber capitals; values roll on change.",
+      "html": "<div class=\"ds-board\"><div class=\"ds-board-cell\" style=\"width:8.25rem\"><span class=\"ds-board-label\">Ends in 30 min</span><span class=\"ds-board-value\"><b class=\"ds-board-dot\"></b> Now</span></div><div class=\"ds-board-cell\" style=\"width:7rem\"><span class=\"ds-board-label\">Until</span><span class=\"ds-board-value\">10:50</span></div><div class=\"ds-board-cell\" style=\"flex:1\"><span class=\"ds-board-label\">Course</span><span class=\"ds-board-value\">CSE 2101 <span style=\"color:var(--board-text,#f3ead2)\">Digital Logic Design</span></span></div><div class=\"ds-board-cell\" style=\"width:7.75rem\"><span class=\"ds-board-label\">Room</span><span class=\"ds-board-value\">309</span></div></div>",
+      "css": ".ds-board { font-family: var(--font-sans, \"Archivo Variable\", ui-sans-serif, system-ui, sans-serif); display: flex; align-items: stretch; height: 44px; min-width: 0; background: var(--board, #121314); color: var(--board-text, #f3ead2); border-radius: 8px; box-shadow: inset 0 0 0 1px var(--board-line, #2b2e30); overflow: hidden; } .ds-board-cell { display: flex; flex-direction: column; justify-content: center; gap: 1px; min-width: 0; flex: none; padding: 0 14px; border-right: 1px solid var(--board-line, #2b2e30); transition: background-color 150ms ease-out; } .ds-board-cell:last-child { border-right: 0; } .ds-board-cell:hover { background: var(--board-2, #1b1d1e); } .ds-board-label { font-size: 0.625rem; line-height: 0.75rem; font-weight: 600; font-stretch: 75%; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber-dim, #b98a2c); white-space: nowrap; } .ds-board-value { display: flex; align-items: center; gap: 6px; font-size: 0.9375rem; line-height: 1.15rem; font-weight: 640; font-stretch: 80%; letter-spacing: 0.045em; text-transform: uppercase; font-variant-numeric: tabular-nums lining-nums; color: var(--amber, #ffb000); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ds-board-dot { width: 8px; height: 8px; border-radius: 999px; background: var(--amber, #ffb000); box-shadow: 0 0 0 3px color-mix(in srgb, var(--amber, #ffb000) 22%, transparent); }"
+    },
+    {
+      "name": "Rail Navigation",
+      "kind": "nav",
+      "refersTo": "rail-item",
+      "description": "Flag-green rail with grouped modules; the active row recesses to rail-deep in the band voice with an amber icon and you-are-here dot.",
+      "html": "<nav class=\"ds-rail\"><p class=\"ds-rail-group\">Accounts</p><a href=\"#\" class=\"ds-rail-item is-active\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z\"/><path d=\"M16 8h-6\"/><path d=\"M16 12H8\"/><path d=\"M13 16H8\"/></svg><span>Bills</span><b></b></a><a href=\"#\" class=\"ds-rail-item\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"18\" rx=\"2\"/><path d=\"M16 2v4M8 2v4M3 10h18\"/></svg><span>Class Routine</span></a></nav>",
+      "css": ".ds-rail { font-family: var(--font-sans, \"Archivo Variable\", ui-sans-serif, system-ui, sans-serif); width: 264px; padding: 8px 12px 16px; background: var(--rail, #006a4e); color: var(--rail-ink, #fff); } .ds-rail-group { margin: 0; padding: 0 12px 6px; font-size: 0.6875rem; line-height: 1rem; font-weight: 620; font-stretch: 78%; letter-spacing: 0.06em; text-transform: uppercase; color: var(--rail-ink-2, #c2e3d7); } .ds-rail-item { display: flex; align-items: center; gap: 12px; min-height: 40px; padding: 6px 12px; margin-bottom: 2px; border-radius: 6px; font-size: 0.875rem; font-weight: 500; font-stretch: 94%; color: color-mix(in srgb, var(--rail-ink, #fff) 88%, transparent); text-decoration: none; transition: background-color 150ms ease-out, color 150ms ease-out; } .ds-rail-item svg { flex: none; color: var(--rail-ink-2, #c2e3d7); } .ds-rail-item span { flex: 1; } .ds-rail-item:hover { background: var(--rail-hover, #0a7558); color: var(--rail-ink, #fff); } .ds-rail-item:focus-visible { outline: 2px solid var(--focus-on-rail, #ffb000); outline-offset: 2px; } .ds-rail-item.is-active { background: var(--rail-deep, #00553e); color: var(--rail-ink, #fff); font-size: 0.8125rem; font-weight: 690; font-stretch: 80%; letter-spacing: 0.05em; text-transform: uppercase; } .ds-rail-item.is-active svg { color: var(--amber, #ffb000); } .ds-rail-item b { width: 8px; height: 8px; border-radius: 999px; background: var(--amber, #ffb000); box-shadow: 0 0 0 3px rgb(255 176 0 / 0.28); }"
+    },
+    {
+      "name": "Timetable Table",
+      "kind": "custom",
+      "refersTo": "table-head",
+      "description": "Data tables in the timetable voice: condensed capital heads, hairline rows, tabular right-aligned numbers.",
+      "html": "<table class=\"ds-table\"><thead><tr><th>Examination</th><th class=\"n\">Credits</th><th class=\"n\">GPA</th></tr></thead><tbody><tr><td>Level-1, Term-I</td><td class=\"n\">17.00</td><td class=\"n\">3.17</td></tr><tr><td>Level-1, Term-II</td><td class=\"n\">18.00</td><td class=\"n\" style=\"color:var(--danger,#8e1b1b)\">2.68</td></tr></tbody></table>",
+      "css": ".ds-table { font-family: var(--font-sans, \"Archivo Variable\", ui-sans-serif, system-ui, sans-serif); width: 100%; max-width: 520px; border-collapse: separate; border-spacing: 0; font-size: 0.8125rem; color: var(--ink, #121614); background: var(--surface, #fff); border: 1px solid var(--line, #d9ddd7); border-radius: 10px; overflow: hidden; } .ds-table th { height: 40px; padding: 0 16px; background: var(--surface-2, #eceeea); color: var(--ink-2, #464f4a); text-align: left; border-bottom: 1px solid var(--line, #d9ddd7); font-size: 0.6875rem; font-weight: 620; font-stretch: 78%; letter-spacing: 0.06em; text-transform: uppercase; } .ds-table td { padding: 12px 16px; border-bottom: 1px solid var(--line, #d9ddd7); } .ds-table tr:last-child td { border-bottom: 0; } .ds-table tbody tr { transition: background-color 120ms ease-out; } .ds-table tbody tr:hover { background: color-mix(in srgb, var(--surface-2, #eceeea) 60%, transparent); } .ds-table .n { text-align: right; font-variant-numeric: tabular-nums lining-nums; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Saidpur Line",
+    "overview": "The portal is a station. Bangladesh Railway at Saidpur supplies the whole material: a flag-green rail down the left edge, a board-black departure strip that always says what leaves next, and a platform-white concourse ruled by concrete hairlines. Everything a student reads is either a signboard, a timetable, or a signal. Records (results, receipts, admit cards) leave the station's voice and become paper: official BAUST documents on white, in both themes.\n\nDensity is operational, not decorative. Panels sit edge to edge on a 20px gutter, each opened by a condensed capital band and closed by its own hairline, so a laptop screen reads like a timetable page and a phone reads like the same timetable folded into one column. Colour carries meaning before it carries mood: green is the railway and the way forward, amber is \"now\" and \"you are here\", maroon is bad news stated plainly. The one authored motion is the board's character roll; every other change is a short exponential ease-out from a visible default, and all of it goes instant under reduced motion.\n\nLight is the daylight platform and the default. Dark is the night-station rendition (deep rail green, near-black ground, mint primary, salmon danger) and keeps every role, including amber, unchanged in meaning.",
+    "keyCharacteristics": [
+      "Flag-green rail and primary actions; board-black strip with amber tabular capitals as the signature.",
+      "Archivo on its width axis: condensed capitals for signboards, bands and timetable heads; normal width for UI and reading.",
+      "Hairline-ruled white panels on a platform-white ground; shadows only for things that float.",
+      "State as signal aspects: green proceed, amber caution or now, maroon danger.",
+      "Tabular figures wherever numbers align; currency in the Taka sign.",
+      "Exponential ease-out motion at 150 to 500 ms, no overshoot; the board roll is the one authored moment."
+    ],
+    "rules": [
+      {
+        "name": "The Three Aspects Rule",
+        "body": "State is shown with exactly three signal colours (ok, caution, danger) plus amber for \"now\". A new state maps onto one of them; it does not get a new hue.",
+        "section": "colors"
+      },
+      {
+        "name": "The Amber Is Now Rule",
+        "body": "Amber appears only where it answers \"when is it\" or \"where am I\": the board, the current class, the current stop, the active module, your seat. If an amber element answers neither, it is wrong.",
+        "section": "colors"
+      },
+      {
+        "name": "The Bad News Is Maroon Rule",
+        "body": "Money owed, failed and referred courses and attendance shortfalls are set in maroon at full size where the student will see them, never softened to grey or buried behind a link.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Widths Rule",
+        "body": "Condensed capitals are for things a station would paint on a sign: page titles, bands, column heads, the board. Anything a student reads as a sentence is normal width, sentence case.",
+        "section": "typography"
+      },
+      {
+        "name": "The Columns Align Rule",
+        "body": "Every number that sits in a column or can change in place (money, credits, GPA, times, board values, seat numbers) uses tabular lining figures. Only the single headline figure of a panel goes proportional.",
+        "section": "typography"
+      },
+      {
+        "name": "The Ruled Panel Rule",
+        "body": "A panel is a white surface with a 1px hairline and a 10px radius. If it has a shadow, it is not a panel; it is floating.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Paper Rule",
+        "body": "Admit cards, receipts and other official records render as white paper with the float shadow and a 4px radius in both themes, carrying the sample watermark, and print without shadow or radius.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** use flag green for the rail and the one primary action in a view, and keep secondary actions secondary or ghost.",
+      "**Do** set page titles in the signboard voice and panel heads in the module band; keep everything readable as a sentence in normal-width sentence case.",
+      "**Do** use tabular lining figures for every aligned or live-changing number, and the Taka sign for money.",
+      "**Do** separate content with 1px hairlines inside 10px-radius white panels on the platform-white ground.",
+      "**Do** map every state onto ok, caution or danger, and use amber only for now and you-are-here.",
+      "**Do** state bad news in maroon where the student will see it, with the action to resolve it alongside.",
+      "**Do** animate only with the exponential ease-out at 150 to 500ms, and make every animation instant under reduced motion.",
+      "**Do** render official records as white paper with the sample watermark in both themes."
+    ],
+    "donts": [
+      "**Don't** put a shadow on a panel or a card; shadows belong to floating surfaces and the tab bar only.",
+      "**Don't** use overshoot or bounce easings, or add page-load choreography; the board roll is the only authored moment.",
+      "**Don't** introduce a new state colour, or use amber as decoration.",
+      "**Don't** set body copy, descriptions or form labels in condensed capitals.",
+      "**Don't** soften dues, failed or referred courses, or attendance shortfalls into grey.",
+      "**Don't** add gamification devices (badges, streaks, confetti, emoji on records).",
+      "**Don't** show photographs of people; avatars are tinted initials."
+    ]
+  }
+}

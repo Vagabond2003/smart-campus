@@ -1,0 +1,119 @@
+rules_version = '2';
+
+// Smart Campus security rules.
+// Everything lives under students/{uid} and is readable and writable by that student only.
+// Each collection accepts exactly the fields the portal writes, within sensible sizes, so an
+// account can't be used to store arbitrary data. Nothing can be deleted from the client.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    function str(v, max) {
+      return v is string && v.size() > 0 && v.size() <= max;
+    }
+
+    function optional(d, key, check) {
+      return !(key in d) || check;
+    }
+
+    // Activated accounts sign in as <16-digit ID>@students.smart-campus.example, so the profile's
+    // ID must match the account. The sample sandbox is an anonymous account that always plays
+    // the sample student (keep in sync with SAMPLE_STUDENT in src/data/seed.ts).
+    function validProfile(d) {
+      return d.keys().hasOnly(['studentId', 'name', 'kind', 'createdAt'])
+        && d.studentId is string && d.studentId.matches('^[0-9]{16}$')
+        && str(d.name, 80)
+        && d.createdAt == request.time
+        && (
+          (d.kind == 'activated'
+            && !d.studentId.matches('^999920260000[0-9]{4}$')
+            && request.auth.token.get('email', '') == d.studentId + '@students.smart-campus.example')
+          || (d.kind == 'demo'
+            && request.auth.token.firebase.sign_in_provider == 'anonymous'
+            && d.studentId == '9999202600001042')
+        );
+    }
+
+    function validPayment(d) {
+      return d.keys().hasOnly(['date', 'billId', 'amount', 'method', 'provider', 'reference', 'receivedBy'])
+        && d.date is timestamp
+        && str(d.billId, 64)
+        && d.amount is number && d.amount > 0 && d.amount <= 1000000
+        && d.method in ['Offline counter', 'Mobile banking']
+        && optional(d, 'provider', str(d.get('provider', ''), 40))
+        && optional(d, 'reference', str(d.get('reference', ''), 40))
+        && str(d.receivedBy, 80);
+    }
+
+    function validBill(d) {
+      return d.keys().hasOnly(['number', 'date', 'title', 'type', 'semester', 'amount', 'lines', 'dueDate'])
+        && str(d.number, 20)
+        && d.date is timestamp
+        && str(d.title, 120)
+        && d.type in ['Semester Fee', 'RIB Fee']
+        && str(d.semester, 40)
+        && d.amount is number && d.amount >= 0 && d.amount <= 1000000
+        && d.lines is list && d.lines.size() <= 20
+        && optional(d, 'dueDate', d.get('dueDate', null) is timestamp);
+    }
+
+    function validNotice(d) {
+      return d.keys().hasOnly(['at', 'title', 'body', 'to', 'tone', 'read'])
+        && d.at is timestamp
+        && str(d.title, 120)
+        && str(d.body, 400)
+        && str(d.to, 120) && d.to.matches('^/.*')
+        && d.tone in ['info', 'caution', 'danger']
+        && d.read is bool;
+    }
+
+    function validComment(d) {
+      return d.keys().hasOnly(['postId', 'author', 'text', 'at'])
+        && str(d.postId, 64)
+        && str(d.author, 80)
+        && str(d.text, 1000)
+        && d.at == request.time;
+    }
+
+    function validState(docId, d) {
+      return (docId == 'rib'
+          && d.keys().hasOnly(['exam', 'registered', 'submittedAt'])
+          && str(d.exam, 80)
+          && d.registered is list && d.registered.size() <= 20
+          && optional(d, 'submittedAt', d.get('submittedAt', null) is timestamp))
+        || (docId == 'notices'
+          && d.keys().hasOnly(['ids'])
+          && d.ids is list && d.ids.size() <= 500);
+    }
+
+    match /students/{uid} {
+      allow read: if isOwner(uid);
+      allow create: if isOwner(uid) && validProfile(request.resource.data);
+
+      match /payments/{id} {
+        allow read: if isOwner(uid);
+        allow create: if isOwner(uid) && validPayment(request.resource.data);
+      }
+      match /bills/{id} {
+        allow read: if isOwner(uid);
+        // RIB fee bills keep one ID per exam, so changing the registration overwrites the bill
+        allow create, update: if isOwner(uid) && validBill(request.resource.data);
+      }
+      match /notices/{id} {
+        allow read: if isOwner(uid);
+        allow create: if isOwner(uid) && validNotice(request.resource.data);
+      }
+      match /comments/{id} {
+        allow read: if isOwner(uid);
+        allow create: if isOwner(uid) && validComment(request.resource.data);
+      }
+      match /state/{docId} {
+        allow read: if isOwner(uid);
+        allow create, update: if isOwner(uid) && validState(docId, request.resource.data);
+      }
+    }
+  }
+}

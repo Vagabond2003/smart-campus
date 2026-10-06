@@ -1,0 +1,25 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+
+# Local environment (Firebase web config lives in .env.local)
+.env.local
+.env.*.local
+
+# Firebase CLI caches and emulator logs
+.firebase/
+firebase-debug*.log
+firestore-debug.log
+ui-debug.log
+
+# Real screenshots of the original portal: they contain real students' and staff members' personal data
+Screenshots and BAUST Logo/
+
+# Agent tooling installed in this folder (third-party skills, some with no-redistribution licences) and their logs
+.claude/
+.gstack/
+.impeccable/review/
+.impeccable/questions/
+.impeccable/hook.cache.json
+.impeccable/config.local.json

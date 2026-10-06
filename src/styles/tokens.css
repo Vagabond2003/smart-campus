@@ -1,0 +1,158 @@
+/* Saidpur Line — design tokens.
+   Light is the default: students read the portal in daylit corridors and outdoors.
+   Dark is the night-station rendition for late reading in the halls. */
+
+@font-face {
+  font-family: "Taka Sign";
+  src: url("../assets/fonts/taka-500.woff") format("woff");
+  font-weight: 100 599;
+  font-display: swap;
+  unicode-range: U+09F3;
+}
+@font-face {
+  font-family: "Taka Sign";
+  src: url("../assets/fonts/taka-700.woff") format("woff");
+  font-weight: 600 900;
+  font-display: swap;
+  unicode-range: U+09F3;
+}
+
+:root,
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  /* Ground and surfaces: platform white, concrete hairlines */
+  --ground: #f4f5f2;
+  --surface: #ffffff;
+  --surface-2: #eceeea;
+  --surface-3: #e3e6e1;
+  --line: #d9ddd7;
+  --line-strong: #bdc4bd;
+
+  /* Ink */
+  --ink: #121614;
+  --ink-2: #464f4a;
+  --ink-3: #636c67;
+
+  /* Rail: Bangladesh flag green */
+  --rail: #006a4e;
+  --rail-deep: #00553e;
+  --rail-hover: #0a7558;
+  --rail-ink: #ffffff;
+  --rail-ink-2: #c2e3d7;
+  --rail-line: rgb(255 255 255 / 0.14);
+
+  --primary: #006a4e;
+  --primary-hover: #005a42;
+  --primary-press: #004d39;
+  --primary-ink: #ffffff;
+  --link: #00664b;
+
+  /* Departure board */
+  --board: #121314;
+  --board-2: #1b1d1e;
+  --board-line: #2b2e30;
+  --amber: #ffb000;
+  --amber-dim: #b98a2c;
+  --board-text: #f3ead2;
+
+  /* Signal aspects: proceed, caution, danger */
+  --ok: #00704f;
+  --ok-wash: #e2f1ea;
+  --caution: #7a4f00;
+  --caution-wash: #fff1d1;
+  --caution-fill: #c98300; /* validated against ok/danger for CVD + 3:1 on white */
+  --danger: #8e1b1b;
+  --danger-wash: #f7e5e3;
+  --danger-line: #e3b9b4;
+
+  --focus: #121614;
+  --focus-on-rail: #ffb000;
+
+  /* Depth: offset + soft blur, only for things that float */
+  --shadow-float:
+    0 0 0 1px rgb(18 22 20 / 0.06),
+    0 4px 10px -2px rgb(18 22 20 / 0.08),
+    0 16px 40px -12px rgb(18 22 20 / 0.18);
+  --shadow-bar: 0 -1px 0 0 var(--line), 0 -8px 24px -12px rgb(18 22 20 / 0.12);
+  --scrim: rgb(14 18 16 / 0.42);
+
+  /* transitions.dev colour tokens, themed */
+  --tabs-text-muted: #464f4a;
+  --tabs-text-active: #121614;
+  --tabs-bar-bg: #e3e6e1;
+  --tabs-pill-bg: #ffffff;
+  --tt-bg: #121314;
+  --tt-fg: #f3ead2;
+
+  /* Layout */
+  --rail-w: 264px;
+  --topbar-h: 64px;
+  --tabbar-h: 64px;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --ground: #0c0f0e;
+  --surface: #141817;
+  --surface-2: #1a1f1d;
+  --surface-3: #222826;
+  --line: #2a312e;
+  --line-strong: #3b4440;
+
+  --ink: #e8ece9;
+  --ink-2: #b2bbb6;
+  --ink-3: #8f9a94;
+
+  --rail: #0b2c22;
+  --rail-deep: #061f17;
+  --rail-hover: #12392d;
+  --rail-ink: #f1f5f2;
+  --rail-ink-2: #9cc7b6;
+  --rail-line: rgb(255 255 255 / 0.1);
+
+  --primary: #2fb184;
+  --primary-hover: #3cc192;
+  --primary-press: #27a077;
+  --primary-ink: #04150f;
+  --link: #6fd6ad;
+
+  --board: #050606;
+  --board-2: #0d0f10;
+  --board-line: #24272a;
+  --amber: #ffb000;
+  --amber-dim: #a8802e;
+  --board-text: #f3ead2;
+
+  --ok: #6fd6ad;
+  --ok-wash: #0f2c22;
+  --caution: #ffc94d;
+  --caution-wash: #2e2410;
+  --caution-fill: #ffb000;
+  --danger: #ef6a7a; /* validated: clears amber by ΔE 20 for normal vision */
+  --danger-wash: #331614;
+  --danger-line: #5c2723;
+
+  --focus: #ffb000;
+  --focus-on-rail: #ffb000;
+
+  --shadow-float:
+    0 0 0 1px rgb(255 255 255 / 0.06),
+    0 4px 10px -2px rgb(0 0 0 / 0.4),
+    0 16px 40px -12px rgb(0 0 0 / 0.6);
+  --shadow-bar: 0 -1px 0 0 var(--line), 0 -8px 24px -12px rgb(0 0 0 / 0.5);
+  --scrim: rgb(0 0 0 / 0.6);
+
+  --tabs-text-muted: #b2bbb6;
+  --tabs-text-active: #e8ece9;
+  --tabs-bar-bg: #1a1f1d;
+  --tabs-pill-bg: #2a312e;
+  --tt-bg: #f3ead2;
+  --tt-fg: #121314;
+}
+
+/* Text-size control: one root size drives every rem in the product. */
+:root[data-text="s"] { font-size: 15px; }
+:root[data-text="m"] { font-size: 16px; }
+:root[data-text="l"] { font-size: 18px; }

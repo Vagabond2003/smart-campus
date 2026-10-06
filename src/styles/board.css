@@ -1,0 +1,160 @@
+/* Departure board — the product's one signature move.
+   Amber condensed capitals on board black, fixed tabular cells so a character roll never shifts layout. */
+
+.board {
+  --board-h: 2.75rem;
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
+  height: var(--board-h);
+  background: var(--board);
+  color: var(--board-text);
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px var(--board-line);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.board-link {
+  display: flex;
+  align-items: stretch;
+  flex: 1 1 auto;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+  border-radius: 8px 0 0 8px;
+  transition: background-color 150ms ease-out;
+}
+.board-link:hover { background: var(--board-2); }
+
+.board-cell {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
+  min-width: 0;
+  padding: 0 0.875rem;
+  border-right: 1px solid var(--board-line);
+}
+.board-cell:last-child { border-right: 0; }
+.board-cell.is-grow { flex: 1 1 auto; }
+
+.board-label {
+  font-stretch: 75%;
+  font-weight: 600;
+  font-size: 0.625rem;
+  line-height: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--amber-dim);
+  white-space: nowrap;
+}
+
+.board-value {
+  font-variant-numeric: tabular-nums lining-nums;
+  font-stretch: 80%;
+  font-weight: 640;
+  font-size: 0.9375rem;
+  line-height: 1.15rem;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+  color: var(--amber);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.board-value.is-light { color: var(--board-text); }
+
+.board-kind {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+.board-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--amber);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--amber) 22%, transparent);
+}
+.board-dot.is-live { animation: board-pulse 1600ms ease-in-out infinite; }
+@keyframes board-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+.board-controls {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 0.375rem;
+  border-left: 1px solid var(--board-line);
+}
+.board-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 6px;
+  color: var(--board-text);
+  opacity: 0.72;
+  transition: opacity 150ms ease-out, background-color 150ms ease-out;
+}
+.board-btn:hover { opacity: 1; background: var(--board-2); }
+.board-btn:active { scale: 0.96; }
+
+.board-pager {
+  font-variant-numeric: tabular-nums;
+  font-stretch: 78%;
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  color: var(--amber-dim);
+  min-width: 2.25rem;
+  text-align: center;
+}
+
+/* Fixed widths keep the roll stable; the course cell (code + title) takes the rest */
+.board-w-kind { width: 8.25rem; flex: none; }
+.board-w-time { width: 7rem; flex: none; }
+.board-w-place { width: 7.75rem; flex: none; }
+.board-label-narrow { display: none; }
+.board-count { color: var(--amber); }
+.board-course { display: flex; gap: 0.6em; min-width: 0; }
+.board-course > span:first-child { flex: none; }
+.board-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; color: var(--board-text); }
+
+/* The board adapts to its own width, not the viewport's. The course title always stays (truncating);
+   at narrow widths the service type and its countdown fold into the time label, then the pager leaves. */
+.board { container: board / inline-size; }
+@container board (max-width: 40rem) {
+  .board-w-kind { display: none; }
+  .board-w-place { display: none; }
+  .board-label-wide { display: none; }
+  .board-label-narrow { display: inline-flex; align-items: center; gap: 0.3rem; color: var(--amber); }
+  .board-label-meta { display: block; overflow: hidden; text-overflow: ellipsis; color: var(--amber-dim); }
+  .board-w-time { width: 6.5rem; }
+  .board-pager { display: none; }
+  .board-prev { display: none; }
+}
+@container board (max-width: 30rem) {
+  .board-cell { padding: 0 0.625rem; }
+  .board-w-time { width: 6rem; }
+  .board-value { font-size: 0.875rem; }
+}
+/* Phone widths: a cell marked optional steps aside so the others read in full. */
+@container board (max-width: 24rem) {
+  .board-cell.is-optional { display: none; }
+}
+
+/* Full-bleed variant under the phone header */
+.board.is-flush {
+  --board-h: 3rem;
+  border-radius: 0;
+  box-shadow: none;
+}
+.board.is-flush .board-link { border-radius: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .board-dot.is-live { animation: none; }
+}
