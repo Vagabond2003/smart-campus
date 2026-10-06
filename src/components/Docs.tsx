@@ -30,8 +30,10 @@ export function DocFields({ items, className }: { items: { k: string; v: ReactNo
   );
 }
 
+const ALL_COLUMNS: (string | undefined)[] = [];
+
 /** `colClass` lets a column step aside on narrow screens (print always shows every column). */
-export function DocTable({ head, rows, foot, colClass = [] }: { head: ReactNode[]; rows: ReactNode[][]; foot?: ReactNode[]; colClass?: (string | undefined)[] }) {
+export function DocTable({ head, rows, foot, colClass = ALL_COLUMNS }: { head: ReactNode[]; rows: ReactNode[][]; foot?: ReactNode[]; colClass?: (string | undefined)[] }) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full border-collapse text-sm text-[var(--doc-ink)]">

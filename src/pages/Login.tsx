@@ -1,7 +1,8 @@
 import { useRef, useState, type FormEvent } from "react";
 import { Link, Navigate, useSearchParams } from "react-router";
 import { Eye, EyeOff, KeyRound, UserRound } from "lucide-react";
-import { useAuth, type SignInError } from "../app/auth";
+import { useAuth } from "../app/auth";
+import type { SignInError } from "../app/accounts";
 import { SAMPLE_PASSWORD, SAMPLE_STUDENT } from "../data/seed";
 import { cn } from "../lib/cn";
 import { useTitle } from "../lib/useTitle";

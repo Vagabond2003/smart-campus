@@ -1,3 +1,4 @@
+/* oxlint-disable react/jsx-key -- DocTable cells are passed as data arrays; DocTable keys every row and cell it renders. */
 import { Link, useParams } from "react-router";
 import { Printer, ReceiptText } from "lucide-react";
 import { useBills } from "../api/hooks";

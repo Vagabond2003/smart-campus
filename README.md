@@ -27,11 +27,24 @@ npm install
 npm run dev          # http://localhost:5173
 ```
 
-With no Firebase config the portal runs **offline on sample data only**: just the sample login, and a reload restores the seed. Add a config (below) to get accounts.
+With no Firebase config the portal runs **offline on sample data only**: just the sample login, and a reload restores the seed. Add a config (below) to get accounts. `npm run dev:offline` runs that offline mode even when you have a config.
 
 ```bash
 npm run build && npm run preview   # production build on http://localhost:4173
 ```
+
+## Tests and checks
+
+| Command | What it checks | Needs |
+| --- | --- | --- |
+| `npm run check` | Lint (oxlint, with React hooks and accessibility rules), type checks, unit tests | Nothing extra |
+| `npm test` | Unit tests (Vitest): the ledger and balances, the CGPA rule, the attendance outlook, how saved records merge over the sample data, account helpers, money and time formatting | Nothing extra |
+| `npm run test:rules` | The Firestore security rules, against the emulator: who may read and write what, field by field | Java 21+ |
+| `npm run test:e2e` | Browser tests (Playwright) on desktop and phone: the unofficial notice, sign-in errors, the sample sandbox, a whole student journey (activate, register for RIB, pay, comment, reload, sign out, sign back in), offline mode, and an automated WCAG 2.2 AA scan of every page | Java 21+ and Google Chrome |
+
+The rules and browser tests start the Firebase emulators themselves, so nothing reaches a real project. Locally the browser tests drive your installed Chrome; to use Playwright's own browser instead, run `npx playwright install chromium` and set `PW_CHANNEL=chromium`.
+
+GitHub Actions runs every check on each push and pull request (`.github/workflows/ci.yml`), and Dependabot proposes dependency updates weekly.
 
 ## Firebase
 
@@ -112,6 +125,7 @@ Page views come from GA4's enhanced measurement, which follows in-app navigation
 | Primitives | Radix UI | Accessible dialogs, menus, selects, tabs, checkboxes and radios. |
 | Motion | GSAP (ScrambleText, Flip) + transitions.dev CSS recipes | GSAP for the departure board's character roll and list reordering; the recipes for every menu, dialog, tab, tooltip, toast, accordion, skeleton and loading line. All of it respects reduced motion. |
 | Icons / type | Lucide; Archivo (variable width) self-hosted, plus a 1 KB subset for the ৳ sign | |
+| Quality | Vitest, Firebase rules tests, Playwright with axe, oxlint, GitHub Actions | oxlint because typescript-eslint doesn't support TypeScript 7 yet. |
 
 ## Where things are
 

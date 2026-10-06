@@ -3,6 +3,7 @@ import { termStations } from "../api/derive";
 import { calendar as C, now } from "../lib/clock";
 import { cn } from "../lib/cn";
 import { fmt, until } from "../lib/format";
+import { useOverflowX } from "./ScrollRegion";
 
 /**
  * The term drawn as a line with its milestones. Stations sit at equal spacing for legibility;
@@ -23,6 +24,8 @@ export function TermLine({ className }: { className?: string }) {
   const usable = 100 - 2 * inset;
   const scroller = useRef<HTMLDivElement>(null);
   const marker = useRef<HTMLSpanElement>(null);
+  // When the line is wider than its panel it scrolls, and then keyboard users need to reach it too.
+  const overflows = useOverflowX(scroller);
 
   useEffect(() => {
     const s = scroller.current;
@@ -41,7 +44,13 @@ export function TermLine({ className }: { className?: string }) {
         </p>
       </div>
       {/* On narrow screens the line scrolls; faded edges say so */}
-      <div ref={scroller} className="scroll-x px-1 pb-3.5 pt-4 max-lg:[mask-image:linear-gradient(to_right,transparent,#000_28px,#000_calc(100%-28px),transparent)]">
+      <div
+        ref={scroller}
+        role="region"
+        aria-labelledby="term-line-title"
+        tabIndex={overflows ? 0 : undefined}
+        className="scroll-x px-1 pb-3.5 pt-4 max-lg:[mask-image:linear-gradient(to_right,transparent,#000_28px,#000_calc(100%-28px),transparent)] focus-visible:[mask-image:none]"
+      >
         <div className="relative min-w-[40rem]">
           {/* the line */}
           <div className="absolute top-[7px] h-[2px] bg-line-strong" style={{ left: `${inset}%`, width: `${usable}%` }} aria-hidden />

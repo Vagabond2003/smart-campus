@@ -51,9 +51,9 @@ function describe(item: BoardItem) {
  */
 export function DepartureBoard({ className }: { className?: string }) {
   const { data: bills } = useBills();
-  const [tick, setTick] = useState(0);
-  // tick re-derives countdowns every 20 s
-  const items = useMemo(() => boardItems(now(), bills?.totals.due), [tick, bills?.totals.due]);
+  // The board's own clock: countdowns re-derive every 20 s.
+  const [at, setAt] = useState(now);
+  const items = useMemo(() => boardItems(at, bills?.totals.due), [at, bills?.totals.due]);
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [holding, setHolding] = useState(false);
@@ -68,7 +68,7 @@ export function DepartureBoard({ className }: { className?: string }) {
   const rotating = !paused && !holding && !reduced && items.length > 1;
 
   useEffect(() => {
-    const t = window.setInterval(() => setTick((x) => x + 1), 20_000);
+    const t = window.setInterval(() => setAt(now()), 20_000);
     return () => window.clearInterval(t);
   }, []);
 

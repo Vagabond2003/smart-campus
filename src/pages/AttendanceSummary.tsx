@@ -33,11 +33,12 @@ export default function AttendanceSummary() {
 
   useLayoutEffect(() => {
     if (!flipState.current) return;
+    const el = list.current;
     const tween = Flip.from(flipState.current, { duration: 0.42, ease: "expo.out", absolute: false });
     flipState.current = null;
     return () => {
       tween.kill();
-      gsap.set(list.current?.querySelectorAll("[data-flip-id]") ?? [], { clearProps: "transform" });
+      gsap.set(el?.querySelectorAll("[data-flip-id]") ?? [], { clearProps: "transform" });
     };
   }, [sort]);
 

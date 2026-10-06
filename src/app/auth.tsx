@@ -16,9 +16,8 @@ import { createProfile, loadCloudState, loadProfile, onCloudError, setCloudUser,
 import { applyCloudState, resetStore } from "../api/store";
 import { SAMPLE_ID_PREFIX, SAMPLE_PASSWORD, SAMPLE_STUDENT, setStudentIdentity } from "../data/seed";
 import { useToast } from "../components/Toast";
+import { activateReason, aliasEmail, cleanId, idFromEmail, isStudentId, signInReason, type ActivateError, type SignInError } from "./accounts";
 
-export type SignInError = "id" | "password" | "credentials" | "rate" | "network" | "disabled" | "unknown";
-export type ActivateError = "taken" | "sample" | "weak" | "rate" | "network" | "disabled" | "unknown";
 type Result<E> = { ok: true } | { ok: false; reason: E };
 
 type AuthValue = {
@@ -38,53 +37,7 @@ type AuthValue = {
 
 const Ctx = createContext<AuthValue | null>(null);
 
-const DOMAIN = "students.smart-campus.example";
-const aliasEmail = (id: string) => `${id}@${DOMAIN}`;
-const idFromEmail = (email: string | null) => new RegExp(`^(\\d{16})@${DOMAIN.replace(/\./g, "\\.")}$`).exec(email ?? "")?.[1];
-export const cleanId = (id: string) => id.replace(/\s+/g, "");
 const demoProfile = (): Profile => ({ studentId: SAMPLE_STUDENT.id, name: SAMPLE_STUDENT.name, kind: "demo" });
-
-const code = (err: unknown) => (typeof err === "object" && err && "code" in err ? String((err as { code: unknown }).code) : "");
-
-function signInReason(err: unknown): SignInError {
-  switch (code(err)) {
-    case "auth/invalid-credential":
-    case "auth/invalid-login-credentials":
-    case "auth/wrong-password":
-    case "auth/user-not-found":
-    case "auth/invalid-email":
-      return "credentials";
-    case "auth/too-many-requests":
-      return "rate";
-    case "auth/network-request-failed":
-      return "network";
-    case "auth/user-disabled":
-    case "auth/operation-not-allowed":
-    case "auth/admin-restricted-operation":
-      return "disabled";
-    default:
-      return "unknown";
-  }
-}
-
-function activateReason(err: unknown): ActivateError {
-  switch (code(err)) {
-    case "auth/email-already-in-use":
-      return "taken";
-    case "auth/weak-password":
-    case "auth/password-does-not-meet-requirements":
-      return "weak";
-    case "auth/too-many-requests":
-      return "rate";
-    case "auth/network-request-failed":
-      return "network";
-    case "auth/operation-not-allowed":
-    case "auth/admin-restricted-operation":
-      return "disabled";
-    default:
-      return "unknown";
-  }
-}
 
 /* ─── Local mode: the offline sample login ───────────────────────────────── */
 
@@ -214,7 +167,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await new Promise((r) => setTimeout(r, 650));
         return { ok: false, reason: "id" };
       }
-      if (!/^\d{16}$/.test(sid)) return { ok: false, reason: "id" };
+      if (!isStudentId(sid)) return { ok: false, reason: "id" };
       try {
         await signInWithEmailAndPassword(auth, aliasEmail(sid), password);
         trackEvent("login", { method: "student_id" });

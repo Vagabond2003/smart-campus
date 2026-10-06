@@ -1,0 +1,8 @@
+{
+  // Tests and tool configs run in Node, so they get Node's types; the app (tsconfig.json) does not.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["node", "vite/client"]
+  },
+  "include": ["tests", "vitest.config.ts", "vitest.rules.config.ts", "playwright.config.ts"]
+}

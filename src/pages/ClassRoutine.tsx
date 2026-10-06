@@ -165,7 +165,7 @@ function SlotCell({ slot, row, today }: { slot: RoutineSlot; row: number; today:
       >
         <span className={cn("text-sm font-[720] [font-stretch:86%]", live ? "text-[#121314]" : "text-ink")}>{slot.code}</span>
         <span className={cn("truncate text-xs", live ? "text-[#121314]/80" : "text-ink-2")}>{lab ? `Lab · ${slot.room}` : `Room ${roomShort(slot.room)}`}</span>
-        {lab ? <span className={cn("truncate text-xs", live ? "text-[#121314]/80" : "text-ink-3")}>{o.title}</span> : null}
+        {lab ? <span className={cn("truncate text-xs", live ? "text-[#121314]/80" : "text-ink-2")}>{o.title}</span> : null}
       </Link>
     </div>
   );
