@@ -100,6 +100,8 @@
     caret-color: var(--primary);
     background: var(--ground);
   }
+  /* Set by index.html while the landing intro is due, so the first paint is already the platform. */
+  html[data-landing] body { background: var(--rail); }
   ::selection {
     background: var(--amber);
     color: #121314;

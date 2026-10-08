@@ -1,5 +1,5 @@
-import { useRef, useState, type FormEvent } from "react";
-import { Link, Navigate, useSearchParams } from "react-router";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { Link, Navigate, useLocation, useSearchParams } from "react-router";
 import { Eye, EyeOff, KeyRound, UserRound } from "lucide-react";
 import { useAuth } from "../app/auth";
 import type { SignInError } from "../app/accounts";
@@ -45,6 +45,12 @@ export default function Login() {
   const pwBox = useRef<HTMLDivElement>(null);
   const idInput = useRef<HTMLInputElement>(null);
   const pwInput = useRef<HTMLInputElement>(null);
+  const location = useLocation();
+
+  // Someone who skipped the landing intro from the keyboard carries on typing here.
+  useEffect(() => {
+    if ((location.state as { focus?: string } | null)?.focus === "sid") idInput.current?.focus();
+  }, [location.state]);
 
   if (signedIn) return <Navigate to={next} replace />;
 

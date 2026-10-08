@@ -15,6 +15,8 @@ A from-scratch redesign of BAUST's **Smart Campus** student portal, backed by Fi
 
 ## Try it
 
+Opening the site plays a short arrival, once per visit: the BAUST crest assembles itself, the departure board announces the service, and the platform glides into the sign-in page. **Skip intro**, any key or a tap jumps straight there; visitors who ask their device for reduced motion, and students who are already signed in, never see it.
+
 - **Sample account** (shown on the sign-in page): ID `9999202600001042`, password `campus2026`. On the live site this opens a private copy of the sample student for you. What you change stays in your browser until you sign out.
 - **Your own account:** choose *Activate your account*, then enter any 16-digit ID, a name and a password. You don't need your real student ID. Your RIB registration, demo payments, course comments and read notifications are saved to your account and come back on any device.
 
@@ -135,6 +137,7 @@ Page views come from GA4's enhanced measurement, which follows in-app navigation
 - `src/lib/firebase.ts` — Firebase setup; everything is optional and switches off without config.
 - `src/shell/` — app shell, rail, the departure board, phone header and tab bar, search (Ctrl/⌘ K), notifications, display settings.
 - `src/pages/` — every module. Module names are unchanged from the original portal.
+- `src/pages/Welcome.tsx`, `src/pages/intro/` — the landing intro. The crest's animatable parts (`crestArt.ts`) are generated from `assets/baust-crest.svg` by `python3 scripts/crest_art.py assets/baust-crest.svg src/pages/intro/crestArt.ts`.
 - `src/styles/` — tokens, the board, components, and the motion recipes.
 - `firebase.json`, `firestore.rules`, `.env.example`, `.env.emulators` — Firebase configuration.
 - `PRODUCT.md` — product record. `DESIGN.md` — the design system.
