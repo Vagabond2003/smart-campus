@@ -1,7 +1,8 @@
 import { useRef, useState, type FormEvent } from "react";
 import { Link, Navigate } from "react-router";
 import { ArrowLeft, Eye, EyeOff, IdCard, KeyRound, UserRound } from "lucide-react";
-import { cleanId, useAuth, type ActivateError } from "../app/auth";
+import { useAuth } from "../app/auth";
+import { cleanId, isStudentId, type ActivateError } from "../app/accounts";
 import { SAMPLE_ID_PREFIX } from "../data/seed";
 import { cn } from "../lib/cn";
 import { useTitle } from "../lib/useTitle";
@@ -74,7 +75,7 @@ export default function Activate() {
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const sid = cleanId(id);
-    if (!/^\d{16}$/.test(sid)) return fail("id", "Enter a 16-digit student ID, digits only.");
+    if (!isStudentId(sid)) return fail("id", "Enter a 16-digit student ID, digits only.");
     if (sid.startsWith(SAMPLE_ID_PREFIX)) return fail("id", "That ID belongs to the sample student. Use it from the sign-in page.");
     const cleanName = name.trim().replace(/\s+/g, " ");
     if (cleanName.length < 2) return fail("name", "Enter your name as it should appear in the portal.");

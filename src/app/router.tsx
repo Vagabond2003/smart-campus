@@ -20,11 +20,18 @@ function RouteError() {
   );
 }
 
+/** First paint while the first route loads: the platform's green when the landing intro is due. */
+function BootFallback() {
+  const landing = document.documentElement.hasAttribute("data-landing");
+  return <div className={landing ? "min-h-dvh bg-rail" : "min-h-dvh bg-ground"} aria-busy="true" />;
+}
+
 export const router = createBrowserRouter([
   {
     errorElement: <RouteError />,
-    hydrateFallbackElement: <div className="min-h-dvh bg-ground" aria-busy="true" />,
+    hydrateFallbackElement: <BootFallback />,
     children: [
+      { index: true, lazy: page(() => import("../pages/Welcome")) },
       { path: "/login", lazy: page(() => import("../pages/Login")) },
       { path: "/forgot-password", lazy: page(() => import("../pages/ForgotPassword")) },
       { path: "/activate", lazy: page(() => import("../pages/Activate")) },
@@ -35,7 +42,6 @@ export const router = createBrowserRouter([
           </RequireAuth>
         ),
         children: [
-          { index: true, element: <Navigate to="/dashboard" replace /> },
           { path: "/dashboard", lazy: page(() => import("../pages/Dashboard")) },
           { path: "/profile", lazy: page(() => import("../pages/Profile")) },
           { path: "/registration/regular", lazy: page(() => import("../pages/RegularRegistration")) },

@@ -51,6 +51,7 @@ export function TipGroup({ children, className, placement = "bottom" }: { childr
   const fromEvent = (e: React.SyntheticEvent) => (e.target as HTMLElement).closest<HTMLElement>("[data-tooltip]");
 
   return (
+    // oxlint-disable-next-line jsx-a11y/no-static-element-interactions -- delegation only: the triggers inside are the real buttons and links; this wrapper just hears their pointer and focus events
     <span
       ref={group}
       className={cn("t-tt-group", className)}

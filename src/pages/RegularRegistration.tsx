@@ -8,6 +8,7 @@ import { useTitle } from "../lib/useTitle";
 import { PageHeader, Signal } from "../components/Data";
 import { Bars, ErrorState, Reveal } from "../components/Feedback";
 import { Select } from "../components/Select";
+import { ScrollX } from "../components/ScrollRegion";
 
 export default function RegularRegistration() {
   useTitle("Regular Course Registration");
@@ -59,7 +60,7 @@ export default function RegularRegistration() {
       </div>
 
       <Reveal loading={isLoading} skeleton={<Bars rows={6} />}>
-        <div className="panel scroll-x">
+        <ScrollX label={`Courses for ${sem}`} className="panel">
           <table className="table min-w-[46rem]">
             <caption className="sr-only">Courses for {sem}</caption>
             <thead>
@@ -102,7 +103,7 @@ export default function RegularRegistration() {
               </tr>
             </tfoot>
           </table>
-        </div>
+        </ScrollX>
       </Reveal>
 
       {current ? (

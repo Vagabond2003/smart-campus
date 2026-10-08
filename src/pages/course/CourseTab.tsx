@@ -14,6 +14,7 @@ import { Disclosure } from "../../components/Accordion";
 import { Segmented } from "../../components/Tabs";
 import { useToast } from "../../components/Toast";
 import { COURSE_TABS } from "./CourseLayout";
+import { ScrollX } from "../../components/ScrollRegion";
 
 export default function CourseTab() {
   const { slug = "", tab = "" } = useParams();
@@ -197,7 +198,7 @@ function Assessments({ code }: { code: string }) {
             "No marks are published for this course yet."
           )}
         </p>
-        <div className="panel scroll-x">
+        <ScrollX label={`Marks for ${code}`} className="panel">
           <table className="table min-w-[44rem]">
             <thead>
               <tr>
@@ -241,7 +242,7 @@ function Assessments({ code }: { code: string }) {
               ))}
             </tbody>
           </table>
-        </div>
+        </ScrollX>
       </div>
     </Reveal>
   );
@@ -288,7 +289,7 @@ function Attendance({ code }: { code: string }) {
               <p className="mt-3 text-xs text-ink-3">The {seed.ATTENDANCE_LINE}% line is illustrative in this concept build.</p>
             </div>
           </Panel>
-          <div className="panel scroll-x">
+          <ScrollX label={`Attendance for ${code}`} className="panel">
             <table className="table min-w-[34rem]">
               <caption className="sr-only">Class-by-class attendance for {code}, newest first</caption>
               <thead>
@@ -317,7 +318,7 @@ function Attendance({ code }: { code: string }) {
                 })}
               </tbody>
             </table>
-          </div>
+          </ScrollX>
         </div>
       ) : null}
     </Reveal>

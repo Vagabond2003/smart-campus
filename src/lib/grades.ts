@@ -18,14 +18,6 @@ export function pointFor(grade: Grade): number {
   return GRADE_SCALE.find((g) => g.grade === grade)?.point ?? 0;
 }
 
-export function gpaOf(rows: { credit: number; grade: Grade }[]) {
-  const attempted = rows.reduce((s, r) => s + r.credit, 0);
-  const earned = rows.filter((r) => r.grade !== "F").reduce((s, r) => s + r.credit, 0);
-  const weighted = rows.reduce((s, r) => s + r.credit * pointFor(r.grade), 0);
-  const gpa = attempted ? Math.floor((weighted / attempted) * 100) / 100 : 0;
-  return { attempted, earned, gpa };
-}
-
 export function isFail(grade: Grade) {
   return grade === "F";
 }

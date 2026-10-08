@@ -45,8 +45,8 @@ export function attendanceSummary(): AttendanceSummaryRow[] {
       const k = Math.ceil((line * total - present) / (1 - line));
       advice = k <= remaining ? { kind: "need", n: k } : { kind: "unreachable" };
     }
-    const standing: AttendanceStanding = pct < seed.ATTENDANCE_LINE ? "below" : pct < seed.ATTENDANCE_LINE + 7 ? "watch" : "ok";
-    return { code: o.code, slug: o.slug, title: o.title, type: o.type, credit: o.credit, contactHours: o.contactHours, present, absent, total, pct, remaining, standing, advice };
+    const level: AttendanceStanding = pct < seed.ATTENDANCE_LINE ? "below" : pct < seed.ATTENDANCE_LINE + 7 ? "watch" : "ok";
+    return { code: o.code, slug: o.slug, title: o.title, type: o.type, credit: o.credit, contactHours: o.contactHours, present, absent, total, pct, remaining, standing: level, advice };
   });
 }
 

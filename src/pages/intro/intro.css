@@ -1,0 +1,131 @@
+/* Landing intro: the platform before the sign-in page. Sizes that must match the sign-in page
+   exactly (the plate, the board and its cells) arrive as custom properties measured from it. */
+
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  color: var(--rail-ink);
+  overscroll-behavior: contain;
+}
+
+/* The platform green. It narrows onto the sign-in page's green panel during the glide. */
+.intro-bg {
+  position: absolute;
+  inset: 0;
+  background: var(--rail);
+  clip-path: inset(0px 0px 0px 0px);
+}
+
+.intro-stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: calc(env(safe-area-inset-top) + 7.5rem) 1.25rem calc(env(safe-area-inset-bottom) + 5.5rem);
+  pointer-events: none;
+}
+
+.intro-plate {
+  position: absolute;
+  z-index: 1; /* above the crest, which passes under it during the glide */
+  top: calc(env(safe-area-inset-top) + 1.5rem);
+  left: 0;
+  right: 0;
+  width: var(--intro-plate-w, min(27rem, calc(100% - 2.5rem)));
+  max-width: none;
+  margin-inline: auto;
+}
+
+/* The crest's year is black, drawn for white paper. On the platform's green it takes the reversed
+   (white) form, as a crest does on a dark ground; nothing else in the crest is black. */
+.intro-crest [data-part="year"] path { fill: var(--rail-ink); }
+
+.intro-crest {
+  display: block;
+  height: min(40dvh, 64vw, 26rem);
+  width: auto;
+  aspect-ratio: 1044 / 1080;
+  overflow: visible;
+}
+
+/* The title rises out of a mask; the padding keeps the descender of "Campus" inside it without
+   moving anything, and the mask opens once the rise is over so nothing is clipped in flight. */
+.intro-title {
+  margin-top: clamp(1rem, 3dvh, 2rem);
+  margin-bottom: -0.25em;
+  padding-bottom: 0.25em;
+  overflow: hidden;
+  font-size: clamp(3.25rem, 8.5vw, 7rem);
+  font-weight: 760;
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+  font-stretch: 86%;
+  white-space: nowrap;
+}
+.intro-title-line { display: block; }
+
+.intro-sub {
+  margin-top: 0.5rem;
+  color: var(--rail-ink-2);
+  font-size: clamp(1.125rem, 1.9vw, 1.5rem);
+  line-height: 1.3;
+}
+
+.intro-board {
+  width: var(--intro-board-w, min(36rem, 100%));
+  max-width: none;
+  margin-top: clamp(1.25rem, 3.5dvh, 2.25rem);
+}
+.intro-board .board-cell { position: relative; flex: none; }
+/* A flip board never shortens a word with an ellipsis mid-roll: characters past the cell just clip. */
+.intro-board .board-label,
+.intro-board .board-value { text-overflow: clip; }
+.intro-board .board-cell.is-grow { flex: none; }
+/* The live dot sits in the cell's padding, so the label lines up with the sign-in board's. */
+.intro-board .board-dot {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.25rem;
+  width: 0.3125rem;
+  height: 0.3125rem;
+  box-shadow: none;
+}
+@container board (max-width: 30rem) {
+  .intro-board .board-dot { display: none; } /* narrow cells have no gutter for it */
+}
+
+.intro-skip {
+  position: absolute;
+  right: 1.5rem;
+  bottom: calc(env(safe-area-inset-bottom) + 1.25rem);
+  display: inline-flex;
+  align-items: center;
+  height: 2.5rem;
+  padding: 0 1rem;
+  border-radius: var(--radius-md);
+  box-shadow: inset 0 0 0 1px var(--rail-line);
+  color: var(--rail-ink);
+  font-size: var(--text-sm);
+  font-weight: 570;
+  transition: background-color 150ms ease-out;
+}
+.intro-skip:hover { background: var(--rail-hover); }
+.intro-skip:active { scale: 0.96; }
+
+@media (max-width: 40rem) {
+  .intro-stage { padding-top: calc(env(safe-area-inset-top) + 8.5rem); }
+  .intro-skip { right: 50%; translate: 50% 0; }
+}
+
+/* While the intro plays, the sign-in page waits underneath with its signs hidden: the intro's
+   copies land on exactly those places and hand over. */
+[data-intro="playing"] [data-twin="crest"],
+[data-intro="playing"] [data-twin="title"],
+[data-intro="playing"] [data-twin="subtitle"],
+[data-intro="playing"] [data-twin="plate"],
+[data-intro="playing"] [data-twin="board"] {
+  visibility: hidden;
+}

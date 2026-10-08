@@ -11,6 +11,7 @@ import { Meter, PageHeader, Panel, Signal } from "../components/Data";
 import { Bars, ErrorState, Reveal } from "../components/Feedback";
 import { Disclosure } from "../components/Accordion";
 import { Select } from "../components/Select";
+import { ScrollX } from "../components/ScrollRegion";
 
 export default function Results() {
   useTitle("Results");
@@ -61,7 +62,7 @@ export default function Results() {
             ))}
 
             <Panel id="standing" title="Standing after each examination">
-              <div className="scroll-x">
+              <ScrollX labelledBy="standing-title">
                 <table className="table min-w-[40rem]">
                   <caption className="sr-only">GPA and CGPA after each examination, on a fixed 0 to 4 scale</caption>
                   <thead>
@@ -112,7 +113,7 @@ export default function Results() {
                     </tr>
                   </tfoot>
                 </table>
-              </div>
+              </ScrollX>
             </Panel>
 
             <div className="flex flex-wrap items-end justify-between gap-3">
@@ -130,7 +131,7 @@ export default function Results() {
               const t = data.standing.terms.find((x) => x.id === r.id)!;
               return (
                 <Panel key={r.id} id={r.id} title={r.exam} action={<span className="text-sm text-ink-2">Published {fmt.long(r.publishedOn)}</span>}>
-                  <div className="scroll-x">
+                  <ScrollX labelledBy={`${r.id}-title`}>
                     <table className="table min-w-[44rem]">
                       <thead>
                         <tr>
@@ -178,7 +179,7 @@ export default function Results() {
                         </tr>
                       </tfoot>
                     </table>
-                  </div>
+                  </ScrollX>
                 </Panel>
               );
             })}

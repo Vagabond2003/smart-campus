@@ -7,12 +7,17 @@
   "scripts": {
     "dev": "vite",
     "dev:emulated": "vite --mode emulators",
+    "dev:offline": "vite --mode offline",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "emulators": "firebase emulators:start --only auth,firestore --project demo-smart-campus",
     "deploy": "npm run build && firebase deploy --only hosting,firestore,auth",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests"
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json",
+    "lint": "oxlint",
+    "test": "vitest run",
+    "test:rules": "firebase emulators:exec --only firestore --project demo-smart-campus \"vitest run --config vitest.rules.config.ts\"",
+    "test:e2e": "firebase emulators:exec --only auth,firestore --project demo-smart-campus \"playwright test\"",
+    "check": "npm run lint && npm run typecheck && npm test"
   },
   "dependencies": {
     "@fontsource-variable/archivo": "^5.3.0",
@@ -28,11 +33,15 @@
     "react-router": "^8.4.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@firebase/rules-unit-testing": "^5.0.2",
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/vite": "^4.3.3",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
     "firebase-tools": "^15.32.1",
+    "oxlint": "^1.87.0",
     "tailwindcss": "^4.3.3",
     "typescript": "^7.0.2",
     "vite": "^8.3.2",

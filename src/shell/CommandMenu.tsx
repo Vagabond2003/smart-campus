@@ -1,3 +1,7 @@
+/* oxlint-disable jsx-a11y/no-noninteractive-element-to-interactive-role, jsx-a11y/click-events-have-key-events, jsx-a11y/no-autofocus --
+   An ARIA combobox: the search field takes focus when the menu opens (that is the menu's whole job),
+   and its options are <li role="option"> elements driven from the field via aria-activedescendant,
+   so the keyboard is handled on the input, not on each option. */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { Dialog as RDialog } from "radix-ui";

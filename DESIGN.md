@@ -5,6 +5,7 @@ colors:
   rail: "#006a4e"
   rail-deep: "#00553e"
   rail-hover: "#0a7558"
+  rail-ink: "#ffffff"
   rail-ink-2: "#c2e3d7"
   primary: "#006a4e"
   primary-hover: "#005a42"
@@ -93,6 +94,25 @@ typography:
     lineHeight: "0.75rem"
     letterSpacing: "0.1em"
     fontVariation: "'wdth' 75"
+  display-landing:
+    fontFamily: "Archivo Variable, Taka Sign, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "clamp(3.25rem, 8.5vw, 7rem)"
+    fontWeight: 760
+    lineHeight: 0.95
+    letterSpacing: "-0.035em"
+    fontVariation: "'wdth' 86"
+  display-signin:
+    fontFamily: "Archivo Variable, Taka Sign, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "2.75rem"
+    fontWeight: 760
+    lineHeight: 0.95
+    letterSpacing: "-0.035em"
+    fontVariation: "'wdth' 86"
+  subtitle-landing:
+    fontFamily: "Archivo Variable, Taka Sign, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "clamp(1.125rem, 1.9vw, 1.5rem)"
+    fontWeight: 400
+    lineHeight: 1.3
 rounded:
   xs: "3px"
   sm: "4px"
@@ -220,6 +240,11 @@ components:
     padding: "6px"
   menu-item-hover:
     backgroundColor: "{colors.surface-2}"
+  concept-plate:
+    backgroundColor: "{colors.caution-wash}"
+    textColor: "{colors.caution}"
+    rounded: "{rounded.sm}"
+    padding: "10px 14px 11px 12px"
 ---
 
 # Design System: Smart Campus
@@ -230,7 +255,7 @@ components:
 
 The portal is a station. Bangladesh Railway at Saidpur supplies the whole material: a flag-green rail down the left edge, a board-black departure strip that always says what leaves next, and a platform-white concourse ruled by concrete hairlines. Everything a student reads is either a signboard, a timetable, or a signal. Records (results, receipts, admit cards) leave the station's voice and become paper: official BAUST documents on white, in both themes.
 
-Density is operational, not decorative. Panels sit edge to edge on a 20px gutter, each opened by a condensed capital band and closed by its own hairline, so a laptop screen reads like a timetable page and a phone reads like the same timetable folded into one column. Colour carries meaning before it carries mood: green is the railway and the way forward, amber is "now" and "you are here", maroon is bad news stated plainly. The one authored motion is the board's character roll; every other change is a short exponential ease-out from a visible default, and all of it goes instant under reduced motion.
+Density is operational, not decorative. Panels sit edge to edge on a 20px gutter, each opened by a condensed capital band and closed by its own hairline, so a laptop screen reads like a timetable page and a phone reads like the same timetable folded into one column. Colour carries meaning before it carries mood: green is the railway and the way forward, amber is "now" and "you are here", maroon is bad news stated plainly. Inside the portal the one authored motion is the board's character roll, and the front door has the world's single arrival sequence (see Landing Intro); every other change is a short exponential ease-out from a visible default, and all of it goes instant under reduced motion.
 
 Light is the daylight platform and the default. Dark is the night-station rendition (deep rail green, near-black ground, mint primary, salmon danger) and keeps every role, including amber, unchanged in meaning.
 
@@ -240,7 +265,7 @@ Light is the daylight platform and the default. Dark is the night-station rendit
 - Hairline-ruled white panels on a platform-white ground; shadows only for things that float.
 - State as signal aspects: green proceed, amber caution or now, maroon danger.
 - Tabular figures wherever numbers align; currency in the Taka sign.
-- Exponential ease-out motion at 150 to 500 ms, no overshoot; the board roll is the one authored moment.
+- Exponential ease-out motion at 150 to 500 ms, no overshoot; the board roll is the one authored moment in the portal, and the landing intro on "/" is the one sanctioned page-load sequence.
 
 ## Colors
 
@@ -292,8 +317,10 @@ A railway palette: one green that means "the line", one amber that means "now", 
 - **Body Small** (400, 0.8125rem / 1.25rem): the workhorse of tables, menus, list rows and metadata; the most used size in the build.
 - **Label / Timetable Head** (620, 0.6875rem, width 78%, uppercase, 0.06em): table column heads, navigation group labels, definition-list keys, period and day heads on the routine.
 - **Board Value / Board Label** (640 at 0.9375rem, width 80%, 0.045em, tabular, uppercase; 600 at 0.625rem, width 75%, 0.1em): the departure board only.
+- **Landing Display** (760, width 86%, -0.035em, line-height 0.95, sentence case): the "Smart Campus" title on the flag-green panel, and nowhere else. The landing intro sets it fluid at clamp(3.25rem, 8.5vw, 7rem) and scales it down onto the sign-in title, which steps 2.75rem, 3.5rem from the small breakpoint and 4.75rem from the large.
+- **Landing Subtitle** (400, line-height 1.3, rail-ink-2): "Student portal" under the landing title; fluid at clamp(1.125rem, 1.9vw, 1.5rem) in the intro, landing on the sign-in subtitle at 1.25rem (1.5rem from the large breakpoint).
 
-The ramp is a fixed rem scale at a ratio of about 1.2 (0.6875, 0.75, 0.8125, 0.9375, 1.0625, 1.25, 1.5, 1.875, 2.375rem). It is not fluid. One root font size (15, 16 or 18px from the user's text-size control) drives every rem.
+The portal ramp is a fixed rem scale at a ratio of about 1.2 (0.6875, 0.75, 0.8125, 0.9375, 1.0625, 1.25, 1.5, 1.875, 2.375rem). It is not fluid. The landing and sign-in display steps above sit outside it on purpose: they belong to the flag-green front door only, and the intro's two clamps are the only fluid sizes in the system. One root font size (15, 16 or 18px from the user's text-size control) drives every rem.
 
 ### Named Rules
 **The Two Widths Rule.** Condensed capitals are for things a station would paint on a sign: page titles, bands, column heads, the board. Anything a student reads as a sentence is normal width, sentence case.
@@ -307,6 +334,10 @@ Desktop is a two-column shell: a fixed 264px flag-green rail, then a content col
 The dashboard overview is a two-column grid of equal-weight panels at 20px gaps on large screens, stacking to one column below. Inside panels the rhythm is 16 to 20px horizontal padding and 12px vertical row padding, with rows separated by hairlines rather than space. Spacing follows a 4px base; 8, 12, 16 and 20px carry almost all of it.
 
 The departure board responds to its own width through a container query, not the viewport: below 40rem the service type and room fold into the time label and the pager leaves; below 30rem the cells tighten. The course title always stays and truncates.
+
+The Bills statement ledger also answers to its own width, because beside the rail on a small laptop it has no more room than a tablet. Narrow, each entry stacks as label and value pairs (labels in ink-3, zero amounts omitted). From 42rem it becomes a table with a label-voice head, and fee, paid and adjusted fold into one signed Amount column, since an entry only ever carries one of them. From 60rem every column shows. Thresholds are in rem so they follow the text-size control.
+
+Content too wide for its column (wide result and registration tables, the term line) scrolls sideways inside a labelled region rather than squeezing. The region joins the tab order only while it actually overflows, re-measured as the box, its content or the web font changes, so keyboard users can reach and arrow-scroll it without meeting an empty tab stop on wide screens.
 
 ## Elevation & Depth
 
@@ -342,6 +373,11 @@ Firm and quiet: medium weight (570), no shadow, a 0.96 press scale.
 - **Signal:** a 24px fully round pill, 0.75rem semibold text, a 6px dot in the aspect colour, on the aspect wash. The "now" signal inverts to amber fill with board-black text.
 - **Tag:** a 24px squared label (4px), hairline border, ink-2 text, for neutral categorisation such as course type.
 
+### Concept Plate (unofficial-concept notice)
+A station notice in the caution aspect, bolted under the BAUST name on the sign-in frame's flag-green panel at every size. It exists because the public site uses BAUST's name and crest, so it is never hidden, collapsed or staged as part of any animation.
+- **Style:** caution wash ground, caution text, a 1px border of caution-fill at 55%, 4px corners, 10px 14px 11px 12px padding, capped at 27rem.
+- **Content:** a 16px line warning-triangle icon beside a condensed capital plate title (700, 0.75rem, width 78%, 0.07em) over one body-small sentence. It is announced as a note.
+
 ### Cards / Containers (Panels)
 - **Corner Style:** 10px.
 - **Background:** panel white.
@@ -355,7 +391,7 @@ Firm and quiet: medium weight (570), no shadow, a 0.96 press scale.
 - **Error:** border turns maroon; the field shakes once using the shake recipe.
 
 ### Tables
-Timetable voice: sticky concrete-2 head in the label style, 16px cell padding, hairline rows, tabular right-aligned numbers, and a concrete-2 footer under a strong hairline for totals. Row hover tints to concrete 2 at 60%.
+Timetable voice: sticky concrete-2 head in the label style, 16px cell padding, hairline rows, tabular right-aligned numbers, and a concrete-2 footer under a strong hairline for totals. Row hover tints to concrete 2 at 60%. Tables wider than their panel sit in a sideways-scrolling region (see Layout); the Bills statement is a ledger that reshapes by container width instead.
 
 ### Navigation
 - **Desktop rail:** flag green, crest and wordmark at the top, modules grouped under condensed-capital labels in rail-ink-2, 18px lucide line icons. Rows are 40px with 6px radius; hover goes rail-hover. The active row recesses to rail-deep, switches to the band voice, turns its icon amber and carries an amber you-are-here dot.
@@ -369,8 +405,18 @@ A board-black strip, 44px high (48px and full-bleed on phones), split into cells
 ### Term Line
 A horizontal timeline of the term's stops (classes began, CT-1, CT-2, Mid Term, CT-3, last class, finals, results). Passed stops are filled green on a green track; the current point is an amber dot with a surface and amber halo; the next stop is an open green ring; future stops are open grey rings on a hairline track. Labels sit underneath in the label voice with dates in body small.
 
+### Landing Intro (the one arrival)
+The world's one sanctioned page-load sequence. It plays only on "/", once per browser tab session, for signed-out visitors who allow motion; reduced-motion visitors and signed-in students never see it and go straight to sign-in or the dashboard. When it is due, the document's first paint is already the platform green (deep rail green in the dark theme), and the sign-in page waits underneath with its signs hidden.
+- **Grammar:** one GSAP timeline with expo.out arrivals. The crest assembles from its own parts: the shield and ribbon go solid, the gear turns onto its axle, the buildings rise bar by bar, the pulse line wipes left to right, the lettering settles. The title rises out of a mask, then the subtitle and the board arrive, and the board rolls a station announcement with ScrambleText.
+- **Glide:** a power3.inOut glide of about 0.95s narrows the platform green onto the sign-in panel while every sign (crest, title, subtitle, board, concept plate) lands on its live counterpart in the sign-in page, and the form slides in. As it lands the board re-rolls to the sign-in board's values, in the same fixed cells, clipping characters rather than showing an ellipsis mid-roll.
+- **The plate stays:** the concept plate is never part of the animation. It is on screen from the first frame and never leaves. It also never hides the crest's flight: side by side (desktop), the plate holds at top centre while the crest flies past, then slides into its slot once the crest has landed, and the two never overlap; stacked (phone), where the plate's slot lies across the crest's path, the plate settles first and the crest, already near its final size, passes briefly over the plate's left end.
+- **Crest on green:** the crest's black year ("2015") takes the reversed white form (rail ink) on the platform green; nothing else in the crest changes.
+- **Skip:** a "Skip intro" button on the green (rail-line inset border, rail-hover on hover), any key that is not a navigation or modifier key, or a tap.
+
+**The One Arrival Rule.** The landing intro is the only page-load sequence in the system. No other route may borrow its timeline, its glide or its crest assembly, and nothing else animates on arrival.
+
 ### Motion
-transitions.dev recipes with a single easing, `cubic-bezier(0.22, 1, 0.36, 1)`: dropdowns and dialogs open at 250ms and close at 150ms with a 0.96 to 0.97 scale, panels and sheets slide at 400/350ms, toasts at 350/250ms, tabs slide at 250ms, tooltips appear at 150ms after an 80ms delay, and skeleton content reveals at 400ms through a 2px blur. Reordering lists use GSAP Flip. The success check settles without a bob. No page-load choreography.
+transitions.dev recipes with a single easing, `cubic-bezier(0.22, 1, 0.36, 1)`: dropdowns and dialogs open at 250ms and close at 150ms with a 0.96 to 0.97 scale, panels and sheets slide at 400/350ms, toasts at 350/250ms, tabs slide at 250ms, tooltips appear at 150ms after an 80ms delay, and skeleton content reveals at 400ms through a 2px blur. Reordering lists use GSAP Flip. The success check settles without a bob. No page-load choreography anywhere except the landing intro on "/" (see The One Arrival Rule).
 
 ## Do's and Don'ts
 
@@ -381,14 +427,15 @@ transitions.dev recipes with a single easing, `cubic-bezier(0.22, 1, 0.36, 1)`: 
 - **Do** separate content with 1px hairlines inside 10px-radius white panels on the platform-white ground.
 - **Do** map every state onto ok, caution or danger, and use amber only for now and you-are-here.
 - **Do** state bad news in maroon where the student will see it, with the action to resolve it alongside.
-- **Do** animate only with the exponential ease-out at 150 to 500ms, and make every animation instant under reduced motion.
+- **Do** animate only with the exponential ease-out at 150 to 500ms, and make every animation instant under reduced motion; the landing intro is the single exception in length and easing, and it does not play at all under reduced motion.
 - **Do** render official records as white paper with the sample watermark in both themes.
 
 ### Don't:
 - **Don't** put a shadow on a panel or a card; shadows belong to floating surfaces and the tab bar only.
-- **Don't** use overshoot or bounce easings, or add page-load choreography; the board roll is the only authored moment.
+- **Don't** use overshoot or bounce easings, or add page-load choreography; the board roll is the only authored moment in the portal, and the landing intro on "/" is the only arrival sequence. No other route borrows it.
 - **Don't** introduce a new state colour, or use amber as decoration.
 - **Don't** set body copy, descriptions or form labels in condensed capitals.
 - **Don't** soften dues, failed or referred courses, or attendance shortfalls into grey.
 - **Don't** add gamification devices (badges, streaks, confetti, emoji on records).
 - **Don't** show photographs of people; avatars are tinted initials.
+- **Don't** hide, collapse, fade or stage the unofficial-concept plate on the sign-in frame or the landing intro; its only movement is travelling with the intro's glide.

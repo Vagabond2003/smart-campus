@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-05T17:03:48+00:00",
+  "generatedAt": "2026-10-08T12:00:00+00:00",
   "title": "Design System: Smart Campus",
   "extensions": {
     "colorMeta": {
@@ -57,6 +57,25 @@
           "#83dcbb",
           "#c1ffe5"
         ]
+      },
+      "rail-ink": {
+        "role": "primary",
+        "displayName": "Rail Ink",
+        "canonical": "#ffffff",
+        "oklch": "oklch(100.0% 0.000 89.9)",
+        "cssVar": "--rail-ink",
+        "dark": "#f1f5f2",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#242424",
+          "#404040",
+          "#5d5d5d",
+          "#7d7d7d",
+          "#9e9e9e",
+          "#c7c7c7",
+          "#eeeeee"
+        ],
+        "purpose": "Text and icons on the flag-green rail and sign-in panel; the reversed form of the crest's year on the landing intro's green."
       },
       "rail-ink-2": {
         "role": "primary",
@@ -608,6 +627,20 @@
         "displayName": "Board Label",
         "purpose": "Departure board cell labels in amber-dim, uppercase.",
         "textTransform": "uppercase"
+      },
+      "display-landing": {
+        "displayName": "Landing Display",
+        "purpose": "The \"Smart Campus\" title in the landing intro, fluid; scales down onto the sign-in title. Flag-green front door only.",
+        "cssClass": ".intro-title"
+      },
+      "display-signin": {
+        "displayName": "Sign-in Display",
+        "purpose": "The \"Smart Campus\" title on the sign-in panel: 2.75rem, 3.5rem from sm, 4.75rem from lg. Flag-green front door only."
+      },
+      "subtitle-landing": {
+        "displayName": "Landing Subtitle",
+        "purpose": "\"Student portal\" under the landing title in rail-ink-2, fluid in the intro; lands on the sign-in subtitle at 1.25rem (1.5rem from lg).",
+        "cssClass": ".intro-sub"
       }
     },
     "shadows": [
@@ -684,7 +717,7 @@
       {
         "name": "board-roll",
         "value": "GSAP ScrambleText, 0.5s + 12ms per character (capped at 24), linear, revealDelay 0.16",
-        "purpose": "The departure board's character roll; the one authored moment. Pausable; skipped under reduced motion."
+        "purpose": "The departure board's character roll; the one authored moment in the portal. Pausable; skipped under reduced motion."
       },
       {
         "name": "flip",
@@ -694,7 +727,17 @@
       {
         "name": "reduced-motion",
         "value": "prefers-reduced-motion: reduce -> transition: none",
-        "purpose": "Every recipe, the board roll, rotation and the live pulse go instant or stop."
+        "purpose": "Every recipe, the board roll, rotation and the live pulse go instant or stop; the landing intro does not play."
+      },
+      {
+        "name": "intro-arrival",
+        "value": "GSAP timeline, expo.out; crest parts assemble over about 2.5s, board announcement rolls with ScrambleText",
+        "purpose": "Landing intro on \"/\" only: the world's one sanctioned page-load sequence. Once per tab session, signed-out visitors who allow motion."
+      },
+      {
+        "name": "intro-glide",
+        "value": "power3.inOut, 0.95s",
+        "purpose": "Landing intro hand-over: the platform green narrows onto the sign-in panel and every sign lands on its live counterpart; the board re-rolls to the sign-in values, clipping rather than ellipsing."
       }
     ],
     "breakpoints": [
@@ -722,6 +765,16 @@
       {
         "name": "board-tight",
         "value": "@container board (max-width: 30rem)"
+      },
+      {
+        "name": "ledger-medium",
+        "value": "@container ledger (min-width: 42rem)",
+        "purpose": "Bills statement becomes a table with one signed Amount column."
+      },
+      {
+        "name": "ledger-wide",
+        "value": "@container ledger (min-width: 60rem)",
+        "purpose": "Bills statement shows every column."
       }
     ],
     "layout": {
@@ -791,6 +844,14 @@
       "css": ".ds-sig { font-family: var(--font-sans, \"Archivo Variable\", ui-sans-serif, system-ui, sans-serif); display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; } .ds-sig i { width: 6px; height: 6px; border-radius: 999px; background: currentColor; } .ds-sig-ok { background: var(--ok-wash, #e2f1ea); color: var(--ok, #00704f); } .ds-sig-caution { background: var(--caution-wash, #fff1d1); color: var(--caution, #7a4f00); } .ds-sig-caution i { background: var(--caution-fill, #c98300); } .ds-sig-danger { background: var(--danger-wash, #f7e5e3); color: var(--danger, #8e1b1b); } .ds-sig-now { background: var(--amber, #ffb000); color: #121314; } .ds-sig-neutral { background: var(--surface-2, #eceeea); color: var(--ink-2, #464f4a); } .ds-sig-neutral i { background: var(--ink-3, #636c67); }"
     },
     {
+      "name": "Concept Plate",
+      "kind": "custom",
+      "refersTo": "concept-plate",
+      "description": "Caution-aspect station notice under the BAUST name on the sign-in frame, at every size; never hidden or staged in an animation.",
+      "html": "<div class=\"ds-plate\" role=\"note\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3\"/><path d=\"M12 9v4\"/><path d=\"M12 17h.01\"/></svg><p><span class=\"ds-plate-title\">Unofficial concept</span><span class=\"ds-plate-body\">This is not the BAUST portal. Never enter your BAUST password here.</span></p></div>",
+      "css": ".ds-plate { font-family: var(--font-sans, \"Archivo Variable\", ui-sans-serif, system-ui, sans-serif); display: flex; align-items: flex-start; gap: 0.625rem; max-width: 27rem; padding: 0.625rem 0.875rem 0.6875rem 0.75rem; border: 1px solid color-mix(in srgb, var(--caution-fill, #c98300) 55%, transparent); border-radius: 4px; background: var(--caution-wash, #fff1d1); color: var(--caution, #7a4f00); } .ds-plate svg { flex: none; margin-top: 1px; } .ds-plate p { margin: 0; } .ds-plate-title { display: block; font-stretch: 78%; font-weight: 700; font-size: 0.75rem; line-height: 1rem; letter-spacing: 0.07em; text-transform: uppercase; } .ds-plate-body { display: block; margin-top: 0.125rem; font-size: 0.8125rem; line-height: 1.25rem; text-wrap: pretty; }"
+    },
+    {
       "name": "Departure Board",
       "kind": "custom",
       "refersTo": "departure-board",
@@ -817,14 +878,14 @@
   ],
   "narrative": {
     "northStar": "Saidpur Line",
-    "overview": "The portal is a station. Bangladesh Railway at Saidpur supplies the whole material: a flag-green rail down the left edge, a board-black departure strip that always says what leaves next, and a platform-white concourse ruled by concrete hairlines. Everything a student reads is either a signboard, a timetable, or a signal. Records (results, receipts, admit cards) leave the station's voice and become paper: official BAUST documents on white, in both themes.\n\nDensity is operational, not decorative. Panels sit edge to edge on a 20px gutter, each opened by a condensed capital band and closed by its own hairline, so a laptop screen reads like a timetable page and a phone reads like the same timetable folded into one column. Colour carries meaning before it carries mood: green is the railway and the way forward, amber is \"now\" and \"you are here\", maroon is bad news stated plainly. The one authored motion is the board's character roll; every other change is a short exponential ease-out from a visible default, and all of it goes instant under reduced motion.\n\nLight is the daylight platform and the default. Dark is the night-station rendition (deep rail green, near-black ground, mint primary, salmon danger) and keeps every role, including amber, unchanged in meaning.",
+    "overview": "The portal is a station. Bangladesh Railway at Saidpur supplies the whole material: a flag-green rail down the left edge, a board-black departure strip that always says what leaves next, and a platform-white concourse ruled by concrete hairlines. Everything a student reads is either a signboard, a timetable, or a signal. Records (results, receipts, admit cards) leave the station's voice and become paper: official BAUST documents on white, in both themes.\n\nDensity is operational, not decorative. Panels sit edge to edge on a 20px gutter, each opened by a condensed capital band and closed by its own hairline, so a laptop screen reads like a timetable page and a phone reads like the same timetable folded into one column. Colour carries meaning before it carries mood: green is the railway and the way forward, amber is \"now\" and \"you are here\", maroon is bad news stated plainly. Inside the portal the one authored motion is the board's character roll, and the front door has the world's single arrival sequence (see Landing Intro); every other change is a short exponential ease-out from a visible default, and all of it goes instant under reduced motion.\n\nLight is the daylight platform and the default. Dark is the night-station rendition (deep rail green, near-black ground, mint primary, salmon danger) and keeps every role, including amber, unchanged in meaning.",
     "keyCharacteristics": [
       "Flag-green rail and primary actions; board-black strip with amber tabular capitals as the signature.",
       "Archivo on its width axis: condensed capitals for signboards, bands and timetable heads; normal width for UI and reading.",
       "Hairline-ruled white panels on a platform-white ground; shadows only for things that float.",
       "State as signal aspects: green proceed, amber caution or now, maroon danger.",
       "Tabular figures wherever numbers align; currency in the Taka sign.",
-      "Exponential ease-out motion at 150 to 500 ms, no overshoot; the board roll is the one authored moment."
+      "Exponential ease-out motion at 150 to 500 ms, no overshoot; the board roll is the one authored moment in the portal, and the landing intro on \"/\" is the one sanctioned page-load sequence."
     ],
     "rules": [
       {
@@ -861,6 +922,11 @@
         "name": "The Paper Rule",
         "body": "Admit cards, receipts and other official records render as white paper with the float shadow and a 4px radius in both themes, carrying the sample watermark, and print without shadow or radius.",
         "section": "elevation"
+      },
+      {
+        "name": "The One Arrival Rule",
+        "body": "The landing intro is the only page-load sequence in the system. No other route may borrow its timeline, its glide or its crest assembly, and nothing else animates on arrival.",
+        "section": "components"
       }
     ],
     "dos": [
@@ -870,17 +936,18 @@
       "**Do** separate content with 1px hairlines inside 10px-radius white panels on the platform-white ground.",
       "**Do** map every state onto ok, caution or danger, and use amber only for now and you-are-here.",
       "**Do** state bad news in maroon where the student will see it, with the action to resolve it alongside.",
-      "**Do** animate only with the exponential ease-out at 150 to 500ms, and make every animation instant under reduced motion.",
+      "**Do** animate only with the exponential ease-out at 150 to 500ms, and make every animation instant under reduced motion; the landing intro is the single exception in length and easing, and it does not play at all under reduced motion.",
       "**Do** render official records as white paper with the sample watermark in both themes."
     ],
     "donts": [
       "**Don't** put a shadow on a panel or a card; shadows belong to floating surfaces and the tab bar only.",
-      "**Don't** use overshoot or bounce easings, or add page-load choreography; the board roll is the only authored moment.",
+      "**Don't** use overshoot or bounce easings, or add page-load choreography; the board roll is the only authored moment in the portal, and the landing intro on \"/\" is the only arrival sequence. No other route borrows it.",
       "**Don't** introduce a new state colour, or use amber as decoration.",
       "**Don't** set body copy, descriptions or form labels in condensed capitals.",
       "**Don't** soften dues, failed or referred courses, or attendance shortfalls into grey.",
       "**Don't** add gamification devices (badges, streaks, confetti, emoji on records).",
-      "**Don't** show photographs of people; avatars are tinted initials."
+      "**Don't** show photographs of people; avatars are tinted initials.",
+      "**Don't** hide, collapse, fade or stage the unofficial-concept plate on the sign-in frame or the landing intro; its only movement is travelling with the intro's glide."
     ]
   }
 }
