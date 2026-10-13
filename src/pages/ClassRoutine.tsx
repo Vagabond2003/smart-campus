@@ -5,6 +5,7 @@ import { useRoutine } from "../api/hooks";
 import * as seed from "../data/seed";
 import { BREAK, now, routineDayIndex } from "../lib/clock";
 import { useTitle } from "../lib/useTitle";
+import { printPage } from "../lib/print";
 import { useIsPhone } from "../lib/useMediaQuery";
 import { Button } from "../components/Button";
 import { PageHeader } from "../components/Data";
@@ -22,7 +23,7 @@ export default function ClassRoutine() {
   useEffect(() => {
     if (params.get("print") === "1" && data) {
       const t = window.setTimeout(() => {
-        window.print();
+        printPage();
         params.delete("print");
         setParams(params, { replace: true });
       }, 300);
@@ -39,7 +40,7 @@ export default function ClassRoutine() {
         title="Class Routine"
         description={`${seed.SEMESTER} · ${seed.student.levelTerm} · Section ${seed.student.section}. Break ${BREAK.start}–${BREAK.end}.`}
         actions={
-          <Button variant="secondary" className="no-print" icon={<Printer size={16} strokeWidth={1.75} />} onClick={() => window.print()}>
+          <Button variant="secondary" className="no-print" icon={<Printer size={16} strokeWidth={1.75} />} onClick={printPage}>
             Print or save PDF
           </Button>
         }

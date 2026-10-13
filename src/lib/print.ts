@@ -1,19 +1,18 @@
 /**
- * Printing. Whatever the visitor's theme, a print is the daylight rendition: the theme switches
- * to light just before the browser lays out the print and switches back after. And every
- * document marked [data-print-fit] prints on one sheet: it is measured at the sheet's printable
- * width and, only if it would run past one page, scaled down until it fits (CSS zoom). Documents
- * also tighten their rows as they grow (`printDensity`), so scaling is the last resort for an
- * unusually long list, not the way ordinary ones fit.
+ * Printing. Whatever the visitor's theme, a print is the daylight rendition. And every document
+ * marked [data-print-fit] prints on one page, whatever paper, orientation and margins the print
+ * dialog ends up with (iOS lets you flip orientation inside the dialog, and Safari adds its own
+ * header and footer).
  *
- * Sheet sizes match the @page rules in index.css: A4 portrait less 12mm sides and 14mm top and
- * bottom, A4 landscape less 10mm all round.
+ * How it fits: a document is laid out at a fixed design width in rem (44 for portrait papers, 66
+ * for the landscape routines), and its height is measured here as `a` rem plus `b` px (hairlines
+ * don't scale). The print stylesheet (index.css) then sizes the page's rem so that box fits the
+ * page area both ways, using vw and vh, which are the page area when printing. So the fit is
+ * worked out by the browser at print time, against the real page, and follows any change made in
+ * the dialog. Documents also tighten their rows as they grow (`printDensity`), so long lists
+ * stay as large as they can.
  */
-const MM = 96 / 25.4;
-const SHEETS = {
-  portrait: { w: 186 * MM, h: 269 * MM },
-  landscape: { w: 277 * MM, h: 190 * MM },
-};
+const DESIGN_WIDTH = { portrait: 44, landscape: 66 };
 
 /** Row counts at which a document's tables tighten (see .doc[data-density] in components.css). */
 export function printDensity(rows: number): "normal" | "compact" | "tight" {
@@ -21,60 +20,65 @@ export function printDensity(rows: number): "normal" | "compact" | "tight" {
 }
 
 let themeBeforePrint: string | undefined;
+let printing = false;
 
-function beforePrint() {
+/** Height of `el` laid out `width` rem wide, with the page's rem at `px`. */
+function heightAt(el: HTMLElement, width: number, px: number) {
+  document.documentElement.style.fontSize = `${px}px`;
+  el.style.width = `${width}rem`;
+  return el.getBoundingClientRect().height;
+}
+
+function measure() {
   const root = document.documentElement;
-  themeBeforePrint = root.dataset.theme;
-  root.dataset.theme = "light";
-  // .measuring applies the print styles that shape a document, so it's measured as it will print;
-  // it comes off again before anything paints
+  // .measuring applies the print styles that shape a document; it comes off before anything paints
   root.classList.add("measuring");
-  for (const el of document.querySelectorAll<HTMLElement>("[data-print-fit]")) fit(el);
+  const keep = root.style.fontSize;
+  for (const el of document.querySelectorAll<HTMLElement>("[data-print-fit]")) {
+    const width = DESIGN_WIDTH[el.dataset.printFit === "landscape" ? "landscape" : "portrait"];
+    // two sizes give the rem part and the fixed (hairline) part of the height
+    const big = heightAt(el, width, 16);
+    const small = heightAt(el, width, 8);
+    el.style.width = "";
+    const a = Math.max((big - small) / 8, 1);
+    const b = Math.max(big - a * 16, 0);
+    root.style.setProperty("--print-w", String(width));
+    root.style.setProperty("--print-a", a.toFixed(3));
+    root.style.setProperty("--print-b", b.toFixed(1));
+  }
+  root.style.fontSize = keep;
   root.classList.remove("measuring");
 }
 
-/**
- * Scale a document down until it fits one sheet, as little as possible. A scaled document is laid
- * out wider (the sheet's width divided by the scale) so it still spans the page, which wraps its
- * text less; and scaling rounds hairlines and line heights up. So every scale is measured, not
- * computed: find one that fits, then search between it and the last that didn't for the largest.
- */
-function fit(el: HTMLElement) {
-  const sheet = SHEETS[el.dataset.printFit === "landscape" ? "landscape" : "portrait"];
-  const room = sheet.h - 4; // a few pixels for rounding in the print engine
-  const fits = (zoom: number) => {
-    el.style.zoom = zoom === 1 ? "" : String(zoom);
-    el.style.width = `${sheet.w / zoom}px`;
-    return el.getBoundingClientRect().height <= room; // scaled size, as it will print
-  };
-  if (fits(1)) {
-    el.style.width = "";
-    return;
+/** Light theme and a fresh measurement; safe to call more than once before a print. */
+export function preparePrint() {
+  const root = document.documentElement;
+  if (!printing) {
+    themeBeforePrint = root.dataset.theme;
+    printing = true;
   }
-  let tooBig = 1;
-  let ok = room / el.getBoundingClientRect().height;
-  for (let i = 0; i < 8 && !fits(ok); i++) {
-    tooBig = ok;
-    ok *= 0.97;
-  }
-  for (let i = 0; i < 7; i++) {
-    const mid = (ok + tooBig) / 2;
-    if (fits(mid)) ok = mid;
-    else tooBig = mid;
-  }
-  fits(ok);
+  root.dataset.theme = "light";
+  measure();
 }
 
-function afterPrint() {
-  const root = document.documentElement;
-  if (themeBeforePrint) root.dataset.theme = themeBeforePrint;
-  for (const el of document.querySelectorAll<HTMLElement>("[data-print-fit]")) {
-    el.style.zoom = "";
-    el.style.width = "";
-  }
+function finishPrint() {
+  if (!printing) return;
+  printing = false;
+  if (themeBeforePrint) document.documentElement.dataset.theme = themeBeforePrint;
+}
+
+/** For the "Print or save PDF" buttons: prepare first, so it's right even where beforeprint is late. */
+export function printPage() {
+  preparePrint();
+  window.print();
 }
 
 export function installPrint() {
-  window.addEventListener("beforeprint", beforePrint);
-  window.addEventListener("afterprint", afterPrint);
+  window.addEventListener("beforeprint", preparePrint);
+  window.addEventListener("afterprint", finishPrint);
+  // Safari also reports printing through the print media query
+  window.matchMedia("print").addEventListener("change", (e) => {
+    if (e.matches && !printing) preparePrint();
+    else if (!e.matches) finishPrint();
+  });
 }

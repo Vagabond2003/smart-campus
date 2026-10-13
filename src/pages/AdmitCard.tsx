@@ -6,7 +6,7 @@ import { useAdmitCards, useStudent } from "../api/hooks";
 import type { AdmitCard as Card } from "../data/types";
 import { credits, fmt } from "../lib/format";
 import { useTitle } from "../lib/useTitle";
-import { printDensity } from "../lib/print";
+import { printDensity, printPage } from "../lib/print";
 import { Button } from "../components/Button";
 import { Avatar, PageHeader, Signal } from "../components/Data";
 import { Bars, EmptyState, ErrorState, Reveal } from "../components/Feedback";
@@ -32,7 +32,7 @@ export default function AdmitCard() {
           description="Bring a printed admit card and your ID card to every examination."
           actions={
             card?.status === "Approved" ? (
-              <Button icon={<Printer size={16} strokeWidth={1.75} />} onClick={() => window.print()}>
+              <Button icon={<Printer size={16} strokeWidth={1.75} />} onClick={printPage}>
                 Print or save PDF
               </Button>
             ) : null

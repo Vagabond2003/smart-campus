@@ -394,7 +394,7 @@ Flat at rest. Depth on the platform comes from tone (white panels on platform-wh
 ### Named Rules
 **The Ruled Panel Rule.** A panel is a white surface with a 1px hairline and a 10px radius. If it has a shadow, it is not a panel; it is floating.
 
-**The Paper Rule.** Admit cards, receipts, the exam routine and other official records render as white paper with the float shadow and a 4px radius in both themes, carrying the sample watermark, and print without shadow or radius. A print is always the daylight rendition, whatever the visitor's theme, and every printed document is one sheet: its tables tighten from 13px rows to 12px past 10 rows and 11px past 18, and a list longer than a sheet holds is scaled down, as little as it takes, to fit (src/lib/print.ts). The class routine prints on a landscape sheet.
+**The Paper Rule.** Admit cards, receipts, the exam routine and other official records render as white paper with the float shadow and a 4px radius in both themes, carrying the sample watermark, and print without shadow or radius. A print is always the daylight rendition, whatever the visitor's theme, and every printed document is one page on whatever paper and orientation the print dialog chooses (iOS ignores requested page sizes and adds its own header and footer): a document keeps a fixed design width (44rem, or 66rem for the routines), its height is measured, and the print stylesheet sizes the rem in vw and vh, the page area, so the whole box fits both ways. Tables tighten from 13px rows to 12px past 10 rows and 11px past 18, so long lists stay as large as they can. The routines ask for a landscape sheet where the browser honours it.
 
 ## Shapes
 

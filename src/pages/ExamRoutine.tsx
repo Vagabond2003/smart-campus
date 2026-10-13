@@ -8,7 +8,7 @@ import { atTime, now } from "../lib/clock";
 import { cn } from "../lib/cn";
 import { fmt, until } from "../lib/format";
 import { useTitle } from "../lib/useTitle";
-import { printDensity } from "../lib/print";
+import { printDensity, printPage } from "../lib/print";
 import { Button } from "../components/Button";
 import { PageHeader, Signal } from "../components/Data";
 import { Bars, EmptyState, ErrorState, Reveal } from "../components/Feedback";
@@ -37,7 +37,7 @@ export default function ExamRoutine() {
           description="Dates, times, rooms and your seat for every examination."
           actions={
             schedule?.published ? (
-              <Button variant="secondary" icon={<Printer size={16} strokeWidth={1.75} />} onClick={() => window.print()}>
+              <Button variant="secondary" icon={<Printer size={16} strokeWidth={1.75} />} onClick={printPage}>
                 Print or save PDF
               </Button>
             ) : null

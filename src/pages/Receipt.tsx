@@ -5,6 +5,7 @@ import { useBills } from "../api/hooks";
 import { student } from "../data/seed";
 import { fmt, taka } from "../lib/format";
 import { useTitle } from "../lib/useTitle";
+import { printPage } from "../lib/print";
 import { Button } from "../components/Button";
 import { PageHeader } from "../components/Data";
 import { Bars, EmptyState, ErrorState, Reveal } from "../components/Feedback";
@@ -31,7 +32,7 @@ export default function Receipt() {
           title="Payment receipt"
           actions={
             p ? (
-              <Button variant="secondary" icon={<Printer size={16} strokeWidth={1.75} />} onClick={() => window.print()}>
+              <Button variant="secondary" icon={<Printer size={16} strokeWidth={1.75} />} onClick={printPage}>
                 Print or save PDF
               </Button>
             ) : null

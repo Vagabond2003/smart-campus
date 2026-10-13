@@ -6,6 +6,7 @@ import { examDuties, SECTION_LABEL, teacher, teaches } from "../../data/campus";
 import { atTime, BREAK, now, PERIODS, routineDayIndex } from "../../lib/clock";
 import { fmt, plural, until } from "../../lib/format";
 import { useTitle } from "../../lib/useTitle";
+import { printPage } from "../../lib/print";
 import { useIsPhone } from "../../lib/useMediaQuery";
 import { Button } from "../../components/Button";
 import { PageHeader, Panel, Signal, Tag } from "../../components/Data";
@@ -30,7 +31,7 @@ export default function TeachRoutine() {
         title="Class Routine"
         description={`${seed.SEMESTER} · ${teacher.name} · ${plural(slots.length, "class", "classes")} a week, ${hours.toFixed(1)} contact hours, all with Section ${SECTION_LABEL}. Break ${BREAK.start}–${BREAK.end}.`}
         actions={
-          <Button variant="secondary" className="no-print" icon={<Printer size={16} strokeWidth={1.75} />} onClick={() => window.print()}>
+          <Button variant="secondary" className="no-print" icon={<Printer size={16} strokeWidth={1.75} />} onClick={printPage}>
             Print or save PDF
           </Button>
         }

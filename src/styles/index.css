@@ -238,6 +238,15 @@
   .doc-print-area { margin: 0 !important; padding: 0 !important; max-width: none !important; }
   .doc, .doc * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .print-landscape { page: landscape; }
+  /* One page, whatever the paper: a [data-print-fit] document keeps its design width in rem, and the
+     page's rem is sized so that box fits the page area both ways (vw and vh are the page area when
+     printing; --print-a and --print-b are its measured height, from src/lib/print.ts). */
+  :root:has([data-print-fit]) { --print-w-default: 44; }
+  :root:has([data-print-fit="landscape"]) { --print-w-default: 66; }
+  :root:has([data-print-fit]):not(.measuring) {
+    font-size: min(16px, calc(98.5vw / var(--print-w, var(--print-w-default))), calc((98.5vh - var(--print-b, 0) * 1px) / var(--print-a, 1))) !important;
+  }
+  :root:not(.measuring) [data-print-fit] { width: calc(var(--print-w, var(--print-w-default)) * 1rem) !important; max-width: none !important; }
   /* a scroll region prints whole rather than clipped at its edge */
   .scroll-x { overflow: visible !important; }
   /* entrance animations would otherwise print mid-flight */
