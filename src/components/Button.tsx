@@ -23,7 +23,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
   size?: Size;
   asChild?: boolean;
-  /** Turn off the 0.96 press scale where motion would distract (repeated controls). */
+  /** Turn off the springy press where motion would distract (repeated controls). */
   static?: boolean;
   icon?: ReactNode;
   trailing?: ReactNode;
@@ -39,8 +39,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       ref={ref}
       className={cn(
         "inline-flex select-none items-center justify-center whitespace-nowrap font-[570] no-underline",
-        "transition-[background-color,color,border-color,scale,filter] duration-150 ease-out",
-        !isStatic && "active:scale-[0.96]",
+        // down fast, back on a spring (src/styles/springs.css); static controls only change colour
+        isStatic ? "transition-[background-color,color,border-color,filter] duration-150 ease-out" : "press",
         "disabled:pointer-events-none disabled:opacity-45",
         variants[variant],
         sizes[size],
@@ -77,7 +77,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(functio
       type="button"
       aria-label={label}
       className={cn(
-        "relative inline-grid shrink-0 place-items-center rounded-md transition-[background-color,color,scale] duration-150 ease-out active:scale-[0.96]",
+        "press relative inline-grid shrink-0 place-items-center rounded-md",
         size === "md" ? "size-10" : "size-8 after:absolute after:-inset-1 after:content-['']",
         tone === "default" && "text-ink-2 hover:bg-surface-2 hover:text-ink",
         tone === "rail" && "text-rail-ink hover:bg-rail-hover",

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router";
-import { ClipboardCheck, Search, Undo2 } from "lucide-react";
+import { Search, Undo2 } from "lucide-react";
 import { useSaveRoll, useStoreVersion } from "../../api/hooks";
 import { roomShort } from "../../api/derive";
 import { meetingByKey } from "../../api/teach";
@@ -53,7 +53,7 @@ function RollSheet({ meetingKey }: { meetingKey: string }) {
       <>
         <PageHeader crumbs={[{ label: "My Courses", to: "/teach/courses" }, { label: s.code, to: `/teach/courses/${o.slug}/roll` }, { label: "Roll" }]} title="Take roll" />
         <div className="panel">
-          <EmptyState icon={<ClipboardCheck size={20} strokeWidth={1.75} />} title="This class hasn't started" action={<Button asChild variant="secondary"><Link to={`/teach/courses/${o.slug}/roll`}>Back to the roll register</Link></Button>}>
+          <EmptyState scene="signal" title="This class hasn't pulled in yet" action={<Button asChild variant="secondary"><Link to={`/teach/courses/${o.slug}/roll`}>Back to the roll register</Link></Button>}>
             The roll for {s.code} on {fmt.dayShort(s.start)} opens at {fmt.time(s.start)}, {until(s.start)}.
           </EmptyState>
         </div>
@@ -101,7 +101,7 @@ function RollSheet({ meetingKey }: { meetingKey: string }) {
       { key: meetingKey, absent: [...absent], late: [...late], reason: needsReason ? reason.trim() : undefined },
       {
         onSuccess: () => {
-          toast({ title: `Roll ${editing ? "updated" : "saved"} for ${s.code}`, description: `${present} of ${roster.length} present${absent.size ? `, ${plural(absent.size, "absence")}` : ""}${late.size ? `, ${late.size} late` : ""}.` });
+          toast({ title: `Roll ${editing ? "updated" : "saved"} for ${s.code}`, description: `${present} of ${roster.length} present${absent.size ? `, ${plural(absent.size, "absence")}` : ""}${late.size ? `, ${late.size} late` : ""}.`, celebrate: "small" });
           nav(`/teach/courses/${o.slug}/roll`);
         },
       },
@@ -150,8 +150,8 @@ function RollSheet({ meetingKey }: { meetingKey: string }) {
       </div>
 
       {listed.length ? (
-        <ul className={phone ? "roster-list panel overflow-hidden" : "roster-grid grid-cols-[repeat(auto-fill,minmax(4.5rem,1fr))]"} aria-label={`Class list for ${s.code}, in roll order`}>
-          {listed.map((p) => {
+        <ul className={phone ? "roster-arrive roster-list panel overflow-hidden" : "roster-arrive roster-grid grid-cols-[repeat(auto-fill,minmax(4.5rem,1fr))]"} aria-label={`Class list for ${s.code}, in roll order`}>
+          {listed.map((p, i) => {
             const state = absent.has(p.id) ? "absent" : late.has(p.id) ? "late" : "present";
             return (
               <li key={p.id} className={phone ? undefined : "contents"}>
@@ -160,6 +160,7 @@ function RollSheet({ meetingKey }: { meetingKey: string }) {
                   state={state}
                   match={matches(p.name, p.roll)}
                   row={phone}
+                  index={i}
                   label={`Roll ${rollSuffix(p)}, ${p.name}${p.regType === "Retake" ? ", retake" : ""}: ${state}`}
                   onToggle={() => toggle(p.id)}
                 />
@@ -168,7 +169,11 @@ function RollSheet({ meetingKey }: { meetingKey: string }) {
           })}
         </ul>
       ) : (
-        <p className="panel px-4 py-6 text-sm text-ink-2">No student matches “{q.trim()}”. Try the last digits of a roll or part of a name.</p>
+        <div className="panel">
+          <EmptyState scene="search" title={`No one in class by “${q.trim()}”`} className="py-6">
+            Try the last digits of a roll or part of a name.
+          </EmptyState>
+        </div>
       )}
 
       {needsReason ? (

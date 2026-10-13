@@ -7,6 +7,7 @@ import { useTitle } from "../../lib/useTitle";
 import { Button } from "../../components/Button";
 import { PageHeader } from "../../components/Data";
 import { RouteTabs } from "../../components/Tabs";
+import { TabMotion } from "../../components/Motion";
 
 export const TEACH_COURSE_TABS = [
   { key: "roll", label: "Roll" },
@@ -42,7 +43,9 @@ export default function TeachCourseLayout() {
       <div className="-mx-4 mb-6 border-b border-line px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0">
         <RouteTabs label="Course sections" activeKey={tab} tabs={TEACH_COURSE_TABS.map((t) => ({ to: `/teach/courses/${slug}/${t.key}`, label: t.label }))} />
       </div>
-      <Outlet />
+      <TabMotion tab={tab} order={TEACH_COURSE_TABS.map((t) => t.key)}>
+        <Outlet />
+      </TabMotion>
     </>
   );
 }

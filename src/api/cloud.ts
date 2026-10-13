@@ -37,8 +37,8 @@ export interface Profile {
   kind: "activated" | "demo";
 }
 
-/** `what` names the record in plain words ("the payment"), ready for a sentence. */
-type Report = (what: string, err: unknown) => void;
+/** `what` names the record in plain words ("the payment"), ready for a sentence; `retry` writes it again. */
+type Report = (what: string, err: unknown, retry: () => void) => void;
 let report: Report = (what, err) => console.warn(`[cloud] couldn't save ${what}`, err);
 export function onCloudError(fn: Report) {
   report = fn;
@@ -161,7 +161,7 @@ export function setCloudUser(uid: string | null) {
 
 function fire(what: string, write: (uid: string) => Promise<unknown>) {
   if (!db || !activeUid) return;
-  write(activeUid).catch((err) => report(what, err));
+  write(activeUid).catch((err) => report(what, err, () => fire(what, write)));
 }
 
 export function persistRib(offer: RibOffer, bill: Bill, notice: Notice | undefined) {

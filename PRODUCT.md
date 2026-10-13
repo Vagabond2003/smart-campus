@@ -12,7 +12,8 @@ Delegated by the user ("choose the correct required framework and tech stack"). 
 
 - Vite + React + TypeScript (strict), React Router for nested app routes.
 - Tailwind CSS v4 over a CSS custom-property token layer; transitions.dev motion tokens and CSS recipes for component-level transitions.
-- GSAP (with `@gsap/react`, Flip, SplitText where earned) for orchestrated, timeline-driven motion; every animation honours `prefers-reduced-motion`.
+- GSAP (with `@gsap/react`, Flip, SplitText where earned) for orchestrated, timeline-driven motion (the board roll, the landing intro); the `motion` library for page arrivals, tab slides, list exits and draggable sheets; CSS `linear()` springs for presses and overlays; `canvas-confetti` (lazy-loaded) for completion bursts; Web Audio for opt-in interface sounds. Every animation honours `prefers-reduced-motion`.
+- Optimistic writes: every action changes the sandbox at once and the screen follows on the next tick; the copy in the visitor's account is written in the background, and a failed write says so with a "Try again".
 - Radix UI primitives for accessible dialogs, tabs, menus, popovers, tooltips and selects.
 - TanStack Query over an in-memory store seeded with synthetic data (with simulated latency), so loading, empty and error states are real.
 - Firebase: Authentication (student-ID accounts plus an anonymous sample sandbox), Cloud Firestore for each student's own records (RIB registration, demo payments, comments, read notifications), Hosting at https://smart-campus-baust.web.app, and Analytics. Without Firebase config the app falls back to an offline sample login.
@@ -81,7 +82,7 @@ The incumbent portal is a launcher: a grid of module icons, each opening a table
 4. Speak BAUST's language: keep the institution's terms (Level-Term, RIB, Referred, Backlog, CT, OBE) rather than generic substitutes.
 5. Synthetic by default: never display real student or staff data.
 6. Bad news is never buried (confirmed): dues, failed and referred courses, and attendance shortfalls are stated plainly where the student will see them, without alarmism and without softening.
-7. Serious, not stiff (confirmed): no gamification (badges, streaks, confetti, emoji on records), no generic startup-dashboard sameness, and no cold government-form density. It should read unmistakably as BAUST's own.
+7. Serious, not stiff; playful actions, calm records (confirmed, revised by the user on 2026-10-13): what a visitor does should feel fun and answer back at once (springy presses, pages that arrive, a station-themed burst and stamp when a task is finished, opt-in sounds, small animated railway scenes in empty states). Records stay calm: results, dues, failed and referred courses and attendance shortfalls never bounce, celebrate or chime. Still no badges, streaks or emoji on records, no generic startup-dashboard sameness, and no cold government-form density. It should read unmistakably as BAUST's own.
 
 ## Accessibility & Inclusion
 

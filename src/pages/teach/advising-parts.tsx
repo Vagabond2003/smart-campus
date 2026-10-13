@@ -1,5 +1,6 @@
 /** The advisor's rows: an RIB registration to approve or return, an advisee to remind. */
-import { useState } from "react";
+import { useState, type Ref } from "react";
+import { m } from "motion/react";
 import { Link } from "react-router";
 import { BellRing } from "lucide-react";
 import { useDecideRegistration, useRemind } from "../../api/hooks";
@@ -35,7 +36,16 @@ export function brief(a: AdviseeStatus) {
   return out.join(" · ");
 }
 
-export function ApprovalRow({ a, compact }: { a: AdviseeStatus; compact?: boolean }) {
+/** Rows in a queue: they arrive and leave on a spring, and the rest close the gap (AnimatePresence, popLayout). */
+export const queueRow = {
+  layout: "position" as const,
+  initial: { opacity: 0, y: -8 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, x: 36, transition: { duration: 0.2 } },
+  transition: { type: "spring" as const, stiffness: 460, damping: 34 },
+};
+
+export function ApprovalRow({ a, compact, ref }: { a: AdviseeStatus; compact?: boolean; ref?: Ref<HTMLLIElement> }) {
   const decide = useDecideRegistration();
   const toast = useToast();
   const [returning, setReturning] = useState(false);
@@ -47,12 +57,16 @@ export function ApprovalRow({ a, compact }: { a: AdviseeStatus; compact?: boolea
       {
         onSuccess: () => {
           setReturning(false);
-          toast({ title: decision === "approved" ? `Approved ${p.name}` : `Returned to ${p.name}`, description: p.id === ME ? "It shows on their RIB Course Registration page now." : undefined });
+          toast({
+            title: decision === "approved" ? `Approved ${p.name}` : `Returned to ${p.name}`,
+            description: p.id === ME ? "It shows on their RIB Course Registration page now." : undefined,
+            celebrate: decision === "approved" ? "small" : undefined,
+          });
         },
       },
     );
   return (
-    <li className="border-b border-line px-4 py-3 last:border-b-0 lg:px-5">
+    <m.li ref={ref} {...queueRow} className="border-b border-line bg-surface px-4 py-3 last:border-b-0 lg:px-5">
       <div className="flex items-start gap-3">
         <Avatar name={p.name} size="md" />
         <div className="min-w-0 flex-1">
@@ -108,7 +122,7 @@ export function ApprovalRow({ a, compact }: { a: AdviseeStatus; compact?: boolea
           </div>
         </form>
       ) : null}
-    </li>
+    </m.li>
   );
 }
 

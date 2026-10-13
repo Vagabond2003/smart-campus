@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { Inbox } from "lucide-react";
+import { AnimatePresence, m } from "motion/react";
 import { useSection } from "../../api/hooks";
 import * as seed from "../../data/seed";
 import { rollSuffix, roster, SECTION_LABEL } from "../../data/campus";
@@ -8,7 +8,7 @@ import { fmt, plural, until } from "../../lib/format";
 import { useTitle } from "../../lib/useTitle";
 import { PageHeader, Panel, Signal } from "../../components/Data";
 import { Bars, EmptyState, Reveal } from "../../components/Feedback";
-import { ApprovalRow, RemindRow, RibSignal } from "./advising-parts";
+import { ApprovalRow, queueRow, RemindRow, RibSignal } from "./advising-parts";
 
 export default function Approvals() {
   useTitle("Registration Approvals");
@@ -32,12 +32,14 @@ export default function Approvals() {
               <Panel id="waiting" title={`Waiting on you${q.waiting.length ? ` · ${q.waiting.length}` : ""}`}>
                 {q.waiting.length ? (
                   <ul>
-                    {q.waiting.map((a) => (
-                      <ApprovalRow key={a.record.person.id} a={a} />
-                    ))}
+                    <AnimatePresence mode="popLayout" initial={false}>
+                      {q.waiting.map((a) => (
+                        <ApprovalRow key={a.record.person.id} a={a} />
+                      ))}
+                    </AnimatePresence>
                   </ul>
                 ) : (
-                  <EmptyState icon={<Inbox size={20} strokeWidth={1.75} />} title="Nothing waiting">
+                  <EmptyState scene="clear" title="All clear: nothing waiting for you">
                     New RIB registrations from your advisees land here. The student sees your decision on their RIB Course Registration page.
                   </EmptyState>
                 )}
@@ -46,19 +48,21 @@ export default function Approvals() {
               <Panel id="decided" title="Decided">
                 {q.decided.length ? (
                   <ul>
-                    {q.decided.map((a) => (
-                      <li key={a.record.person.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-line px-4 py-3 last:border-b-0 lg:px-5">
-                        <Link to={`/teach/students/${a.record.person.id}`} className="min-w-0 flex-1 text-sm no-underline">
-                          <span className="font-[620] text-ink hover:underline">{a.record.person.name}</span> <span className="num text-xs text-ink-3">{rollSuffix(a.record.person)}</span>
-                          <span className="block text-xs text-ink-2">
-                            {a.rib.courses.join(", ")}
-                            {a.rib.note ? ` · “${a.rib.note}”` : ""}
-                          </span>
-                        </Link>
-                        <RibSignal a={a} />
-                        <span className="w-24 text-right text-xs text-ink-3">{a.rib.decidedAt ? fmt.short(a.rib.decidedAt) : a.rib.at ? fmt.short(a.rib.at) : ""}</span>
-                      </li>
-                    ))}
+                    <AnimatePresence initial={false}>
+                      {q.decided.map((a) => (
+                        <m.li key={a.record.person.id} {...queueRow} className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-line px-4 py-3 last:border-b-0 lg:px-5">
+                          <Link to={`/teach/students/${a.record.person.id}`} className="min-w-0 flex-1 text-sm no-underline">
+                            <span className="font-[620] text-ink hover:underline">{a.record.person.name}</span> <span className="num text-xs text-ink-3">{rollSuffix(a.record.person)}</span>
+                            <span className="block text-xs text-ink-2">
+                              {a.rib.courses.join(", ")}
+                              {a.rib.note ? ` · “${a.rib.note}”` : ""}
+                            </span>
+                          </Link>
+                          <RibSignal a={a} />
+                          <span className="w-24 text-right text-xs text-ink-3">{a.rib.decidedAt ? fmt.short(a.rib.decidedAt) : a.rib.at ? fmt.short(a.rib.at) : ""}</span>
+                        </m.li>
+                      ))}
+                    </AnimatePresence>
                   </ul>
                 ) : (
                   <p className="px-4 py-4 text-sm text-ink-2 lg:px-5">No decisions yet this term.</p>

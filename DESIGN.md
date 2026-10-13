@@ -298,7 +298,7 @@ components:
 
 The portal is a station. Bangladesh Railway at Saidpur supplies the whole material: a flag-green rail down the left edge, a board-black departure strip that always says what leaves next, and a platform-white concourse ruled by concrete hairlines. Everything a student reads is either a signboard, a timetable, or a signal. Records (results, receipts, admit cards) leave the station's voice and become paper: official BAUST documents on white, in both themes. The teacher portal is the same station seen from the staff side: the same rail, board and panels, with a section drawn as a roster of numbered cells.
 
-Density is operational, not decorative. Panels sit edge to edge on a 20px gutter, each opened by a condensed capital band and closed by its own hairline, so a laptop screen reads like a timetable page and a phone reads like the same timetable folded into one column. Colour carries meaning before it carries mood: green is the railway and the way forward, amber is "now" and "you are here", maroon is bad news stated plainly. Inside the portal the one authored motion is the board's character roll, and the front door has the world's single arrival sequence (see Landing Intro); every other change is a short exponential ease-out from a visible default, and all of it goes instant under reduced motion.
+Density is operational, not decorative. Panels sit edge to edge on a 20px gutter, each opened by a condensed capital band and closed by its own hairline, so a laptop screen reads like a timetable page and a phone reads like the same timetable folded into one column. Colour carries meaning before it carries mood: green is the railway and the way forward, amber is "now" and "you are here", maroon is bad news stated plainly. Motion splits the same way the portal does: what a visitor does answers back on a spring (a press gives and returns, a dialog lands, a finished task is stamped and marked with a short burst of tickets), and what a visitor reads stays calm on the house ease-out (records fade in and meters fill, but nothing about a result, a due or a shortfall bounces or celebrates). The board's character roll is the portal's signature moment and the front door has the world's single arrival sequence (see Landing Intro). Under reduced motion every movement stops and the state changes remain.
 
 Light is the daylight platform and the default. Dark is the night-station rendition (deep rail green, near-black ground, mint primary, salmon danger) and keeps every role, including amber, unchanged in meaning.
 
@@ -308,7 +308,7 @@ Light is the daylight platform and the default. Dark is the night-station rendit
 - Hairline-ruled white panels on a platform-white ground; shadows only for things that float.
 - State as signal aspects: green proceed, amber caution or now, maroon danger.
 - Tabular figures wherever numbers align; currency in the Taka sign.
-- Exponential ease-out motion at 150 to 500 ms, no overshoot; the board roll is the one authored moment in the portal, and the landing intro on "/" is the one sanctioned page-load sequence.
+- Playful actions, calm records: springs, bursts and opt-in sounds for what a visitor does; the exponential ease-out for records. The board roll is the portal's signature moment, and the landing intro on "/" is the one authored arrival sequence.
 
 ## Colors
 
@@ -339,7 +339,7 @@ A railway palette: one green that means "the line", one amber that means "now", 
 ### Named Rules
 **The Three Aspects Rule.** State is shown with exactly three signal colours (ok, caution, danger) plus amber for "now". A new state maps onto one of them; it does not get a new hue.
 
-**The Amber Is Now Rule.** Amber appears only where it answers "when is it" or "where am I": the board, the current class and the action due for it now (the teacher's roll), the current stop, the active module, your seat. If an amber element answers neither, it is wrong.
+**The Amber Is Now Rule.** Amber appears only where it answers "when is it" or "where am I": the board, the current class and the action due for it now (the teacher's roll), the current stop, the active module, your seat, and the burst that marks a task finished this moment. If an amber element answers neither, it is wrong.
 
 **The Bad News Is Maroon Rule.** Money owed, failed and referred courses and attendance shortfalls are set in maroon at full size where the student will see them, never softened to grey or buried behind a link.
 
@@ -403,7 +403,7 @@ Gently squared. Controls (buttons, fields, menu items, rail items) use 6px corne
 ## Components
 
 ### Buttons
-Firm and quiet: medium weight (570), no shadow, a 0.96 press scale.
+Firm and quiet: medium weight (570), no shadow, a springy press: down to 0.96 in 90ms, back past rest and settled on the press spring.
 - **Shape:** gently squared (6px), heights 32, 40 and 48px for small, medium and large.
 - **Primary:** flag green with white text, 16px side padding at medium. Hover deepens to primary-hover, press to primary-press.
 - **Secondary:** panel white with a strong-hairline border and ink text; hover fills concrete 2.
@@ -458,7 +458,7 @@ A section drawn as its students, in roll order. The teacher's dashboard reads it
 - **Grid (tablet and desktop):** cells at least 70px (4.375rem) wide on a 6px gap, at least 56px tall, panel white with a 1px hairline and 4px corners. The roster number sits at the top; the first name sits under it in body text at 0.6875rem, ink-2, normal width. Students who share a first name get as much of the surname as tells them apart ("Sourav Ra", "Sourav Ro"); the full name is in the cell's label.
 - **Rows (phones):** one student per row, ruled by hairlines like a panel's rows, 44px minimum, 16px side padding: the roster number, then the full name at 0.8125rem, then anything the row needs to say (why the student is marked, or Absent / Late). On a phone a filter or search removes rows instead of dimming them.
 - **Section watch marks:** danger-wash with a danger hairline and a maroon number (under the line, or a RIB course not registered); caution-wash with a 40% caution-fill hairline and an ochre number (close to the line, or carrying a RIB course). An inbox glyph in the corner means the student is waiting on the teacher. A filter (or the roll's search) dims the cells it leaves out to 32%, so the grid keeps its shape.
-- **Roll states:** absent fills the cell solid maroon with white text (dark ink in the dark theme); late takes the caution aspect. Everyone starts present, so present is the plain cell. Colour changes run 220ms on the house ease and go instant under reduced motion. Grid cells press at 0.96 like buttons; full-width rows don't scale.
+- **Roll states:** absent fills the cell solid maroon with white text (dark ink in the dark theme); late takes the caution aspect. Everyone starts present, so present is the plain cell. Colour changes run 220ms on the house ease and go instant under reduced motion. A tapped cell gives (in to 0.88, back on the press spring) and, with sounds on, ticks; the cells arrive one after another, 7ms apart, like a board filling in. Grid cells press at 0.96 like buttons; full-width rows don't scale.
 
 ### Term Line
 A horizontal timeline of the term's stops (classes began, CT-1, CT-2, Mid Term, CT-3, last class, finals, results). Passed stops are filled green on a green track; the current point is an amber dot with a surface and amber halo; the next stop is an open green ring; future stops are open grey rings on a hairline track. Labels sit underneath in the label voice with dates in body small.
@@ -471,10 +471,34 @@ The world's one sanctioned page-load sequence. It plays only on "/", once per br
 - **Crest on green:** the crest's black year ("2015") takes the reversed white form (rail ink) on the platform green; nothing else in the crest changes.
 - **Skip:** a "Skip intro" button on the green (rail-line inset border, rail-hover on hover), any key that is not a navigation or modifier key, or a tap.
 
-**The One Arrival Rule.** The landing intro is the only page-load sequence in the system. No other route may borrow its timeline, its glide or its crest assembly, and nothing else animates on arrival.
+**The Calm Records Rule.** Springs, bursts and sounds belong to what a visitor does. Records (results, GPA, dues, attendance, referred and backlog courses) only fade in and fill; they never bounce, celebrate or chime.
+
+**The One Arrival Rule.** The landing intro is the only authored arrival sequence in the system. No other route may borrow its timeline, its glide or its crest assembly. Pages inside the portal may arrive (see Motion), but only as a quick fade and a capped stagger that never holds back input.
 
 ### Motion
-transitions.dev recipes with a single easing, `cubic-bezier(0.22, 1, 0.36, 1)`: dropdowns and dialogs open at 250ms and close at 150ms with a 0.96 to 0.97 scale, panels and sheets slide at 400/350ms, toasts at 350/250ms, tabs slide at 250ms, tooltips appear at 150ms after an 80ms delay, and skeleton content reveals at 400ms through a 2px blur. Reordering lists use GSAP Flip. The success check settles without a bob. No page-load choreography anywhere except the landing intro on "/" (see The One Arrival Rule).
+Playful actions, calm records. transitions.dev recipes on one easing, `cubic-bezier(0.22, 1, 0.36, 1)`, carry everything a visitor reads; three springs, sampled from damped springs into CSS `linear()` curves, carry everything a visitor touches.
+- **Springs:** `--spring-press` (650ms, back past rest by about a fifth of the press depth) for presses; `--spring-pop` (590ms, about 13% overshoot) for things that land: dialogs, menus, toasts, new rows, roster cells; `--spring-soft` (470ms, about 3%) for things that slide: the tab pill, the search lens. Overlays land on a spring and leave on the quick ease.
+- **Pages:** a page fades in over 160ms while its header and panels rise 14px one after another, 45ms apart, on a spring (the motion library's variants). Everything is clickable from the first frame. Course spaces keep the page still and slide the tab content in from the side the new tab sits on.
+- **Lists:** rows in a queue (registrations waiting for approval) leave sideways and the rest close the gap; rows and posts the visitor has just added pop into place.
+- **Records:** meters fill from empty when they first appear (900ms, ease-out, no overshoot); skeletons reveal at 400ms through a 2px blur. Nothing on a record bounces.
+- **Sheets:** on phones a sheet follows a drag on its head; let go past 96px or with a quick flick and it closes, short of that it springs home.
+- **Bell:** when a new notice arrives the bell rings once and the count pops; the first load stays still.
+- **Theme:** a theme chosen from the display menu spreads from where it was chosen, a circle wiping across the page (a view transition, 560ms).
+- **Finished tasks:** see Celebrations.
+- **Reduced motion:** springs, staggers, slides, bursts and scenes stop; fades, fills and colour changes that carry state remain, and the theme simply switches.
+- Reordering lists use GSAP Flip. The board's roll stays GSAP ScrambleText.
+
+### Celebrations
+A finished task is stamped, like a ticket at the barrier. The success toast swaps its icon for a stamp (a mint ring with a check, set at -9°, landing from 1.9x with its ink spreading a moment later), and a burst of tickets and squares in flag green, amber, platform cream and proceed green goes off from the button that finished the task.
+- **Big** (two bursts, about 120 pieces, the three-note chime): RIB registration received, a payment made, marks or grades published.
+- **Small** (one burst, about 34 pieces, the two-note chime): work handed in, a roll saved, a registration approved, a post, a lecture or an assignment put up, marks or grades updated.
+- **Never:** on reading a record, on a draft, on returning a registration, on any bad news. Bursts are lazy-loaded (canvas-confetti), never block input, and don't play under reduced motion.
+
+### Sounds
+Off until a visitor turns them on (display menu, "Sounds"). Synthesised with Web Audio, no files, all quiet: a tick and a tock for toggles (roster cells, pins, segmented filters), a soft pop when something appears, a two-note station chime for a finished task and a three-note one for a big one, a filtered whoosh for the theme, and a low thud when something didn't save.
+
+### Empty and Error Scenes
+Empty states and error pages open with a small railway scene (200 by 120, line work in ink-3, the train in primary green, lamps in the signal aspects) that plays once on hover or tap. Each scene has a meaning: the **platform** (nothing has arrived yet; a train pulls in and out), the **semaphore** (not open yet; the arm lifts and the lamp turns green), the **lens over a dead-end track** (nothing matched; the lens follows the pointer), the **guard's green flag** (all clear; it waves), the **level crossing** (something is blocked; the lamps take turns and the barrier tries to lift), and the **buffer stop** (end of the line, page not found; a train rolls up and bumps). Titles may carry the railway voice ("No lectures have pulled in yet"), but the sentence under them still says what will appear and what to do. Scenes are hidden from assistive tech and still under reduced motion.
 
 ## Do's and Don'ts
 
@@ -485,17 +509,17 @@ transitions.dev recipes with a single easing, `cubic-bezier(0.22, 1, 0.36, 1)`: 
 - **Do** separate content with 1px hairlines inside 10px-radius white panels on the platform-white ground.
 - **Do** map every state onto ok, caution or danger, and use amber only for now and you-are-here.
 - **Do** state bad news in maroon where the student will see it, with the action to resolve it alongside.
-- **Do** animate only with the exponential ease-out at 150 to 500ms, and make every animation instant under reduced motion; the landing intro is the single exception in length and easing, and it does not play at all under reduced motion.
+- **Do** answer what a visitor does on a spring and mark a finished task with the stamp and a burst sized to it; keep records on the exponential ease-out; stop every movement under reduced motion.
 - **Do** render official records as white paper with the sample watermark in both themes.
 - **Do** keep long sheets' save and publish actions in the sticky action bar, with the live count beside them.
 
 ### Don't:
 - **Don't** put a shadow on a panel or a card; shadows belong to floating surfaces and the tab bar only.
-- **Don't** use overshoot or bounce easings, or add page-load choreography; the board roll is the only authored moment in the portal, and the landing intro on "/" is the only arrival sequence. No other route borrows it.
+- **Don't** let motion hold up a task: pages are usable from the first frame, staggers are capped, and no route borrows the landing intro's timeline, glide or crest.
 - **Don't** introduce a new state colour, or use amber as decoration.
 - **Don't** set body copy, descriptions or form labels in condensed capitals.
 - **Don't** soften dues, failed or referred courses, or attendance shortfalls into grey.
-- **Don't** add gamification devices (badges, streaks, confetti, emoji on records).
+- **Don't** put springs, bursts or sound on records or bad news, and don't add badges, streaks or emoji; a burst is only for a task the visitor just finished.
 - **Don't** show photographs of people; avatars are tinted initials.
 - **Don't** narrow a person's name to fit a cell; widen the cell, or give each student a row.
 - **Don't** hide, collapse, fade or stage the unofficial-concept plate on the sign-in frame or the landing intro; its only movement is travelling with the intro's glide.

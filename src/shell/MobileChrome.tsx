@@ -117,7 +117,7 @@ export function TabBar() {
         <div className="mt-4 flex items-center justify-between gap-3 border-t border-line px-3 pt-3">
           <div className="flex items-center gap-2 text-sm text-ink-2">
             <DisplayMenu />
-            Theme and text size
+            Theme, text size and sounds
           </div>
           <button
             type="button"

@@ -4,7 +4,6 @@
  * day at a time. The student's routine and the teacher's share it.
  */
 import { Link } from "react-router";
-import { CalendarRange } from "lucide-react";
 import { roomShort } from "../api/derive";
 import * as seed from "../data/seed";
 import type { RoutineSlot } from "../data/types";
@@ -182,7 +181,7 @@ export function RoutineDayView({ slots, day, setDay, today, linkFor, metaFor, em
         </ol>
       ) : (
         <div className="panel">
-          <EmptyState icon={<CalendarRange size={20} strokeWidth={1.75} />} title={`No classes on ${WEEK_DAYS[day]}`}>
+          <EmptyState scene="platform" title={`No classes on ${WEEK_DAYS[day]}`}>
             {empty}
           </EmptyState>
         </div>

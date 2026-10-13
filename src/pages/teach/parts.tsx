@@ -1,5 +1,5 @@
 /** Pieces the teacher's screens share: the roster cell, roll and mark-sheet signals, small helpers. */
-import { type ReactNode } from "react";
+import { type CSSProperties, type ReactNode } from "react";
 import { Link } from "react-router";
 import { Inbox } from "lucide-react";
 import * as seed from "../../data/seed";
@@ -9,6 +9,8 @@ import type { RollStatus, SheetStatus } from "../../api/teach";
 import { fmt, until } from "../../lib/format";
 import { cn } from "../../lib/cn";
 import { Signal } from "../../components/Data";
+import { play } from "../../lib/feel";
+import { prefersReducedMotion } from "../../lib/motion";
 
 export const slugOf = (code: string) => seed.offeringByCode[code].slug;
 export const firstName = (name: string) => name.split(" ")[0];
@@ -58,7 +60,18 @@ type CellProps = {
   /** Phones: one student per row, with the full name (and why they're marked) beside the roll. */
   row?: boolean;
   note?: string;
+  /** Position in the roster: cells arrive one after another, like a board filling in. */
+  index?: number;
 };
+
+const order = (index?: number) => (index != null ? ({ "--i": index } as CSSProperties) : undefined);
+
+/** A tapped cell gives a little: in, then back past rest on a spring. */
+function give(el: HTMLElement) {
+  if (prefersReducedMotion()) return;
+  const spring = getComputedStyle(document.documentElement).getPropertyValue("--spring-press").trim() || "ease-out";
+  el.animate([{ scale: 1, easing: "ease-out" }, { scale: 0.88, offset: 0.16, easing: spring }, { scale: 1 }], { duration: 640 });
+}
 
 function CellBody({ person, waiting, row, note, state }: Pick<CellProps, "person" | "waiting" | "row" | "note" | "state">) {
   if (row) {
@@ -88,18 +101,31 @@ function CellBody({ person, waiting, row, note, state }: Pick<CellProps, "person
 }
 
 /** A roster cell that opens the advisee's record. */
-export function RosterLink({ person, mark, waiting, dim, label, className, to, row, note }: CellProps & { to: string }) {
+export function RosterLink({ person, mark, waiting, dim, label, className, to, row, note, index }: CellProps & { to: string }) {
   return (
-    <Link to={to} className={cn("roster-cell", className)} data-mark={mark} data-dim={dim ? "true" : undefined} aria-label={label} title={row ? undefined : label}>
+    <Link to={to} className={cn("roster-cell", className)} style={order(index)} data-mark={mark} data-dim={dim ? "true" : undefined} aria-label={label} title={row ? undefined : label}>
       <CellBody person={person} waiting={waiting} row={row} note={note} />
     </Link>
   );
 }
 
 /** A roster cell the teacher taps while taking the roll. */
-export function RosterToggle({ person, state = "present", label, className, onToggle, match = true, row }: CellProps & { onToggle: () => void; match?: boolean }) {
+export function RosterToggle({ person, state = "present", label, className, onToggle, match = true, row, index }: CellProps & { onToggle: () => void; match?: boolean }) {
   return (
-    <button type="button" className={cn("roster-cell", className)} data-state={state} data-match={match ? undefined : "false"} aria-pressed={state !== "present"} aria-label={label} onClick={onToggle}>
+    <button
+      type="button"
+      className={cn("roster-cell", className)}
+      style={order(index)}
+      data-state={state}
+      data-match={match ? undefined : "false"}
+      aria-pressed={state !== "present"}
+      aria-label={label}
+      onClick={(e) => {
+        onToggle();
+        give(e.currentTarget);
+        play(state === "present" ? "tick" : "tock");
+      }}
+    >
       <CellBody person={person} row={row} state={state} />
     </button>
   );

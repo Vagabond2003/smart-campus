@@ -1,4 +1,5 @@
-import { type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
+import { m, useDragControls, useMotionValue } from "motion/react";
 import { Dialog as RDialog, DropdownMenu, Popover as RPopover } from "radix-ui";
 import { X } from "lucide-react";
 import { cn } from "../lib/cn";
@@ -59,28 +60,59 @@ interface SheetProps {
   children: ReactNode;
 }
 
+/**
+ * A sheet can be thrown away: drag its head down and let go. A short pull or a slow one springs
+ * back; a long or quick one closes it. The list inside still scrolls normally.
+ */
 export function Sheet({ open, onOpenChange, title, children }: SheetProps) {
   const p = usePresence(open, 350);
+  const drag = useDragControls();
+  const y = useMotionValue(0);
+  const body = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (open) y.set(0);
+  }, [open, y]);
   return (
     <RDialog.Root open={p.mounted} onOpenChange={(o) => !o && onOpenChange(false)}>
       <RDialog.Portal>
         <RDialog.Overlay className="scrim z-50" data-open={p.dataOpen} />
         <RDialog.Content
-          className="t-panel-slide fixed inset-x-0 bottom-0 z-50 flex max-h-[85dvh] flex-col rounded-t-2xl bg-surface shadow-float outline-none pb-safe"
+          className="t-panel-slide fixed inset-x-0 bottom-0 z-50 outline-none"
           data-open={p.dataOpen}
           style={{ ["--panel-translate-y" as string]: "48px" }}
           aria-describedby={undefined}
         >
-          <div className="mx-auto mt-2 h-1 w-10 rounded-full bg-line-strong" aria-hidden />
-          <div className="flex items-center justify-between px-4 pb-1 pt-2">
-            <RDialog.Title className="text-md font-[650] text-ink">{title}</RDialog.Title>
-            <RDialog.Close asChild>
-              <IconButton label="Close">
-                <X size={18} strokeWidth={1.75} />
-              </IconButton>
-            </RDialog.Close>
-          </div>
-          <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-4">{children}</div>
+          <m.div
+            ref={body}
+            drag="y"
+            dragControls={drag}
+            dragListener={false}
+            dragConstraints={{ top: 0 }}
+            dragElastic={{ top: 0.04, bottom: 1 }}
+            dragMomentum={false}
+            style={{ y }}
+            onDragStart={() => body.current?.classList.remove("sheet-settle")}
+            onDragEnd={(_, info) => {
+              if (info.offset.y > 96 || info.velocity.y > 640) return onOpenChange(false);
+              // springs home in CSS (springs.css), so the sheet needs no animation engine of its own
+              body.current?.classList.add("sheet-settle");
+              y.set(0);
+            }}
+            className="flex max-h-[85dvh] flex-col rounded-t-2xl bg-surface shadow-float pb-safe"
+          >
+            <div className="cursor-grab touch-none select-none active:cursor-grabbing" onPointerDown={(e) => drag.start(e)}>
+              <div className="mx-auto mt-2 h-1 w-10 rounded-full bg-line-strong" aria-hidden />
+              <div className="flex items-center justify-between px-4 pb-1 pt-2">
+                <RDialog.Title className="text-md font-[650] text-ink">{title}</RDialog.Title>
+                <RDialog.Close asChild>
+                  <IconButton label="Close" onPointerDown={(e) => e.stopPropagation()}>
+                    <X size={18} strokeWidth={1.75} />
+                  </IconButton>
+                </RDialog.Close>
+              </div>
+            </div>
+            <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-4">{children}</div>
+          </m.div>
         </RDialog.Content>
       </RDialog.Portal>
     </RDialog.Root>
@@ -129,6 +161,7 @@ export const MenuSeparator = DropdownMenu.Separator;
 export const MenuRadioGroup = DropdownMenu.RadioGroup;
 export const MenuRadioItem = DropdownMenu.RadioItem;
 export const MenuItemIndicator = DropdownMenu.ItemIndicator;
+export const MenuCheckboxItem = DropdownMenu.CheckboxItem;
 
 /* ─── Popover: anchored panel with free content (notices) ─── */
 

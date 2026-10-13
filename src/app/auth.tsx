@@ -85,10 +85,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let lastToast = 0;
-    onCloudError((what) => {
+    // every write that failed since the last toast, so one "Try again" retries them all
+    let failed: (() => void)[] = [];
+    onCloudError((what, _err, retry) => {
+      failed.push(retry);
       if (Date.now() - lastToast < 6000) return; // one RIB registration is three writes; say it once
       lastToast = Date.now();
-      toast({ title: `Couldn't save ${what} to your account`, description: "It shows here for now but won't be there after a reload. Check your connection.", tone: "caution" });
+      toast({
+        title: `Couldn't save ${what} to your account`,
+        description: "It shows here for now, but it won't be there after a reload until it saves. Check your connection.",
+        tone: "caution",
+        action: {
+          label: "Try again",
+          onClick: () => {
+            const again = failed;
+            failed = [];
+            again.forEach((f) => f());
+          },
+        },
+      });
     });
   }, [toast]);
 

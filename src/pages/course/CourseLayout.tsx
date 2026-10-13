@@ -4,6 +4,7 @@ import { credits } from "../../lib/format";
 import { useTitle } from "../../lib/useTitle";
 import { Avatar, PageHeader } from "../../components/Data";
 import { RouteTabs } from "../../components/Tabs";
+import { TabMotion } from "../../components/Motion";
 
 export const COURSE_TABS = [
   { key: "discussion", label: "Discussion" },
@@ -52,7 +53,9 @@ export default function CourseLayout() {
       <div className="-mx-4 mb-6 border-b border-line px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0">
         <RouteTabs label="Course sections" activeKey={tab} tabs={COURSE_TABS.map((t) => ({ to: `/courses/${slug}/${t.key}`, label: t.label }))} />
       </div>
-      <Outlet />
+      <TabMotion tab={tab} order={COURSE_TABS.map((t) => t.key)}>
+        <Outlet />
+      </TabMotion>
     </>
   );
 }

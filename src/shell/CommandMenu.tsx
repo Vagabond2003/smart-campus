@@ -13,6 +13,7 @@ import { duties } from "../api/teach";
 import { cn } from "../lib/cn";
 import { useDisplay } from "../lib/display";
 import { usePresence } from "../lib/presence";
+import { Scene } from "../components/Scenes";
 
 interface Cmd {
   id: string;
@@ -132,7 +133,12 @@ export function CommandMenu({ open, onOpenChange }: { open: boolean; onOpenChang
               <kbd className="hidden rounded-sm border border-line px-1.5 py-0.5 text-2xs text-ink-3 sm:block">Esc</kbd>
             </div>
             <ul ref={listRef} id="cmd-list" role="listbox" aria-label="Results" className="min-h-0 flex-1 overflow-y-auto p-1.5">
-              {results.length === 0 ? <li className="px-3 py-8 text-center text-sm text-ink-2">No module, course or action matches "{q}".</li> : null}
+              {results.length === 0 ? (
+                <li className="flex flex-col items-center px-3 py-6 text-center text-sm text-ink-2">
+                  <Scene name="search" className="w-40" />
+                  No module, course or action matches "{q}". Try a module name, such as Results or Bills, or a course code.
+                </li>
+              ) : null}
               {groups.map((g) => {
                 const items = results.filter((r) => r.group === g);
                 if (!items.length) return null;

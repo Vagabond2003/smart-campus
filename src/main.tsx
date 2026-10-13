@@ -8,9 +8,11 @@ import { router } from "./app/router";
 import { AuthProvider } from "./app/auth";
 import { DisplayProvider } from "./lib/display";
 import { ToastProvider } from "./components/Toast";
+import { loadFeatures, MotionProvider } from "./components/Motion";
 import { initAnalytics } from "./lib/firebase";
 
 void initAnalytics();
+void loadFeatures();
 
 // A tab opened before a redeploy can ask for a code chunk that no longer exists. Reload to pick up
 // the new build, at most once a minute so a real outage can't turn into a reload loop.
@@ -34,13 +36,15 @@ const queryClient = new QueryClient({
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <DisplayProvider>
-      <QueryClientProvider client={queryClient}>
-        <ToastProvider>
-          <AuthProvider>
-            <RouterProvider router={router} />
-          </AuthProvider>
-        </ToastProvider>
-      </QueryClientProvider>
+      <MotionProvider>
+        <QueryClientProvider client={queryClient}>
+          <ToastProvider>
+            <AuthProvider>
+              <RouterProvider router={router} />
+            </AuthProvider>
+          </ToastProvider>
+        </QueryClientProvider>
+      </MotionProvider>
     </DisplayProvider>
   </StrictMode>,
 );

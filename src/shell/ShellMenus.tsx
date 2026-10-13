@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
-import { ArrowLeftRight, Bell, Check, LogOut, Monitor, Moon, Sun, Type, UserRound } from "lucide-react";
+import { ArrowLeftRight, Bell, Check, LogOut, Monitor, Moon, Sun, Type, UserRound, Volume2 } from "lucide-react";
 import { useAuth } from "../app/auth";
 import { useTeacherView } from "../app/nav";
 import { useMarkNoticesRead, useNotices } from "../api/hooks";
@@ -12,7 +12,7 @@ import { useDisplay, type TextSize, type ThemePref } from "../lib/display";
 import { ago } from "../lib/format";
 import { Avatar } from "../components/Data";
 import { IconButton } from "../components/Button";
-import { Menu, MenuItem, MenuItemIndicator, MenuLabel, MenuRadioGroup, MenuRadioItem, MenuSeparator, Popover, Sheet } from "../components/Overlay";
+import { Menu, MenuCheckboxItem, MenuItem, MenuItemIndicator, MenuLabel, MenuRadioGroup, MenuRadioItem, MenuSeparator, Popover, Sheet } from "../components/Overlay";
 import { useIsDesktop } from "../lib/useMediaQuery";
 
 const THEMES: { value: ThemePref; label: string; icon: typeof Sun }[] = [
@@ -26,7 +26,7 @@ const SIZES: { value: TextSize; label: string; sample: string }[] = [
   { value: "l", label: "Large text", sample: "text-[1.0625rem]" },
 ];
 
-/** Theme and text size. The text-size control carries over from the incumbent portal. */
+/** Theme, text size and sounds. The text-size control carries over from the incumbent portal. */
 export function DisplayMenu({ tone = "default" }: { tone?: "default" | "rail" }) {
   const [open, setOpen] = useState(false);
   const d = useDisplay();
@@ -36,7 +36,7 @@ export function DisplayMenu({ tone = "default" }: { tone?: "default" | "rail" })
       onOpenChange={setOpen}
       label="Display settings"
       trigger={
-        <IconButton label="Display: theme and text size" tone={tone} data-tooltip="Theme and text size">
+        <IconButton label="Display: theme, text size and sounds" tone={tone} data-tooltip="Theme, text and sounds">
           <Type size={18} strokeWidth={1.75} />
         </IconButton>
       }
@@ -68,6 +68,14 @@ export function DisplayMenu({ tone = "default" }: { tone?: "default" | "rail" })
           </MenuRadioItem>
         ))}
       </MenuRadioGroup>
+      <MenuSeparator className="menu-sep" />
+      <MenuCheckboxItem checked={d.sound} onCheckedChange={(on) => d.setSound(on === true)} className="menu-item" onSelect={(e) => e.preventDefault()}>
+        <Volume2 size={16} strokeWidth={1.75} />
+        <span className="flex-1">Sounds</span>
+        <MenuItemIndicator>
+          <Check size={16} strokeWidth={2} className="text-primary" />
+        </MenuItemIndicator>
+      </MenuCheckboxItem>
     </Menu>
   );
 }
@@ -201,11 +209,21 @@ export function NoticesButton({ tone = "default" }: { tone?: "default" | "rail" 
   const { data } = useMyNotices();
   const desktop = useIsDesktop();
   const unread = data?.filter((n) => !n.read).length ?? 0;
+  // the bell rings when something new arrives (not on the first load: that's just what was waiting)
+  const [rings, setRings] = useState(0);
+  const seen = useRef<number | null>(null);
+  useEffect(() => {
+    if (!data) return;
+    if (seen.current != null && unread > seen.current) setRings((r) => r + 1);
+    seen.current = unread;
+  }, [data, unread]);
   const trigger = (
     <IconButton label={unread ? `Notifications, ${unread} new` : "Notifications"} tone={tone} data-tooltip="Notifications" onClick={desktop ? undefined : () => setOpen(true)}>
-      <Bell size={18} strokeWidth={1.75} />
+      <span key={rings} className={cn("grid place-items-center", rings && "bell-ring")}>
+        <Bell size={18} strokeWidth={1.75} />
+      </span>
       {unread ? (
-        <span className={cn("num absolute right-1 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-amber px-1 text-[0.625rem] font-[750] leading-none text-[#121314]", tone === "rail" ? "ring-2 ring-rail" : "ring-2 ring-ground")}>{unread}</span>
+        <span key={unread} className={cn("count-pop num absolute right-1 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-amber px-1 text-[0.625rem] font-[750] leading-none text-[#121314]", tone === "rail" ? "ring-2 ring-rail" : "ring-2 ring-ground")}>{unread}</span>
       ) : null}
     </IconButton>
   );

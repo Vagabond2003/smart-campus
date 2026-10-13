@@ -1,5 +1,7 @@
 import { type ReactNode } from "react";
 import { Link } from "react-router";
+import { m } from "motion/react";
+import { riseVariants } from "./Motion";
 import { ChevronRight } from "lucide-react";
 import { cn } from "../lib/cn";
 import { initials, taka } from "../lib/format";
@@ -14,7 +16,7 @@ interface Crumb {
 
 export function PageHeader({ title, description, crumbs, actions, children }: { title: ReactNode; description?: ReactNode; crumbs?: Crumb[]; actions?: ReactNode; children?: ReactNode }) {
   return (
-    <header className="mb-5">
+    <m.header variants={riseVariants} className="mb-5">
       {crumbs?.length ? (
         <nav aria-label="Breadcrumb" className="mb-2">
           <ol className="flex flex-wrap items-center gap-1 text-sm text-ink-3">
@@ -41,7 +43,7 @@ export function PageHeader({ title, description, crumbs, actions, children }: { 
         {actions ? <div className="flex flex-wrap items-center gap-2">{actions}</div> : null}
       </div>
       {children}
-    </header>
+    </m.header>
   );
 }
 
@@ -50,7 +52,8 @@ export function PageHeader({ title, description, crumbs, actions, children }: { 
 export function Panel({ title, action, children, className, id, bodyClassName, tone }: { title?: ReactNode; action?: ReactNode; children: ReactNode; className?: string; id?: string; bodyClassName?: string; tone?: "danger" }) {
   const headingId = id ? `${id}-title` : undefined;
   return (
-    <section aria-labelledby={headingId} className={cn("panel min-w-0", tone === "danger" && "border-danger-line", className)}>
+    // panels rise one after another as a page arrives (the page's PageMotion staggers them)
+    <m.section variants={riseVariants} aria-labelledby={headingId} className={cn("panel min-w-0", tone === "danger" && "border-danger-line", className)}>
       {title ? (
         <div className={cn("panel-head", tone === "danger" && "border-danger-line bg-danger-wash/60")}>
           <h2 id={headingId} className="band text-[0.9375rem] text-ink">
@@ -60,7 +63,7 @@ export function Panel({ title, action, children, className, id, bodyClassName, t
         </div>
       ) : null}
       <div className={cn(bodyClassName)}>{children}</div>
-    </section>
+    </m.section>
   );
 }
 
@@ -175,7 +178,7 @@ export function Meter({ value, max, line, tone = "ok", label, className }: { val
   const track = { ok: "bg-ok-wash", caution: "bg-caution-wash", danger: "bg-danger-wash", neutral: "bg-surface-3", now: "bg-caution-wash" }[tone];
   return (
     <div className={cn("relative h-2 w-full", track, className)} role="meter" aria-valuemin={0} aria-valuemax={max} aria-valuenow={Number(value.toFixed(2))} aria-label={label}>
-      <div className={cn("h-full rounded-r-[4px]", fill)} style={{ width: `${pct}%` }} />
+      <div className={cn("meter-fill h-full origin-left rounded-r-[4px]", fill)} style={{ width: `${pct}%` }} />
       {line != null ? <div className="absolute -top-1 bottom-[-4px] w-[2px] bg-ink" style={{ left: `calc(${(line / max) * 100}% - 1px)` }} aria-hidden /> : null}
     </div>
   );

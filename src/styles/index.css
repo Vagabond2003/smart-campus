@@ -7,6 +7,8 @@
 @import "./transitions.css";
 @import "./board.css";
 @import "./components.css";
+@import "./springs.css";
+@import "./scenes.css";
 
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 

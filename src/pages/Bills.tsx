@@ -328,7 +328,7 @@ function PayDialog({ open, bill, due, onClose }: { open: boolean; bill: Bill | n
                   {
                     onSuccess: (p) => {
                       setReceiptId(p.id);
-                      toast({ title: "Payment received", description: `${taka(amount)} by ${method}. Receipt ready.` });
+                      toast({ title: "Payment received", description: `${taka(amount)} by ${method}. Receipt ready.`, celebrate: "big" });
                     },
                   },
                 )

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { Link, Navigate, useLocation, useParams } from "react-router";
-import { FilePlus2, Link2, NotebookPen, Paperclip, Pin, Search, X } from "lucide-react";
+import { FilePlus2, Link2, NotebookPen, Paperclip, Search, X } from "lucide-react";
 import { useAddBundle, useCreateAssignment, useCreatePost, useLectures, useMaterials, usePosts, useTeachCourse } from "../../api/hooks";
 import { gradeState, type MeetingRow } from "../../api/teach";
 import * as seed from "../../data/seed";
@@ -337,7 +337,7 @@ function DiscussionTab({ code }: { code: string }) {
           </ol>
         ) : (
           <div className="panel">
-            <EmptyState icon={<Pin size={20} strokeWidth={1.75} />} title="No posts yet">
+            <EmptyState scene="platform" title="The platform's quiet: no posts yet">
               Post the syllabus for the next test, schedule changes or lab instructions. Students get a notification for each one.
             </EmptyState>
           </div>
@@ -363,7 +363,7 @@ function Composer({ code }: { code: string }) {
       { code, title: title.trim(), blocks, pinned },
       {
         onSuccess: () => {
-          toast({ title: `Posted to ${code}`, description: `Section ${seed.student.section} has a notification.` });
+          toast({ title: `Posted to ${code}`, description: `Section ${seed.student.section} has a notification.`, celebrate: "small" });
           setTitle("");
           setBody("");
           setNote("");
@@ -452,7 +452,7 @@ function BundlesTab({ code, kind }: { code: string; kind: "lectures" | "material
           </ul>
         ) : (
           <div className="panel">
-            <EmptyState icon={<Paperclip size={20} strokeWidth={1.75} />} title={kind === "lectures" ? "No lectures posted yet" : "No materials yet"}>
+            <EmptyState scene="platform" title={kind === "lectures" ? "No lectures on board yet" : "No materials on board yet"}>
               Post {kind === "lectures" ? "each week's slides and notes" : "practice sheets, references and recordings"}. Students get a notification for each.
             </EmptyState>
           </div>
@@ -487,7 +487,7 @@ function BundleComposer({ code, kind }: { code: string; kind: "lectures" | "mate
       { code, section: kind, title: title.trim(), resources: resources.slice(0, 10) },
       {
         onSuccess: () => {
-          toast({ title: `Posted to ${kind === "lectures" ? "Lectures" : "Materials"}`, description: `${code} students have a notification.` });
+          toast({ title: `Posted to ${kind === "lectures" ? "Lectures" : "Materials"}`, description: `${code} students have a notification.`, celebrate: "small" });
           reset();
         },
       },
@@ -621,7 +621,7 @@ function AssignmentsTab({ code }: { code: string }) {
           </ul>
         ) : (
           <div className="panel">
-            <EmptyState icon={<NotebookPen size={20} strokeWidth={1.75} />} title="No assignments set">
+            <EmptyState scene="platform" title="No assignments on the timetable yet">
               Set one above. Students see it with its due date, and their departure board counts down to it.
             </EmptyState>
           </div>
@@ -651,7 +651,7 @@ function AssignmentComposer({ code }: { code: string }) {
       { code, title: title.trim(), brief: brief.trim(), due, max: maxN },
       {
         onSuccess: () => {
-          toast({ title: `Assignment set for ${code}`, description: `Due ${fmt.dayShort(due)}, ${fmt.time(due)}. Students have a notification.` });
+          toast({ title: `Assignment set for ${code}`, description: `Due ${fmt.dayShort(due)}, ${fmt.time(due)}. Students have a notification.`, celebrate: "small" });
           setTitle("");
           setBrief("");
           setOpen(false);

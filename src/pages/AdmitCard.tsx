@@ -1,7 +1,7 @@
 /* oxlint-disable react/jsx-key -- DocTable cells are passed as data arrays; DocTable keys every row and cell it renders. */
 import { useState } from "react";
 import { Link } from "react-router";
-import { IdCard, Printer } from "lucide-react";
+import { Printer } from "lucide-react";
 import { useAdmitCards, useStudent } from "../api/hooks";
 import type { AdmitCard as Card } from "../data/types";
 import { credits, fmt } from "../lib/format";
@@ -117,7 +117,7 @@ export default function AdmitCard() {
               </article>
             ) : (
               <div className="panel">
-                <EmptyState icon={<IdCard size={20} strokeWidth={1.75} />} title={card.status === "Awaiting registration" ? "Register to get this admit card" : "Not issued yet"}>
+                <EmptyState scene="signal" title={card.status === "Awaiting registration" ? "Register to get this admit card" : "Not issued yet"}>
                   {card.note}
                   {card.courses.length ? <span className="mt-2 block">It will list {card.courses.length} courses: {card.courses.map((c) => c.code).join(", ")}.</span> : null}
                 </EmptyState>

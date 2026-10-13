@@ -55,7 +55,11 @@ function Grading({ a }: { a: Assignment }) {
       {
         onSuccess: () => {
           setConfirm(false);
-          toast(publish ? { title: `Grades ${published ? "updated" : "published"} for ${a.code}`, description: a.assessment ? `They also fill the ${a.assessment} column in Assessments.` : undefined } : { title: "Draft saved", description: "Students see grades only when you publish." });
+          toast(
+            publish
+              ? { title: `Grades ${published ? "updated" : "published"} for ${a.code}`, description: a.assessment ? `They also fill the ${a.assessment} column in Assessments.` : undefined, celebrate: published ? "small" : "big" }
+              : { title: "Draft saved", description: "Students see grades only when you publish." },
+          );
         },
       },
     );

@@ -1,6 +1,7 @@
 import { useCallback, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { NavLink } from "react-router";
 import { cn } from "../lib/cn";
+import { play } from "../lib/feel";
 
 /** Writes the active tab's geometry onto the pill; snaps without a transition on first paint and resize. */
 function usePill(activeKey: string) {
@@ -63,7 +64,10 @@ export function Segmented<T extends string>({ label, value, onChange, options, f
           aria-selected={o.value === value}
           tabIndex={o.value === value ? 0 : -1}
           className="t-tab"
-          onClick={() => onChange(o.value)}
+          onClick={() => {
+            if (o.value !== value) play("tick");
+            onChange(o.value);
+          }}
           onKeyDown={(e) => {
             if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
             e.preventDefault();

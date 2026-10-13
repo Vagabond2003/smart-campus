@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router";
-import { Inbox, Search, Users } from "lucide-react";
+import { Inbox, Search } from "lucide-react";
 import { useSection } from "../../api/hooks";
 import type { AdviseeStatus } from "../../api/teach";
 import * as seed from "../../data/seed";
@@ -98,7 +98,7 @@ export default function Advising() {
           </ScrollX>
         ) : (
           <div className="panel">
-            <EmptyState icon={<Users size={20} strokeWidth={1.75} />} title="No advisee matches">
+            <EmptyState scene="search" title="No advisee by that name or roll">
               Try another filter, part of a name or the last digits of a roll.
             </EmptyState>
           </div>

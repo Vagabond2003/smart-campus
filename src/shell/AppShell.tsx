@@ -1,9 +1,10 @@
 import { Suspense, useEffect, useState } from "react";
-import { Outlet, ScrollRestoration } from "react-router";
+import { Outlet, ScrollRestoration, useLocation } from "react-router";
 import { Search } from "lucide-react";
 import { useStoreSync } from "../api/hooks";
 import { IconButton } from "../components/Button";
 import { PageSkeleton } from "../components/Feedback";
+import { PageMotion } from "../components/Motion";
 import { TipGroup } from "../components/Tooltip";
 import { CommandMenu } from "./CommandMenu";
 import { DepartureBoard } from "./DepartureBoard";
@@ -12,7 +13,14 @@ import { Rail } from "./Rail";
 import { DisplayMenu, NoticesButton, ProfileMenu } from "./ShellMenus";
 import { useIsDesktop } from "../lib/useMediaQuery";
 
+/** One key per page. A course space keeps its key across its tabs: the tabs move their own content. */
+function pageKey(path: string) {
+  const course = path.match(/^(\/(?:teach\/)?courses\/[^/]+)\/[^/]+$/);
+  return course ? course[1] : path;
+}
+
 export function AppShell() {
+  const { pathname } = useLocation();
   const [search, setSearch] = useState(false);
   const desktop = useIsDesktop();
   useStoreSync();
@@ -52,7 +60,9 @@ export function AppShell() {
 
         <main id="main" tabIndex={-1} className="mx-auto w-full max-w-[84rem] px-4 pb-[calc(var(--tabbar-h)+env(safe-area-inset-bottom)+2rem)] pt-5 outline-none sm:px-6 lg:px-8 lg:pb-16 lg:pt-7 xl:px-10">
           <Suspense fallback={<PageSkeleton />}>
-            <Outlet />
+            <PageMotion key={pageKey(pathname)}>
+              <Outlet />
+            </PageMotion>
           </Suspense>
         </main>
       </div>

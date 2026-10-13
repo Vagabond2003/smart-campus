@@ -1,15 +1,17 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { CircleAlert, RotateCcw } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 import { cn } from "../lib/cn";
 import { tokenMs } from "../lib/presence";
 import { Button } from "./Button";
+import { Scene, type SceneName } from "./Scenes";
 
 /* ─── Empty state that teaches what will appear and where it comes from ──── */
 
-export function EmptyState({ icon, title, children, action, className }: { icon: ReactNode; title: string; children?: ReactNode; action?: ReactNode; className?: string }) {
+/** `scene` draws a small railway scene that plays on hover or tap; `icon` is the quiet fallback. */
+export function EmptyState({ icon, scene, title, children, action, className }: { icon?: ReactNode; scene?: SceneName; title: string; children?: ReactNode; action?: ReactNode; className?: string }) {
   return (
-    <div className={cn("flex flex-col items-center px-6 py-12 text-center", className)}>
-      <div className="mb-4 grid size-12 place-items-center rounded-full bg-surface-2 text-ink-2">{icon}</div>
+    <div className={cn("flex flex-col items-center px-6 py-10 text-center", className)}>
+      {scene ? <Scene name={scene} /> : <div className="mb-4 grid size-12 place-items-center rounded-full bg-surface-2 text-ink-2">{icon}</div>}
       <h3 className="text-md font-[640] text-ink">{title}</h3>
       {children ? <div className="mt-1.5 max-w-[46ch] text-sm text-ink-2">{children}</div> : null}
       {action ? <div className="mt-5">{action}</div> : null}
@@ -20,7 +22,7 @@ export function EmptyState({ icon, title, children, action, className }: { icon:
 export function ErrorState({ onRetry, what = "this page" }: { onRetry?: () => void; what?: string }) {
   return (
     <EmptyState
-      icon={<CircleAlert size={22} strokeWidth={1.75} />}
+      scene="fault"
       title={`Couldn't load ${what}`}
       action={
         onRetry ? (
@@ -30,7 +32,7 @@ export function ErrorState({ onRetry, what = "this page" }: { onRetry?: () => vo
         ) : null
       }
     >
-      Check your connection and try again. Nothing you entered was lost.
+      The line to the server dropped for a moment. Check your connection and try again; nothing you entered was lost.
     </EmptyState>
   );
 }

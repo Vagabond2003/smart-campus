@@ -51,8 +51,18 @@ import { attendanceSummary, billBalance, ledger, ledgerTotals, standing } from "
 import { allLectures, allMaterials, myAssessments, myAssignments, myAttendance } from "./records";
 import { advisees, approvals, courseAttendance, courseMeetings, courseSheets, duties, sectionAttendance, teacherAssignments, teachingOn } from "./teach";
 
-function delay<T>(value: () => T, ms = 220 + Math.random() * 260): Promise<T> {
+/** A read: a short, realistic wait, so loading states are real (and prefetching on intent can hide it). */
+function delay<T>(value: () => T, ms = 140 + Math.random() * 160): Promise<T> {
   return new Promise((resolve) => setTimeout(() => resolve(value()), ms));
+}
+
+/**
+ * A write is optimistic: the sandbox changes at once and the screen follows on the next tick. The
+ * copy in the visitor's account is written in the background (src/api/cloud.ts); if that fails, a
+ * toast says so and offers to try again. Nothing waits on the network.
+ */
+function instantly<T>(value: () => T): Promise<T> {
+  return Promise.resolve().then(value);
 }
 
 export const queries = {
@@ -156,26 +166,26 @@ const persistNotices = (list: (Notice | undefined)[]) => list.forEach((n) => n &
 export function useRegisterRib() {
   return useMutation({
     mutationFn: (codes: string[]) =>
-      delay(() => {
+      instantly(() => {
         const r = registerRib(codes);
         persistRib(store.ribOffer, r.bill, undefined);
         persistNotices(r.notices);
         trackEvent("rib_register", { courses: codes.length });
         return r;
-      }, 700),
+      }),
   });
 }
 
 export function usePay() {
   return useMutation({
     mutationFn: (v: { billId: string; amount: number; provider: string }) =>
-      delay(() => {
+      instantly(() => {
         const p = pay(v.billId, v.amount, v.provider);
         // the receipt notice is the newest one
         persistPayment(p, store.notices[0]);
         trackEvent("demo_payment", { method: v.provider });
         return p;
-      }, 900),
+      }),
   });
 }
 
@@ -183,34 +193,34 @@ export function usePay() {
 export function useAddComment(asTeacher = false) {
   return useMutation({
     mutationFn: (v: { postId: string; text: string }) =>
-      delay(() => {
+      instantly(() => {
         const r = addComment(v.postId, v.text, asTeacher ? campus.teacher.name : seed.student.name, asTeacher ? "teacher" : "student");
         persistComment(v.postId, r.comment);
         persistNotices([r.notice]);
         return r.comment;
-      }, 260),
+      }),
   });
 }
 
 export function useMarkNoticesRead(audience: Notice["audience"] = undefined) {
   return useMutation({
     mutationFn: () =>
-      delay(() => {
+      instantly(() => {
         markNoticesRead(audience);
         persistReadNotices(store.notices.filter((n) => n.read).map((n) => n.id));
-      }, 80),
+      }),
   });
 }
 
 export function useSubmitAssignment() {
   return useMutation({
     mutationFn: (v: { assignmentId: string; file: { name: string; size: string } }) =>
-      delay(() => {
+      instantly(() => {
         const r = submitAssignment(v.assignmentId, v.file);
         persistSubmission(r.submission);
         persistNotices([r.notice]);
         return r.submission;
-      }, 600),
+      }),
   });
 }
 
@@ -219,38 +229,38 @@ export function useSubmitAssignment() {
 export function useSaveRoll() {
   return useMutation({
     mutationFn: (v: { key: string; absent: string[]; late: string[]; reason?: string }) =>
-      delay(() => {
+      instantly(() => {
         const r = saveRoll(v.key, v.absent, v.late, v.reason);
         persistRoll(r.roll);
         persistNotices([r.notice]);
         trackEvent("roll_taken", { absent: v.absent.length });
         return r.roll;
-      }, 420),
+      }),
   });
 }
 
 export function useSaveMarks() {
   return useMutation({
     mutationFn: (v: { code: string; name: string; scores: Record<string, number>; publish: boolean }) =>
-      delay(() => {
+      instantly(() => {
         const r = saveMarks(v.code, v.name, v.scores, v.publish);
         persistMarks(r.sheet);
         persistNotices([r.notice]);
         if (v.publish) trackEvent("marks_published", { entered: Object.keys(v.scores).length });
         return r.sheet;
-      }, 480),
+      }),
   });
 }
 
 export function useCreatePost() {
   return useMutation({
     mutationFn: (v: NewPost) =>
-      delay(() => {
+      instantly(() => {
         const r = createPost(v);
         persistPost(r.post);
         persistNotices([r.notice]);
         return r.post;
-      }, 420),
+      }),
   });
 }
 
@@ -258,73 +268,73 @@ export function useCreatePost() {
 export function useSetPinned() {
   return useMutation({
     mutationFn: (v: { postId: string; pinned: boolean }) =>
-      delay(() => {
+      instantly(() => {
         setPinned(v.postId, v.pinned);
         const post = store.posts.find((p) => p.id === v.postId);
         if (post && !seed.posts.some((p) => p.id === post.id)) persistPost(post);
         else persistPins(Object.fromEntries(store.posts.filter((p) => seed.posts.some((s) => s.id === p.id && s.pinned !== p.pinned)).map((p) => [p.id, p.pinned])));
-      }, 180),
+      }),
   });
 }
 
 export function useAddBundle() {
   return useMutation({
     mutationFn: (v: { code: string; section: "lectures" | "materials"; title: string; resources: Resource[] }) =>
-      delay(() => {
+      instantly(() => {
         const r = addBundle(v);
         persistBundle(r.bundle);
         persistNotices([r.notice]);
         return r.bundle;
-      }, 520),
+      }),
   });
 }
 
 export function useCreateAssignment() {
   return useMutation({
     mutationFn: (v: { code: string; title: string; brief: string; due: Date; max: number }) =>
-      delay(() => {
+      instantly(() => {
         const r = createAssignment(v);
         persistAssignment(r.assignment);
         persistNotices([r.notice]);
         return r.assignment;
-      }, 480),
+      }),
   });
 }
 
 export function useSaveGrades() {
   return useMutation({
     mutationFn: (v: { assignmentId: string; scores: Record<string, number>; publish: boolean }) =>
-      delay(() => {
+      instantly(() => {
         const r = saveGrades(v.assignmentId, v.scores, v.publish);
         persistGrades(r.grades);
         persistNotices([r.notice]);
         return r.grades;
-      }, 480),
+      }),
   });
 }
 
 export function useDecideRegistration() {
   return useMutation({
     mutationFn: (v: { personId: string; decision: AdvisingDecision["decision"]; note?: string }) =>
-      delay(() => {
+      instantly(() => {
         const r = decideRegistration(v.personId, v.decision, v.note);
         persistDecision(r.decision);
         persistNotices([r.notice]);
         trackEvent("rib_decision", { decision: v.decision });
         return r.decision;
-      }, 380),
+      }),
   });
 }
 
 export function useRemind() {
   return useMutation({
     mutationFn: (personId: string) =>
-      delay(() => {
+      instantly(() => {
         const r = remind(personId);
         persistReminders(r.reminded);
         persistNotices([r.notice]);
         return r.reminded;
-      }, 300),
+      }),
   });
 }
 

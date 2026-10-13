@@ -1,6 +1,5 @@
 import { useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { Link, Navigate, useParams } from "react-router";
-import { CalendarClock } from "lucide-react";
 import { useSaveMarks, useStoreVersion } from "../../api/hooks";
 import { findAssessment, sheetRow, teacherAssignments } from "../../api/teach";
 import * as seed from "../../data/seed";
@@ -62,7 +61,7 @@ function Sheet({ a }: { a: Assessment }) {
       <>
         <PageHeader crumbs={[{ label: "My Courses", to: "/teach/courses" }, { label: a.code, to: `/teach/courses/${o.slug}/marks` }, { label: a.name }]} title={a.name} />
         <div className="panel">
-          <EmptyState icon={<CalendarClock size={20} strokeWidth={1.75} />} title="Marks open after the test" action={<Button asChild variant="secondary"><Link to={`/teach/courses/${o.slug}/marks`}>Back to marks</Link></Button>}>
+          <EmptyState scene="signal" title="Marks open after the test" action={<Button asChild variant="secondary"><Link to={`/teach/courses/${o.slug}/marks`}>Back to marks</Link></Button>}>
             {a.code} {a.name} is on {fmt.dayShort(a.date!)}, {until(a.date!)}. Its sheet opens here that day.
           </EmptyState>
         </div>
@@ -80,7 +79,11 @@ function Sheet({ a }: { a: Assessment }) {
           setConfirm(false);
           toast(
             publish
-              ? { title: `${a.name} marks ${published ? "updated" : "published"} for ${a.code}`, description: `${roster.length} students can see them now${stats.blank ? `; ${plural(stats.blank, "blank entry", "blank entries")} recorded as absent` : ""}.` }
+              ? {
+                  title: `${a.name} marks ${published ? "updated" : "published"} for ${a.code}`,
+                  description: `${roster.length} students can see them now${stats.blank ? `; ${plural(stats.blank, "blank entry", "blank entries")} recorded as absent` : ""}.`,
+                  celebrate: published ? "small" : "big",
+                }
               : { title: "Draft saved", description: "Students don't see a draft. Publish when the sheet is complete." },
           );
         },

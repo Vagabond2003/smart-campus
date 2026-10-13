@@ -1,6 +1,6 @@
 import { Link, Navigate, useLocation, useParams } from "react-router";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { ExternalLink, FileArchive, FileText, Info, Link2, Mail, NotebookPen, Paperclip, Phone, Pin, PinOff, Search, Send, Upload, Users, Video } from "lucide-react";
+import { ExternalLink, FileArchive, FileText, Info, Link2, Mail, Phone, Pin, PinOff, Search, Send, Upload, Video } from "lucide-react";
 import { useAddComment, useAssessments, useAssignments, useAttendance, useLectures, useMaterials, usePeople, usePosts, useSetPinned, useSubmitAssignment } from "../../api/hooks";
 import * as seed from "../../data/seed";
 import { teacher as sampleTeacher } from "../../data/campus";
@@ -14,6 +14,7 @@ import { Bars, EmptyState, ErrorState, Reveal } from "../../components/Feedback"
 import { Disclosure } from "../../components/Accordion";
 import { Segmented } from "../../components/Tabs";
 import { useToast } from "../../components/Toast";
+import { play } from "../../lib/feel";
 import { COURSE_TABS } from "./CourseLayout";
 import { ScrollX } from "../../components/ScrollRegion";
 
@@ -82,7 +83,7 @@ function Discussion({ code }: { code: string }) {
           </ol>
         ) : (
           <div className="panel">
-            <EmptyState icon={<Pin size={20} strokeWidth={1.75} />} title={filter === "pinned" ? "Nothing pinned yet" : "No posts yet"}>
+            <EmptyState scene="platform" title={filter === "pinned" ? "Nothing pinned yet" : "No announcements on this line yet"}>
               Teachers post syllabi, test instructions and schedule changes here. Pinned posts stay at the top for every section.
             </EmptyState>
           </div>
@@ -93,6 +94,9 @@ function Discussion({ code }: { code: string }) {
 }
 
 /** One course post. The teacher (`asTeacher`) also pins it and replies as themselves. */
+/** Written in the last few seconds: it pops into place rather than just appearing. */
+const fresh = (at: Date) => now().getTime() - at.getTime() < 5000;
+
 export function PostView({ post, highlight, asTeacher }: { post: Post; highlight?: boolean; asTeacher?: boolean }) {
   const t = seed.teachers[post.authorId];
   const [text, setText] = useState("");
@@ -106,7 +110,7 @@ export function PostView({ post, highlight, asTeacher }: { post: Post; highlight
     add.mutate({ postId: post.id, text: v }, { onSuccess: () => setText("") });
   };
   return (
-    <article id={post.id} className={cn("panel scroll-mt-28 overflow-hidden transition-[box-shadow] duration-300", highlight && "shadow-[0_0_0_3px_color-mix(in_srgb,var(--amber)_55%,transparent)]")} aria-labelledby={`${post.id}-t`}>
+    <article id={post.id} className={cn("panel scroll-mt-28 overflow-hidden transition-[box-shadow] duration-300", fresh(post.at) && "arrive", highlight && "shadow-[0_0_0_3px_color-mix(in_srgb,var(--amber)_55%,transparent)]")} aria-labelledby={`${post.id}-t`}>
       <header className="flex items-center gap-3 px-4 pt-4 lg:px-5">
         <Avatar name={t.name} size="md" />
         <div className="min-w-0 flex-1 leading-tight">
@@ -123,7 +127,10 @@ export function PostView({ post, highlight, asTeacher }: { post: Post; highlight
             aria-pressed={post.pinned}
             disabled={pin.isPending}
             icon={post.pinned ? <PinOff size={15} strokeWidth={1.75} /> : <Pin size={15} strokeWidth={1.75} />}
-            onClick={() => pin.mutate({ postId: post.id, pinned: !post.pinned })}
+            onClick={() => {
+              play(post.pinned ? "tock" : "tick");
+              pin.mutate({ postId: post.id, pinned: !post.pinned });
+            }}
           >
             {post.pinned ? "Unpin" : "Pin for all sections"}
           </Button>
@@ -167,7 +174,7 @@ export function PostView({ post, highlight, asTeacher }: { post: Post; highlight
         {post.comments.length ? (
           <ul className="mb-3 flex flex-col gap-3">
             {post.comments.map((c) => (
-              <li key={c.id} className="flex gap-2.5">
+              <li key={c.id} className={cn("flex gap-2.5", fresh(c.at) && "arrive")}>
                 <Avatar name={c.author} size="sm" you={c.author === me} />
                 <div className="min-w-0 text-sm">
                   <p>
@@ -374,7 +381,7 @@ function Bundles({ code, kind }: { code: string; kind: "lectures" | "materials" 
           </ul>
         ) : (
           <div className="panel">
-            <EmptyState icon={<Paperclip size={20} strokeWidth={1.75} />} title={kind === "lectures" ? "No lectures posted yet" : "No materials yet"}>
+            <EmptyState scene="platform" title={kind === "lectures" ? "No lectures have pulled in yet" : "No materials have pulled in yet"}>
               {seed.teachers[o.teacherIds[0]].name} posts {kind === "lectures" ? "weekly slides and notes" : "practice sheets, references and recordings"} here. You'll get a notification when something new arrives.
             </EmptyState>
           </div>
@@ -449,7 +456,7 @@ function Assignments({ code }: { code: string }) {
           </ul>
         ) : (
           <div className="panel">
-            <EmptyState icon={<NotebookPen size={20} strokeWidth={1.75} />} title="No assignments yet">
+            <EmptyState scene="clear" title="Nothing due: the line is clear">
               When {seed.teachers[o.teacherIds[0]].name} posts one, it appears here with its due date, and the departure board counts down to it.
             </EmptyState>
           </div>
@@ -503,7 +510,7 @@ function AssignmentCard({ a }: { a: Assignment }) {
               const f = e.currentTarget.files?.[0];
               e.currentTarget.value = "";
               if (!f) return;
-              submit.mutate({ assignmentId: a.id, file: { name: f.name, size: sizeOf(f.size) } }, { onSuccess: () => toast({ title: "Work handed in", description: `${f.name} is recorded for ${a.code}. Your teacher sees it now.` }) });
+              submit.mutate({ assignmentId: a.id, file: { name: f.name, size: sizeOf(f.size) } }, { onSuccess: () => toast({ title: "Work handed in", description: `${f.name} is recorded for ${a.code}. Your teacher sees it now.`, celebrate: "small" }) });
             }}
           />
           <Button icon={<Upload size={16} strokeWidth={1.75} />} disabled={submit.isPending} onClick={() => file.current?.click()}>
@@ -592,7 +599,7 @@ function People({ code }: { code: string }) {
               ))}
             </ul>
           ) : (
-            <EmptyState icon={<Users size={20} strokeWidth={1.75} />} title="No one matches that search">
+            <EmptyState scene="search" title="No one on this platform by that name">
               Try part of a name or the last digits of a roll number.
             </EmptyState>
           )}

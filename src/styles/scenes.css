@@ -1,0 +1,111 @@
+/* Railway scenes for empty and error states (src/components/Scenes.tsx). Line work in ink-3,
+   surfaces in concrete, the train in flag green, lamps in the signal aspects. Every colour is a
+   token, so the night station gets its own rendition for free. A scene plays once on hover or
+   tap ([data-play]); under reduced motion it stays a still picture. */
+.scene {
+  display: grid;
+  place-items: center;
+  width: 12.5rem;
+  max-width: 100%;
+  aspect-ratio: 5 / 3;
+  margin-bottom: 0.75rem;
+  -webkit-tap-highlight-color: transparent;
+}
+.scene svg { display: block; width: 100%; height: auto; overflow: hidden; }
+
+.scene .s-line { stroke: var(--line-strong); stroke-width: 1.5; }
+.scene .s-stroke { stroke: var(--ink-3); stroke-width: 2; }
+.scene .s-post { stroke: var(--ink-2); stroke-width: 3; }
+.scene .s-rail { stroke: var(--ink-3); stroke-width: 1.75; }
+.scene .s-sleeper { fill: var(--line-strong); }
+.scene .s-fill-quiet { fill: var(--surface-2); }
+.scene .s-fill-ink { fill: var(--ink-2); }
+.scene .s-fill-rail { fill: var(--primary); }
+.scene .s-fill-window { fill: var(--surface); }
+.scene .s-fill-danger { fill: var(--danger); }
+.scene .s-clock { fill: var(--surface); stroke: var(--ink-3); stroke-width: 2; }
+.scene .s-glow { fill: color-mix(in srgb, var(--caution-fill) 22%, transparent); }
+.scene .s-glow-go { fill: color-mix(in srgb, var(--ok) 18%, transparent); }
+.scene .s-lamp-stop { fill: var(--danger); }
+.scene .s-lamp-go { fill: var(--ok); opacity: 0; }
+.scene .s-lamp-go.is-on { opacity: 1; }
+.scene .s-lens-glass { fill: color-mix(in srgb, var(--surface) 70%, transparent); stroke: var(--ink-2); stroke-width: 3; }
+.scene .s-lens-handle { stroke: var(--ink-2); stroke-width: 5; }
+.scene .s-crossbuck rect { fill: var(--surface); stroke: var(--danger); stroke-width: 1.5; }
+.scene .s-blink { fill: var(--line-strong); }
+.scene .s-barrier-edge { stroke: var(--ink-3); stroke-width: 1; }
+
+/* Platform: a train pulls in, waits, and pulls out */
+.scene .s-train { transform: translateX(240px); }
+.scene[data-play] .s-train { animation: s-train 2.7s both; }
+@keyframes s-train {
+  0% { transform: translateX(240px); animation-timing-function: cubic-bezier(0.16, 0.84, 0.3, 1.04); }
+  40% { transform: translateX(0); }
+  62% { transform: translateX(0); animation-timing-function: cubic-bezier(0.55, 0, 0.85, 0.35); }
+  100% { transform: translateX(-250px); }
+}
+.scene[data-play] .s-hands { transform-box: view-box; transform-origin: 170px 36px; animation: s-tick 2.7s steps(6) both; }
+@keyframes s-tick { to { rotate: 60deg; } }
+
+/* Signal: the arm lifts to proceed and the lamp turns green, then back to stop */
+.scene .s-arm { transform-box: view-box; transform-origin: 100px 31px; }
+.scene[data-play] .s-arm { animation: s-arm 2.3s both; }
+@keyframes s-arm {
+  0% { rotate: 0deg; animation-timing-function: var(--spring-pop); }
+  30% { rotate: -42deg; }
+  76% { rotate: -42deg; animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0); }
+  100% { rotate: 0deg; }
+}
+.scene[data-play] .s-lamp-go { animation: s-go 2.3s both; }
+.scene[data-play] .s-lamp-stop { animation: s-stop 2.3s both; }
+@keyframes s-go { 0%, 18% { opacity: 0; } 26%, 80% { opacity: 1; } 90%, 100% { opacity: 0; } }
+@keyframes s-stop { 0%, 18% { opacity: 1; } 26%, 80% { opacity: 0; } 90%, 100% { opacity: 1; } }
+
+/* Search: the lens follows the pointer and drifts home */
+.scene .s-lens {
+  transform: translate(var(--mx, 0px), var(--my, 0px));
+  transition: transform var(--spring-soft-dur) var(--spring-soft);
+}
+
+/* All clear: the flag waves */
+.scene .s-flag { transform-box: view-box; transform-origin: 85px 39px; }
+.scene[data-play] .s-flag { animation: s-wave 1.5s ease-in-out both; }
+@keyframes s-wave {
+  0% { transform: skewY(0deg) scaleX(1); }
+  18% { transform: skewY(-7deg) scaleX(0.92); }
+  36% { transform: skewY(6deg) scaleX(1); }
+  54% { transform: skewY(-5deg) scaleX(0.94); }
+  72% { transform: skewY(3deg) scaleX(1); }
+  100% { transform: skewY(0deg) scaleX(1); }
+}
+
+/* Fault: the crossing lamps take turns, the barrier tries to lift and drops back */
+.scene[data-play] .s-blink-a { animation: s-blink 0.56s steps(1) 3; }
+.scene[data-play] .s-blink-b { animation: s-blink 0.56s steps(1) 0.28s 3; }
+@keyframes s-blink { 0% { fill: var(--danger); } 50% { fill: var(--line-strong); } }
+.scene .s-barrier { transform-box: view-box; transform-origin: 60px 75.5px; }
+.scene[data-play] .s-barrier { animation: s-lift 1.7s both; }
+@keyframes s-lift {
+  0% { rotate: 0deg; animation-timing-function: ease-out; }
+  22% { rotate: -9deg; animation-timing-function: var(--spring-press); }
+  60% { rotate: 0deg; }
+  100% { rotate: 0deg; }
+}
+
+/* End of the line: the train rolls up and bumps the buffers */
+.scene[data-play] .s-bump { animation: s-bump 1.9s both; }
+@keyframes s-bump {
+  0% { transform: translateX(0); animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.5); }
+  42% { transform: translateX(66px); animation-timing-function: var(--spring-press); }
+  64% { transform: translateX(60px); }
+  78% { transform: translateX(60px); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  100% { transform: translateX(0); }
+}
+.scene .s-buffer { transform-box: view-box; transform-origin: 184px 95px; }
+.scene[data-play] .s-buffer { animation: s-squash 1.9s both; }
+@keyframes s-squash { 0%, 40% { scale: 1 1; } 46% { scale: 0.86 1; } 60%, 100% { scale: 1 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .scene *, .scene[data-play] * { animation: none !important; transition: none !important; }
+  .scene .s-lens { transform: none; }
+}

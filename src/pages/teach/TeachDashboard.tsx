@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AnimatePresence } from "motion/react";
 import { Link } from "react-router";
 import { CalendarClock, ClipboardCheck, Inbox, NotebookPen, SquarePen } from "lucide-react";
 import { useSection, useTeachToday } from "../../api/hooks";
@@ -87,8 +88,8 @@ function SectionPanel({ className }: { className?: string }) {
       </div>
       <Reveal loading={isLoading} skeleton={<Bars rows={5} />}>
         {rows.length ? (
-          <ul className={phone ? "roster-list" : "roster-grid px-4 py-4 lg:px-5"} aria-label={`Section ${SECTION_LABEL}, ${rows.length} students in roll order`}>
-            {rows.map((a) => {
+          <ul className={cn("roster-arrive", phone ? "roster-list" : "roster-grid px-4 py-4 lg:px-5")} aria-label={`Section ${SECTION_LABEL}, ${rows.length} students in roll order`}>
+            {rows.map((a, i) => {
               const why = reasons(a);
               return (
                 <li key={a.record.person.id} className={phone ? undefined : "contents"}>
@@ -99,6 +100,7 @@ function SectionPanel({ className }: { className?: string }) {
                     waiting={a.waiting}
                     dim={!shown(a)}
                     row={phone}
+                    index={i}
                     note={a.mark === "ok" ? undefined : brief(a)}
                     label={`Roll ${rollSuffix(a.record.person)}, ${a.record.person.name}${a.record.person.id === ME ? " (sample student)" : ""}. ${why.length ? `${why.join("; ")}.` : "On track."}`}
                   />
@@ -140,12 +142,14 @@ function WaitingPanel({ className }: { className?: string }) {
             </p>
             {q.waiting.length ? (
               <ul>
-                {q.waiting.map((a) => (
-                  <ApprovalRow key={a.record.person.id} a={a} />
-                ))}
+                <AnimatePresence mode="popLayout" initial={false}>
+                  {q.waiting.map((a) => (
+                    <ApprovalRow key={a.record.person.id} a={a} />
+                  ))}
+                </AnimatePresence>
               </ul>
             ) : (
-              <EmptyState icon={<Inbox size={20} strokeWidth={1.75} />} title="Nothing waiting" className="py-8">
+              <EmptyState scene="clear" title="All clear: nothing waiting for you" className="py-8">
                 When an advisee registers for the RIB exam, their registration lands here for you to approve or return.
               </EmptyState>
             )}

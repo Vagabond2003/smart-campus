@@ -1,6 +1,6 @@
 /* oxlint-disable react/jsx-key -- DocTable cells are passed as data arrays; DocTable keys every row and cell it renders. */
 import { Link, useParams } from "react-router";
-import { Printer, ReceiptText } from "lucide-react";
+import { Printer } from "lucide-react";
 import { useBills } from "../api/hooks";
 import { student } from "../data/seed";
 import { fmt, taka } from "../lib/format";
@@ -104,7 +104,7 @@ export default function Receipt() {
           </article>
         ) : (
           <div className="panel">
-            <EmptyState icon={<ReceiptText size={20} strokeWidth={1.75} />} title="Receipt not found" action={<Button asChild variant="secondary"><Link to="/bills">Back to Bills</Link></Button>}>
+            <EmptyState scene="search" title="This receipt isn't on file" action={<Button asChild variant="secondary"><Link to="/bills">Back to Bills</Link></Button>}>
               Receipts exist for every payment on your statement. This one may belong to another session.
             </EmptyState>
           </div>

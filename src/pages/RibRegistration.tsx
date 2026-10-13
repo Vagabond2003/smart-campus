@@ -184,7 +184,7 @@ export default function RibRegistration() {
                     {
                       onSuccess: () => {
                         setDone(true);
-                        toast({ title: "RIB registration received", description: `${taka(fee)} fee added to Bills.` });
+                        toast({ title: "RIB registration received", description: `${taka(fee)} fee added to Bills.`, celebrate: "big" });
                       },
                     },
                   )

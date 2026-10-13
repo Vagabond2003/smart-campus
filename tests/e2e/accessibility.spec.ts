@@ -6,6 +6,12 @@ import { open, openSandbox } from "./helpers";
 // attached to the report so it stays visible without blocking.
 async function scan(page: Page, name: string) {
   await expect(page.locator("[aria-busy='true']")).toHaveCount(0);
+  // Pages fade in and their panels rise; contrast is measured once everything has arrived.
+  await page.waitForFunction(
+    () =>
+      document.getAnimations().every((a) => a.playState !== "running" || a.effect?.getTiming().iterations === Infinity) &&
+      [...document.querySelectorAll<HTMLElement>("main *")].every((el) => el.style.opacity === "" || el.style.opacity === "1"),
+  );
   const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
   const blocking = violations.filter((v) => v.impact === "serious" || v.impact === "critical");
   const summary = violations.map((v) => `${v.impact} ${v.id}: ${v.help} (${v.nodes.length}) ${v.nodes.slice(0, 3).map((n) => n.target.join(" ")).join(" | ")}`);

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { ClipboardList, Printer } from "lucide-react";
+import { Printer } from "lucide-react";
 import { useExams } from "../api/hooks";
 import { roomShort } from "../api/derive";
 import { atTime, now } from "../lib/clock";
@@ -99,7 +99,7 @@ export default function ExamRoutine() {
               </ul>
             ) : (
               <div className="panel">
-                <EmptyState icon={<ClipboardList size={20} strokeWidth={1.75} />} title="Routine not published yet">
+                <EmptyState scene="signal" title="Routine not published yet">
                   {schedule.note} The departure board on top of every page will show your first exam once it is out.
                 </EmptyState>
               </div>

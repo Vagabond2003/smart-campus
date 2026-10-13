@@ -3,6 +3,7 @@ import { createBrowserRouter, Navigate, Outlet, useRouteError, isRouteErrorRespo
 import { RequireAuth } from "./auth";
 import { AppShell } from "../shell/AppShell";
 import { Button } from "../components/Button";
+import { Scene } from "../components/Scenes";
 
 const page = (load: () => Promise<{ default: ComponentType }>) => () => load().then((m) => ({ Component: m.default }));
 
@@ -11,8 +12,9 @@ function RouteError() {
   const notFound = isRouteErrorResponse(err) && err.status === 404;
   return (
     <div className="mx-auto flex min-h-[60dvh] max-w-md flex-col items-center justify-center px-6 text-center">
-      <h1 className="text-xl font-[680] text-ink">{notFound ? "This page isn't on the routine" : "This page hit an error"}</h1>
-      <p className="mt-2 text-sm text-ink-2">{notFound ? "The address may be mistyped, or the page has moved." : "Reload the page. If it keeps happening, the module may be temporarily unavailable."}</p>
+      <Scene name={notFound ? "end" : "fault"} />
+      <h1 className="text-xl font-[680] text-ink">{notFound ? "End of the line: this page isn't on the routine" : "This page hit an error"}</h1>
+      <p className="mt-2 text-sm text-ink-2">{notFound ? "The address may be mistyped, or the page has moved." : "Something on this page broke down. Reload it; if it keeps happening, the module may be temporarily unavailable."}</p>
       <Button asChild className="mt-6">
         <a href="/dashboard">Go to Dashboard</a>
       </Button>
@@ -92,7 +94,8 @@ export const router = createBrowserRouter([
 function NotFound() {
   return (
     <div className="mx-auto flex min-h-[50dvh] max-w-md flex-col items-center justify-center text-center">
-      <h1 className="text-xl font-[680] text-ink">This page isn't on the routine</h1>
+      <Scene name="end" />
+      <h1 className="text-xl font-[680] text-ink">End of the line: this page isn't on the routine</h1>
       <p className="mt-2 text-sm text-ink-2">The address may be mistyped, or the page has moved. Every module is in the menu.</p>
       <Button asChild className="mt-6">
         <a href="/dashboard">Go to Dashboard</a>

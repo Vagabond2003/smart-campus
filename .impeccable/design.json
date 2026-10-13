@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-13T12:00:00+00:00",
+  "generatedAt": "2026-10-13T18:30:00+00:00",
   "title": "Design System: Smart Campus",
   "extensions": {
     "colorMeta": {
@@ -715,8 +715,8 @@
       },
       {
         "name": "press-scale",
-        "value": "0.96",
-        "purpose": "Button and icon-button :active scale."
+        "value": "scale 0.96 in 90ms, release on --spring-press",
+        "purpose": "Buttons and icon buttons: down fast, back past rest on a spring. Static buttons only change colour."
       },
       {
         "name": "board-roll",
@@ -731,7 +731,7 @@
       {
         "name": "reduced-motion",
         "value": "prefers-reduced-motion: reduce -> transition: none",
-        "purpose": "Every recipe, the board roll, rotation and the live pulse go instant or stop; the landing intro does not play."
+        "purpose": "Springs, staggers, slides, bursts and scenes stop; fades, fills and colour changes that carry state remain; the theme simply switches."
       },
       {
         "name": "intro-arrival",
@@ -742,6 +742,36 @@
         "name": "intro-glide",
         "value": "power3.inOut, 0.95s",
         "purpose": "Landing intro hand-over: the platform green narrows onto the sign-in panel and every sign lands on its live counterpart; the board re-rolls to the sign-in values, clipping rather than ellipsing."
+      },
+      {
+        "name": "spring-press",
+        "value": "linear() sampled from a damped spring (k 520, c 20), 650ms",
+        "purpose": "Release after a press: back past rest by about a fifth of the press depth."
+      },
+      {
+        "name": "spring-pop",
+        "value": "linear() sampled from a damped spring (k 400, c 22), 590ms",
+        "purpose": "Things that land: dialogs, menus, toasts, new rows, roster cells, the stamp."
+      },
+      {
+        "name": "spring-soft",
+        "value": "linear() sampled from a damped spring (k 300, c 26), 470ms",
+        "purpose": "Things that slide: the tab pill, the search lens, hover lifts."
+      },
+      {
+        "name": "page-arrival",
+        "value": "fade 160ms; header and panels rise 14px, 45ms apart, spring k 420 c 32",
+        "purpose": "How a page inside the portal arrives. Usable from the first frame."
+      },
+      {
+        "name": "theme-sweep",
+        "value": "view transition, clip-path circle from the pointer, 560ms ease-smooth-out",
+        "purpose": "A theme chosen from the display menu spreads from where it was chosen."
+      },
+      {
+        "name": "celebration",
+        "value": "canvas-confetti, tickets and squares in rail, amber, board-text and ok; small 34 pieces, big two bursts",
+        "purpose": "Only for a task the visitor just finished, with the stamped toast and the chime."
       }
     ],
     "breakpoints": [
@@ -922,14 +952,14 @@
   ],
   "narrative": {
     "northStar": "Saidpur Line",
-    "overview": "The portal is a station. Bangladesh Railway at Saidpur supplies the whole material: a flag-green rail down the left edge, a board-black departure strip that always says what leaves next, and a platform-white concourse ruled by concrete hairlines. Everything a student reads is either a signboard, a timetable, or a signal. Records (results, receipts, admit cards) leave the station's voice and become paper: official BAUST documents on white, in both themes.\n\nDensity is operational, not decorative. Panels sit edge to edge on a 20px gutter, each opened by a condensed capital band and closed by its own hairline, so a laptop screen reads like a timetable page and a phone reads like the same timetable folded into one column. Colour carries meaning before it carries mood: green is the railway and the way forward, amber is \"now\" and \"you are here\", maroon is bad news stated plainly. Inside the portal the one authored motion is the board's character roll, and the front door has the world's single arrival sequence (see Landing Intro); every other change is a short exponential ease-out from a visible default, and all of it goes instant under reduced motion.\n\nLight is the daylight platform and the default. Dark is the night-station rendition (deep rail green, near-black ground, mint primary, salmon danger) and keeps every role, including amber, unchanged in meaning.",
+    "overview": "The portal is a station. Bangladesh Railway at Saidpur supplies the whole material: a flag-green rail down the left edge, a board-black departure strip that always says what leaves next, and a platform-white concourse ruled by concrete hairlines. Everything a student reads is either a signboard, a timetable, or a signal. Records (results, receipts, admit cards) leave the station's voice and become paper: official BAUST documents on white, in both themes. The teacher portal is the same station seen from the staff side: the same rail, board and panels, with a section drawn as a roster of numbered cells.\n\nDensity is operational, not decorative. Panels sit edge to edge on a 20px gutter, each opened by a condensed capital band and closed by its own hairline, so a laptop screen reads like a timetable page and a phone reads like the same timetable folded into one column. Colour carries meaning before it carries mood: green is the railway and the way forward, amber is \"now\" and \"you are here\", maroon is bad news stated plainly. Motion splits the same way the portal does: what a visitor does answers back on a spring (a press gives and returns, a dialog lands, a finished task is stamped and marked with a short burst of tickets), and what a visitor reads stays calm on the house ease-out (records fade in and meters fill, but nothing about a result, a due or a shortfall bounces or celebrates). The board's character roll is the portal's signature moment and the front door has the world's single arrival sequence (see Landing Intro). Under reduced motion every movement stops and the state changes remain.\n\nLight is the daylight platform and the default. Dark is the night-station rendition (deep rail green, near-black ground, mint primary, salmon danger) and keeps every role, including amber, unchanged in meaning.",
     "keyCharacteristics": [
       "Flag-green rail and primary actions; board-black strip with amber tabular capitals as the signature.",
       "Archivo on its width axis: condensed capitals for signboards, bands and timetable heads; normal width for UI and reading.",
       "Hairline-ruled white panels on a platform-white ground; shadows only for things that float.",
       "State as signal aspects: green proceed, amber caution or now, maroon danger.",
       "Tabular figures wherever numbers align; currency in the Taka sign.",
-      "Exponential ease-out motion at 150 to 500 ms, no overshoot; the board roll is the one authored moment in the portal, and the landing intro on \"/\" is the one sanctioned page-load sequence."
+      "Playful actions, calm records: springs, bursts and opt-in sounds for what a visitor does; the exponential ease-out for records. The board roll is the portal's signature moment, and the landing intro on \"/\" is the one authored arrival sequence."
     ],
     "rules": [
       {
@@ -939,7 +969,7 @@
       },
       {
         "name": "The Amber Is Now Rule",
-        "body": "Amber appears only where it answers \"when is it\" or \"where am I\": the board, the current class and the action due for it now (the teacher's roll), the current stop, the active module, your seat. If an amber element answers neither, it is wrong.",
+        "body": "Amber appears only where it answers \"when is it\" or \"where am I\": the board, the current class and the action due for it now (the teacher's roll), the current stop, the active module, your seat, and the burst that marks a task finished this moment. If an amber element answers neither, it is wrong.",
         "section": "colors"
       },
       {
@@ -968,8 +998,13 @@
         "section": "elevation"
       },
       {
+        "name": "The Calm Records Rule",
+        "body": "Springs, bursts and sounds belong to what a visitor does. Records (results, GPA, dues, attendance, referred and backlog courses) only fade in and fill; they never bounce, celebrate or chime.",
+        "section": "components"
+      },
+      {
         "name": "The One Arrival Rule",
-        "body": "The landing intro is the only page-load sequence in the system. No other route may borrow its timeline, its glide or its crest assembly, and nothing else animates on arrival.",
+        "body": "The landing intro is the only authored arrival sequence in the system. No other route may borrow its timeline, its glide or its crest assembly. Pages inside the portal may arrive (see Motion), but only as a quick fade and a capped stagger that never holds back input.",
         "section": "components"
       }
     ],
@@ -980,17 +1015,17 @@
       "**Do** separate content with 1px hairlines inside 10px-radius white panels on the platform-white ground.",
       "**Do** map every state onto ok, caution or danger, and use amber only for now and you-are-here.",
       "**Do** state bad news in maroon where the student will see it, with the action to resolve it alongside.",
-      "**Do** animate only with the exponential ease-out at 150 to 500ms, and make every animation instant under reduced motion; the landing intro is the single exception in length and easing, and it does not play at all under reduced motion.",
+      "**Do** answer what a visitor does on a spring and mark a finished task with the stamp and a burst sized to it; keep records on the exponential ease-out; stop every movement under reduced motion.",
       "**Do** render official records as white paper with the sample watermark in both themes.",
       "**Do** keep long sheets' save and publish actions in the sticky action bar, with the live count beside them."
     ],
     "donts": [
       "**Don't** put a shadow on a panel or a card; shadows belong to floating surfaces and the tab bar only.",
-      "**Don't** use overshoot or bounce easings, or add page-load choreography; the board roll is the only authored moment in the portal, and the landing intro on \"/\" is the only arrival sequence. No other route borrows it.",
+      "**Don't** let motion hold up a task: pages are usable from the first frame, staggers are capped, and no route borrows the landing intro's timeline, glide or crest.",
       "**Don't** introduce a new state colour, or use amber as decoration.",
       "**Don't** set body copy, descriptions or form labels in condensed capitals.",
       "**Don't** soften dues, failed or referred courses, or attendance shortfalls into grey.",
-      "**Don't** add gamification devices (badges, streaks, confetti, emoji on records).",
+      "**Don't** put springs, bursts or sound on records or bad news, and don't add badges, streaks or emoji; a burst is only for a task the visitor just finished.",
       "**Don't** show photographs of people; avatars are tinted initials.",
       "**Don't** narrow a person's name to fit a cell; widen the cell, or give each student a row.",
       "**Don't** hide, collapse, fade or stage the unofficial-concept plate on the sign-in frame or the landing intro; its only movement is travelling with the intro's glide."
