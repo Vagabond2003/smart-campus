@@ -17,3 +17,15 @@ test("prints every document on one light page", async ({ page }) => {
     expect(pageCount(await page.pdf({ format: "A4", preferCSSPageSize: true })), path).toBe(1);
   }
 });
+
+test("prints the teacher's routine on one light page", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("sc.display", JSON.stringify({ theme: "dark", text: "m" })));
+  await open(page, "/login");
+  await page.getByRole("button", { name: "Explore as a teacher" }).click();
+  await expect(page).toHaveURL(/\/teach$/);
+  await open(page, "/teach/routine");
+  await expect(page.getByRole("button", { name: "Print or save PDF" })).toBeVisible();
+  expect(await page.evaluate(() => (dispatchEvent(new Event("beforeprint")), document.documentElement.dataset.theme))).toBe("light");
+  await page.evaluate(() => dispatchEvent(new Event("afterprint")));
+  expect(pageCount(await page.pdf({ format: "A4", preferCSSPageSize: true }))).toBe(1);
+});

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Printer } from "lucide-react";
 import { roomShort } from "../../api/derive";
 import * as seed from "../../data/seed";
 import { examDuties, SECTION_LABEL, teacher, teaches } from "../../data/campus";
@@ -6,6 +7,7 @@ import { atTime, BREAK, now, PERIODS, routineDayIndex } from "../../lib/clock";
 import { fmt, plural, until } from "../../lib/format";
 import { useTitle } from "../../lib/useTitle";
 import { useIsPhone } from "../../lib/useMediaQuery";
+import { Button } from "../../components/Button";
 import { PageHeader, Panel, Signal, Tag } from "../../components/Data";
 import { RoutineDayView, RoutineGrid } from "../../components/RoutineGrid";
 import { ScrollX } from "../../components/ScrollRegion";
@@ -22,16 +24,28 @@ export default function TeachRoutine() {
   const at = now();
   const duties = [...examDuties].sort((a, b) => a.date.getTime() - b.date.getTime());
   return (
-    <>
+    // prints like the student's routine: the whole week on one landscape sheet, with the exam duties
+    <div className="print-landscape" data-print-fit="landscape">
       <PageHeader
         title="Class Routine"
         description={`${seed.SEMESTER} · ${teacher.name} · ${plural(slots.length, "class", "classes")} a week, ${hours.toFixed(1)} contact hours, all with Section ${SECTION_LABEL}. Break ${BREAK.start}–${BREAK.end}.`}
+        actions={
+          <Button variant="secondary" className="no-print" icon={<Printer size={16} strokeWidth={1.75} />} onClick={() => window.print()}>
+            Print or save PDF
+          </Button>
+        }
       />
-      {phone ? (
-        <RoutineDayView slots={slots} day={Number(day)} setDay={setDay} today={today} linkFor={(s) => `/teach/courses/${slugOf(s.code)}/roll`} metaFor={() => `Section ${SECTION_LABEL}`} empty="No classes to teach this day." />
-      ) : (
-        <RoutineGrid slots={slots} label={`${teacher.name}'s weekly routine, ${seed.SEMESTER}`} today={today} linkFor={(s) => `/teach/courses/${slugOf(s.code)}/roll`} />
-      )}
+      {/* the printed routine is always the whole week, without today's marks */}
+      <div className="print-only">
+        <RoutineGrid slots={slots} label={`${teacher.name}'s weekly routine, ${seed.SEMESTER}`} today={-1} linkFor={(s) => `/teach/courses/${slugOf(s.code)}/roll`} />
+      </div>
+      <div className="no-print">
+        {phone ? (
+          <RoutineDayView slots={slots} day={Number(day)} setDay={setDay} today={today} linkFor={(s) => `/teach/courses/${slugOf(s.code)}/roll`} metaFor={() => `Section ${SECTION_LABEL}`} empty="No classes to teach this day." />
+        ) : (
+          <RoutineGrid slots={slots} label={`${teacher.name}'s weekly routine, ${seed.SEMESTER}`} today={today} linkFor={(s) => `/teach/courses/${slugOf(s.code)}/roll`} />
+        )}
+      </div>
 
       <Panel id="duties" title="Exam duties" className="mt-6">
         <ScrollX label="Exam duties">
@@ -43,7 +57,7 @@ export default function TeachRoutine() {
                 <th scope="col">Course</th>
                 <th scope="col">Duty</th>
                 <th scope="col">Room</th>
-                <th scope="col">
+                <th scope="col" className="no-print">
                   <span className="sr-only">When</span>
                 </th>
               </tr>
@@ -66,7 +80,7 @@ export default function TeachRoutine() {
                       <Tag>{d.role}</Tag>
                     </td>
                     <td className="text-ink-2">{roomShort(d.room)}</td>
-                    <td className="n">{past ? <Signal tone="neutral" dot={false}>Done</Signal> : <span className="text-xs text-ink-3">{until(start)}</span>}</td>
+                    <td className="n no-print">{past ? <Signal tone="neutral" dot={false}>Done</Signal> : <span className="text-xs text-ink-3">{until(start)}</span>}</td>
                   </tr>
                 );
               })}
@@ -77,6 +91,6 @@ export default function TeachRoutine() {
           The examiner sets and marks the paper; invigilators supervise the room. Periods run {PERIODS[0].start} to {PERIODS[8].end}.
         </p>
       </Panel>
-    </>
+    </div>
   );
 }
