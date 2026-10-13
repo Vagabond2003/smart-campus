@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Ellipsis, LogOut, Search } from "lucide-react";
-import { NAV, TAB_ITEMS } from "../app/nav";
+import { ArrowLeftRight, Ellipsis, LogOut, Search } from "lucide-react";
+import { NAV, TAB_ITEMS, TEACH_NAV, TEACH_TAB_ITEMS, useTeacherView } from "../app/nav";
 import { useAuth } from "../app/auth";
 import { prefetchRoute } from "../api/hooks";
 import { cn } from "../lib/cn";
@@ -14,11 +14,12 @@ import { DisplayMenu, NoticesButton, ProfileMenu } from "./ShellMenus";
 
 /** Phone and tablet header: green signboard band with the departure board directly under it. */
 export function MobileHeader({ onSearch }: { onSearch: () => void }) {
+  const teacher = useTeacherView();
   return (
     <header className="sticky top-0 z-40 bg-rail text-rail-ink pt-safe lg:hidden" data-on-rail>
       <div className="flex h-14 items-center gap-1 pl-3 pr-1.5">
-        <NavLink to="/dashboard" className="mr-auto rounded-md no-underline" aria-label="Smart Campus, go to Dashboard">
-          <Brand compact />
+        <NavLink to={teacher ? "/teach" : "/dashboard"} className="mr-auto rounded-md no-underline" aria-label="Smart Campus, go to Dashboard">
+          <Brand compact teacher={teacher} />
         </NavLink>
         <IconButton label="Search" tone="rail" onClick={onSearch}>
           <Search size={19} strokeWidth={1.75} />
@@ -37,16 +38,20 @@ export function TabBar() {
   const qc = useQueryClient();
   const nav = useNavigate();
   const { signOut } = useAuth();
-  const inTabs = TAB_ITEMS.some((t) => loc.pathname.startsWith(t.to));
+  const teacher = useTeacherView();
+  const tabs = teacher ? TEACH_TAB_ITEMS : TAB_ITEMS;
+  const groups = teacher ? TEACH_NAV : NAV;
+  const inTabs = tabs.some((t) => (t.to === "/teach" ? loc.pathname === t.to : loc.pathname.startsWith(t.to)));
 
   return (
     <>
       <nav aria-label="Primary" className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface pb-safe lg:hidden">
         <ul className="grid h-[var(--tabbar-h)] grid-cols-5">
-          {TAB_ITEMS.map((t) => (
+          {tabs.map((t) => (
             <li key={t.to}>
               <NavLink
                 to={t.to}
+                end={t.to === "/teach"}
                 onTouchStart={() => prefetchRoute(qc, t.to)}
                 className={({ isActive }) =>
                   cn(
@@ -76,7 +81,7 @@ export function TabBar() {
 
       <Sheet open={more} onOpenChange={setMore} title="All modules">
         <nav aria-label="All modules">
-          {NAV.map((g) => (
+          {groups.map((g) => (
             <div key={g.label} className="mt-3 first:mt-0">
               <p className="caps px-3 pb-1 text-ink-3">{g.label}</p>
               <ul>
@@ -84,6 +89,7 @@ export function TabBar() {
                   <li key={i.to}>
                     <NavLink
                       to={i.to}
+                      end={i.to === "/teach"}
                       onClick={() => setMore(false)}
                       className={({ isActive }) =>
                         cn("flex h-12 items-center gap-3 rounded-md px-3 text-[0.9375rem] no-underline", isActive ? "bg-surface-2 font-[650] text-ink" : "font-[520] text-ink hover:bg-surface-2")
@@ -98,6 +104,16 @@ export function TabBar() {
             </div>
           ))}
         </nav>
+        <div className="mt-3 border-t border-line pt-3">
+          <NavLink
+            to={teacher ? "/dashboard" : "/teach"}
+            onClick={() => setMore(false)}
+            className="flex h-12 items-center gap-3 rounded-md px-3 text-[0.9375rem] font-[560] text-ink no-underline hover:bg-surface-2"
+          >
+            <ArrowLeftRight size={20} strokeWidth={1.75} className="text-ink-2" aria-hidden />
+            {teacher ? "Switch to student view" : "Switch to teacher view"}
+          </NavLink>
+        </div>
         <div className="mt-4 flex items-center justify-between gap-3 border-t border-line px-3 pt-3">
           <div className="flex items-center gap-2 text-sm text-ink-2">
             <DisplayMenu />

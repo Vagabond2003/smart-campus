@@ -58,14 +58,17 @@ export function Reveal({ loading, skeleton, children, className }: { loading: bo
     };
   }, [loading]);
 
-  if (phase === "done" && !loading) return <div className={className}>{children}</div>;
-
+  // One tree for every phase: the skeleton's slot empties when the reveal ends, but the content
+  // stays where it is, so nothing inside remounts (a comment typed mid-reveal must survive it).
+  const done = phase === "done" && !loading;
   return (
-    <div className={cn("t-skel is-stack", phase === "revealing" && "is-revealed", className)} aria-busy={loading}>
-      <div className="t-skel-skeleton is-pulsing" aria-hidden>
-        {skeleton}
-      </div>
-      <div className="t-skel-content">{loading ? null : children}</div>
+    <div className={cn(!done && "t-skel is-stack", phase === "revealing" && "is-revealed", className)} aria-busy={loading || undefined}>
+      {done ? null : (
+        <div className="t-skel-skeleton is-pulsing" aria-hidden>
+          {skeleton}
+        </div>
+      )}
+      <div className={done ? undefined : "t-skel-content"}>{loading ? null : children}</div>
     </div>
   );
 }

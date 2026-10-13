@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { Check } from "lucide-react";
 import { Checkbox } from "radix-ui";
-import { useRegisterRib, useRib } from "../api/hooks";
+import { useRegisterRib, useRib, useStoreVersion } from "../api/hooks";
+import { myRib } from "../api/teach";
+import { teacher as advisor } from "../data/campus";
 import type { RibOfferCourse } from "../data/types";
 import { now } from "../lib/clock";
 import { cn } from "../lib/cn";
@@ -20,6 +22,8 @@ export default function RibRegistration() {
   useTitle("RIB Course Registration");
   const { data, isLoading, isError, refetch } = useRib();
   const register = useRegisterRib();
+  useStoreVersion();
+  const decision = myRib();
   const toast = useToast();
   const [picked, setPicked] = useState<string[] | null>(null);
   const [confirm, setConfirm] = useState(false);
@@ -46,13 +50,27 @@ export default function RibRegistration() {
         {data ? (
           <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_22rem]">
             <div className="flex min-w-0 flex-col gap-5">
-              <div className={cn("panel flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3.5 lg:px-5", registered ? "bg-ok-wash/50" : closed ? "" : "bg-caution-wash/45")}>
-                {registered ? (
+              <div className={cn("panel flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3.5 lg:px-5", registered && decision.state === "returned" ? "border-danger-line bg-danger-wash/50" : registered ? "bg-ok-wash/50" : closed ? "" : "bg-caution-wash/45")}>
+                {registered && decision.state === "returned" ? (
+                  <>
+                    <Signal tone="danger">Returned by your advisor</Signal>
+                    <span className="text-sm text-ink">
+                      {advisor.name}: “{decision.note ?? "Please review your choice."}” Change your choice and register again by {fmt.dayShort(data.deadline)}.
+                    </span>
+                  </>
+                ) : registered && decision.state === "approved" ? (
+                  <>
+                    <Signal tone="ok">Approved</Signal>
+                    <span className="text-sm text-ink-2">
+                      {plural(data.registered.length, "course")} for {data.exam}, approved by {advisor.name}, your advisor{decision.decidedAt ? `, on ${fmt.long(decision.decidedAt)}` : ""}. Changing it now sends it back for approval.
+                    </span>
+                  </>
+                ) : registered ? (
                   <>
                     <Signal tone="ok">Registered</Signal>
                     <span className="text-sm text-ink-2">
                       {plural(data.registered.length, "course")} for {data.exam}
-                      {data.submittedAt ? `, submitted ${fmt.long(data.submittedAt)}` : ""}. You can change your choice until {fmt.dayShort(data.deadline)}.
+                      {data.submittedAt ? `, submitted ${fmt.long(data.submittedAt)}` : ""}. Waiting for {advisor.name}, your advisor, to approve it. You can change your choice until {fmt.dayShort(data.deadline)}.
                     </span>
                   </>
                 ) : closed ? (

@@ -65,7 +65,7 @@ export const student: Student = {
   stipend: "—",
   track: "—",
   status: "Active",
-  advisorId: "t-nusrat",
+  advisorId: "t-arman",
   admittedIn: FIRST_SEMESTER,
 };
 
@@ -190,7 +190,8 @@ export const assessments: Assessment[] = [
   ct("CSE 2101", "CT-2", C.ct2, 14, 15, "CO2", "t-arman"),
   ct("CSE 2101", "CT-3", C.ct3, null, null, "CO3", "t-arman"),
   ct("CSE 2101", "Mid Term", C.midTermStart, null, null, "CO1, CO2", "t-arman", 45),
-  ct("CSE 2101", "Assignment", C.lastClass, null, null, "CO3", "t-arman"),
+  // Filled by Assignment 1 (BCD decoder) once its grades are published.
+  ct("CSE 2101", "Assignment", atTime(addDays(startOfDay(T()), -2), "23:59"), null, null, "CO3", "t-arman"),
 
   ct("CSE 2103", "CT-1", addDays(C.ct1, 1), 12, 15, "CO1", "t-tahmina"),
   ct("CSE 2103", "CT-2", addDays(C.ct2, -2), 13, 15, "CO2", "t-tahmina"),
@@ -211,6 +212,7 @@ export const assessments: Assessment[] = [
 
   ct("CSE 2102", "Lab performance", addDays(C.ct2, 5), 18, 20, "CO1", "t-arman", 20),
   ct("CSE 2102", "Lab report 1–4", addDays(C.ct2, 5), 9, 10, "CO2", "t-arman", 10),
+  ct("CSE 2102", "Lab reports 5–8", addDays(startOfDay(T()), -5), null, null, "CO2", "t-arman", 10),
   ct("CSE 2102", "Lab test", addDays(C.lastClass, -6), null, null, "CO3", "t-arman", 30),
 
   ct("CSE 2104", "Lab tasks 1–5", addDays(C.ct2, 4), 19, 20, "CO1", "t-sabbir", 20),
@@ -372,6 +374,19 @@ export const materials: Bundle[] = [
 ];
 
 export const assignments: Assignment[] = [
+  {
+    id: "asg-2101-1",
+    code: "CSE 2101",
+    title: "Assignment 1: BCD to seven-segment decoder",
+    brief: "Design a BCD to seven-segment decoder: truth table, K-map simplification for each segment, and the final circuit. Submit one PDF.",
+    due: atTime(addDays(startOfDay(T()), -2), "23:59"),
+    max: 15,
+    state: "submitted",
+    submittedAt: atTime(addDays(startOfDay(T()), -3), "21:14"),
+    assessment: "Assignment",
+    authorId: "t-arman",
+    postedAt: atTime(addDays(startOfDay(T()), -16), "17:20"),
+  },
   { id: "asg-2103-1", code: "CSE 2103", title: "Assignment 1: Linked list operations", brief: "Implement insertion, deletion and reversal for a singly linked list and analyse each operation's running time. Submit one PDF.", due: atTime(addDays(startOfDay(T()), 3), "23:59"), max: 15, state: "open" },
   { id: "asg-2105-1", code: "CSE 2105", title: "Assignment 1: Probability distributions", brief: "Fit binomial and Poisson models to the supplied dataset and compare them.", due: atTime(addDays(C.ct2, 4), "23:59"), max: 15, state: "graded", marks: 13, submittedAt: atTime(addDays(C.ct2, 3), "22:41") },
   { id: "asg-math-1", code: "MATH 2145", title: "Problem set 4", brief: "Problems 1 to 12 from chapter 5. Show every step.", due: atTime(addDays(startOfDay(T()), 9), "17:00"), max: 0, state: "open" },

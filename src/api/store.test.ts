@@ -41,13 +41,16 @@ describe("payments, comments and notifications", () => {
   it("adds a comment to its own post only", () => {
     const [target, other] = store.posts;
     const before = other.comments.length;
-    const c = addComment(target.id, "Is the lab report due Friday?", "Mahir Faisal");
+    const { comment: c } = addComment(target.id, "Is the lab report due Friday?", "Mahir Faisal");
     expect(store.posts.find((p) => p.id === target.id)?.comments.at(-1)).toEqual(c);
     expect(store.posts.find((p) => p.id === other.id)?.comments).toHaveLength(before);
   });
 
-  it("marks every notification read", () => {
+  it("marks every notification read for the side that's looking, and only that side", () => {
     markNoticesRead();
+    expect(store.notices.filter((n) => !n.audience).every((n) => n.read)).toBe(true);
+    expect(store.notices.some((n) => n.audience === "teacher" && !n.read)).toBe(true);
+    markNoticesRead("teacher");
     expect(store.notices.every((n) => n.read)).toBe(true);
   });
 

@@ -23,6 +23,8 @@ Delegated by the user ("choose the correct required framework and tech stack"). 
 
 Undergraduate students of Bangladesh Army University of Science and Technology (BAUST), Saidpur. Example profile: a B.Sc. Engg. in CSE student in a numbered batch and section, at a given Level-Term (e.g. Level-2, Term-I), who may also be repeating courses (Retake) and carrying Referred or Backlog courses. They open the portal on phones and on laptops in roughly equal measure (confirmed).
 
+The concept also has a teacher side (added on request): a visitor can play a sample teacher who teaches and advises the sample student's section, in the same private sandbox. Teacher jobs: take the roll in class, enter and publish marks, post to course discussions, share lecture files, set and grade assignments, and approve or return advisees' RIB registrations. An Office (admin) portal is planned later.
+
 Their recurring jobs: check today's classes and rooms; watch attendance per course; read class-test and mid-term marks; follow course announcements, lectures and materials; register regular and RIB courses each term; check results, GPA and CGPA; see dues and payment receipts; download the admit card; find the exam date, room and seat.
 
 ## Product Purpose
@@ -50,7 +52,8 @@ The incumbent portal is a launcher: a grid of module icons, each opening a table
 
 ## Capabilities and Constraints
 
-- No custom server: Firebase is the backend. All academic data is synthetic; only what a student does in the portal is stored, privately, per account.
+- No custom server: Firebase is the backend. All academic data is synthetic; only what a visitor does in the portal is stored, privately, per account: their student actions and, as the sample teacher, their sandbox campus (rolls, marks, posts, grades, advising decisions).
+- Decided for the concept (user): each visitor gets their own sandbox campus with a student/teacher role switch, rather than one shared campus; files (lectures, materials, submissions) are recorded by name only until file sharing is built.
 - Must cover every capability above; may reorganise and extend them (confirmed).
 - Decided for the concept: accounts are activated with any 16-digit ID (no real ID needed) and have no email, so there is no password reset.
 - Undecided: real payment integration, Bangla localisation, notification delivery.

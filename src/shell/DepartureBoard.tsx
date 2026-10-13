@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 import { boardItems, type BoardItem } from "../api/derive";
-import { useBills } from "../api/hooks";
+import { useBills, useStoreVersion } from "../api/hooks";
+import { teacherBoardItems } from "../api/teach";
+import { useTeacherView } from "../app/nav";
 import { now } from "../lib/clock";
 import { until } from "../lib/format";
 import { gsap, prefersReducedMotion, useGSAP } from "../lib/motion";
@@ -27,17 +29,31 @@ function fieldsOf(item: BoardItem) {
     time: item.live ? hhmm(item.target) : item.when,
     code: item.code,
     title: item.title,
-    place: item.place,
+    place: item.cta ?? item.place,
   };
 }
 
+/** An item's action isn't offered on the page it leads to. */
+const withoutCta = (item: BoardItem): BoardItem => ({ ...item, cta: undefined });
+
 function timeLabel(item: BoardItem) {
   if (item.kind === "class") return item.live ? "Until" : "Time";
-  return item.kind === "exam" ? "Date" : "Due";
+  if (item.kind === "approval") return "Deadline";
+  if (item.kind === "marks") return "Owed";
+  return item.kind === "exam" || item.kind === "duty" ? "Date" : "Due";
+}
+
+function courseLabel(item: BoardItem) {
+  if (item.kind === "dues") return "Amount · for";
+  if (item.kind === "approval") return "Waiting";
+  return "Course";
 }
 
 function describe(item: BoardItem) {
   const c = countdown(item).toLowerCase();
+  if (item.kind === "approval") return `${item.code} ${item.title} in section ${item.place}, decide ${item.when.toLowerCase()}, ${c}.`;
+  if (item.kind === "marks") return `${item.label} for ${item.code}: ${item.title}, ${item.when.toLowerCase()}, ${c}.`;
+  if (item.kind === "duty") return `${item.label} duty: ${item.code} ${item.title} on ${item.when}, room ${item.place}, ${c}.`;
   if (item.kind === "dues") return `Dues: ${item.code} for ${item.title}, ${item.when.toLowerCase()}, ${c}.`;
   if (item.kind === "assignment") return `Assignment for ${item.code}: ${item.title}, due ${item.when}, ${c}.`;
   if (item.kind === "exam") return `${item.label}: ${item.code} ${item.title} on ${item.when}, ${item.placeLabel.toLowerCase()} ${item.place}, ${c}.`;
@@ -51,9 +67,15 @@ function describe(item: BoardItem) {
  */
 export function DepartureBoard({ className }: { className?: string }) {
   const { data: bills } = useBills();
+  const teacher = useTeacherView();
+  const version = useStoreVersion();
   // The board's own clock: countdowns re-derive every 20 s.
   const [at, setAt] = useState(now);
-  const items = useMemo(() => boardItems(at, bills?.totals.due), [at, bills?.totals.due]);
+  const { pathname } = useLocation();
+  const items = useMemo(
+    () => (teacher ? teacherBoardItems(at).map((i) => (i.cta && i.to === pathname ? withoutCta(i) : i)) : boardItems(at, bills?.totals.due)),
+    [teacher, at, bills?.totals.due, version, pathname], // eslint-disable-line react-hooks/exhaustive-deps
+  );
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [holding, setHolding] = useState(false);
@@ -136,7 +158,7 @@ export function DepartureBoard({ className }: { className?: string }) {
       onFocus={() => setHolding(true)}
       onBlur={(e) => !e.currentTarget.contains(e.relatedTarget as Node) && setHolding(false)}
     >
-      <Link to={item.to} className="board-link" aria-label={`${describe(item)} Open details.`}>
+      <Link to={item.to} className="board-link" aria-label={`${describe(item)} ${item.cta ? `${item.cta}.` : "Open details."}`}>
         <span className="board-cell board-w-kind" aria-hidden>
           <span className="board-label board-count">{countdown(item)}</span>
           <span className="board-kind">
@@ -156,7 +178,7 @@ export function DepartureBoard({ className }: { className?: string }) {
         </span>
         <span className="board-cell is-grow" aria-hidden>
           <span className="board-label">
-            <span className="board-label-wide">{item.kind === "dues" ? "Amount · for" : "Course"}</span>
+            <span className="board-label-wide">{courseLabel(item)}</span>
             {/* narrow boards fold the place and the countdown into this label, so no field is lost */}
             <span className="board-label-narrow board-label-meta">
               {item.placeLabel} {item.place} · {countdown(item)}
@@ -167,8 +189,8 @@ export function DepartureBoard({ className }: { className?: string }) {
             <span ref={setRef("title")} className="board-title" />
           </span>
         </span>
-        <span className="board-cell board-w-place" aria-hidden>
-          <span className="board-label">{item.placeLabel}</span>
+        <span className={cn("board-cell board-w-place", item.cta && "is-action")} aria-hidden>
+          <span className="board-label">{item.cta ? `${item.placeLabel} ${item.place}` : item.placeLabel}</span>
           <span ref={setRef("place")} className="board-value" />
         </span>
       </Link>

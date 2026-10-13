@@ -62,6 +62,25 @@ export const router = createBrowserRouter([
           { path: "/bills/receipts/:id", lazy: page(() => import("../pages/Receipt")) },
           { path: "/admit-card", lazy: page(() => import("../pages/AdmitCard")) },
           { path: "/exams", lazy: page(() => import("../pages/ExamRoutine")) },
+
+          // The teacher's side of the sandbox
+          { path: "/teach", lazy: page(() => import("../pages/teach/TeachDashboard")) },
+          { path: "/teach/courses", lazy: page(() => import("../pages/teach/TeachCourses")) },
+          { path: "/teach/courses/:slug/marks/:name", lazy: page(() => import("../pages/teach/MarkSheetPage")) },
+          { path: "/teach/courses/:slug/assignments/:id", lazy: page(() => import("../pages/teach/GradeAssignment")) },
+          {
+            path: "/teach/courses/:slug",
+            lazy: page(() => import("../pages/teach/TeachCourseLayout")),
+            children: [
+              { index: true, element: <Navigate to="roll" replace /> },
+              { path: ":tab", lazy: page(() => import("../pages/teach/TeachCourseTab")) },
+            ],
+          },
+          { path: "/teach/roll/:key", lazy: page(() => import("../pages/teach/TakeRoll")) },
+          { path: "/teach/routine", lazy: page(() => import("../pages/teach/TeachRoutine")) },
+          { path: "/teach/advising", lazy: page(() => import("../pages/teach/Advising")) },
+          { path: "/teach/approvals", lazy: page(() => import("../pages/teach/Approvals")) },
+          { path: "/teach/students/:id", lazy: page(() => import("../pages/teach/AdviseeRecord")) },
           { path: "*", element: <NotFound /> },
         ],
       },

@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { Bell, Check, LogOut, Monitor, Moon, Sun, Type, UserRound } from "lucide-react";
+import { ArrowLeftRight, Bell, Check, LogOut, Monitor, Moon, Sun, Type, UserRound } from "lucide-react";
 import { useAuth } from "../app/auth";
+import { useTeacherView } from "../app/nav";
 import { useMarkNoticesRead, useNotices } from "../api/hooks";
 import { student } from "../data/seed";
+import { SECTION_LABEL, teacher as sampleTeacher } from "../data/campus";
 import type { Notice } from "../data/types";
 import { cn } from "../lib/cn";
 import { useDisplay, type TextSize, type ThemePref } from "../lib/display";
@@ -74,6 +76,9 @@ export function ProfileMenu({ onRail }: { onRail?: boolean }) {
   const [open, setOpen] = useState(false);
   const { signOut } = useAuth();
   const nav = useNavigate();
+  const teacher = useTeacherView();
+  const name = teacher ? sampleTeacher.name : student.name;
+  const line = teacher ? `${sampleTeacher.designation} · ${sampleTeacher.department}` : student.id;
   return (
     <Menu
       open={open}
@@ -82,35 +87,52 @@ export function ProfileMenu({ onRail }: { onRail?: boolean }) {
       trigger={
         <button
           type="button"
-          aria-label={`Account: ${student.name}`}
+          aria-label={`Account: ${name}`}
           className={cn(
             "flex h-10 items-center gap-2.5 rounded-full pl-1 pr-1 transition-colors duration-150 ease-out xl:pr-3",
             onRail ? "hover:bg-rail-hover" : "hover:bg-surface-2",
           )}
         >
-          <Avatar name={student.name} you size="md" />
+          <Avatar name={name} you size="md" />
           <span className="hidden min-w-0 flex-col text-left leading-tight xl:flex">
-            <span className="truncate text-sm font-[620] text-ink">{student.name}</span>
-            <span className="num truncate text-2xs text-ink-3">{student.id}</span>
+            <span className="truncate text-sm font-[620] text-ink">{name}</span>
+            <span className={cn("truncate text-2xs text-ink-3", !teacher && "num")}>{line}</span>
           </span>
         </button>
       }
     >
       <div className="flex items-center gap-3 px-2.5 pb-2.5 pt-2">
-        <Avatar name={student.name} you size="lg" />
+        <Avatar name={name} you size="lg" />
         <div className="min-w-0">
-          <p className="truncate text-sm font-[650] text-ink">{student.name}</p>
-          <p className="num text-xs text-ink-3">{student.id}</p>
-          <p className="text-xs text-ink-3">
-            {student.program} · {student.levelTerm}
-          </p>
+          <p className="truncate text-sm font-[650] text-ink">{name}</p>
+          {teacher ? (
+            <>
+              <p className="text-xs text-ink-3">
+                {sampleTeacher.designation}, {sampleTeacher.department} · Advisor, Section {SECTION_LABEL}
+              </p>
+              <p className="text-xs text-ink-3">Sample teacher in your sandbox</p>
+            </>
+          ) : (
+            <>
+              <p className="num text-xs text-ink-3">{student.id}</p>
+              <p className="text-xs text-ink-3">
+                {student.program} · {student.levelTerm}
+              </p>
+            </>
+          )}
         </div>
       </div>
       <MenuSeparator className="menu-sep" />
-      <MenuItem className="menu-item" onSelect={() => nav("/profile")}>
-        <UserRound size={16} strokeWidth={1.75} />
-        My Profile
+      <MenuItem className="menu-item" onSelect={() => nav(teacher ? "/dashboard" : "/teach")}>
+        <ArrowLeftRight size={16} strokeWidth={1.75} />
+        {teacher ? `Switch to student view` : "Switch to teacher view"}
       </MenuItem>
+      {!teacher ? (
+        <MenuItem className="menu-item" onSelect={() => nav("/profile")}>
+          <UserRound size={16} strokeWidth={1.75} />
+          My Profile
+        </MenuItem>
+      ) : null}
       <MenuItem
         className="menu-item"
         onSelect={() => {
@@ -127,9 +149,16 @@ export function ProfileMenu({ onRail }: { onRail?: boolean }) {
 
 const toneDot: Record<Notice["tone"], string> = { info: "bg-primary", caution: "bg-caution-fill", danger: "bg-danger" };
 
-function NoticeList({ onPick }: { onPick: () => void }) {
+/** The notices for whichever side of the sandbox is on screen. */
+function useMyNotices() {
+  const teacher = useTeacherView();
   const { data } = useNotices();
-  const mark = useMarkNoticesRead();
+  return { teacher, data: data?.filter((n) => (teacher ? n.audience === "teacher" : !n.audience)) };
+}
+
+function NoticeList({ onPick }: { onPick: () => void }) {
+  const { data, teacher } = useMyNotices();
+  const mark = useMarkNoticesRead(teacher ? "teacher" : undefined);
   const nav = useNavigate();
   const unread = data?.filter((n) => !n.read).length ?? 0;
   return (
@@ -169,7 +198,7 @@ function NoticeList({ onPick }: { onPick: () => void }) {
 
 export function NoticesButton({ tone = "default" }: { tone?: "default" | "rail" }) {
   const [open, setOpen] = useState(false);
-  const { data } = useNotices();
+  const { data } = useMyNotices();
   const desktop = useIsDesktop();
   const unread = data?.filter((n) => !n.read).length ?? 0;
   const trigger = (

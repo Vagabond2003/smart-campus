@@ -1,4 +1,5 @@
 import {
+  BookCheck,
   BookMarked,
   BookOpen,
   CalendarCheck2,
@@ -10,8 +11,11 @@ import {
   LayoutDashboard,
   ReceiptText,
   UserRound,
+  UsersRound,
   type LucideIcon,
 } from "lucide-react";
+import { useLocation } from "react-router";
+import { SECTION_LABEL } from "../data/campus";
 
 export interface NavItem {
   label: string; // module names are product truth: they never change
@@ -66,3 +70,36 @@ export const NAV_ITEMS = NAV.flatMap((g) => g.items);
 
 /** Phone tab bar: the four most-used modules, plus More for the rest. */
 export const TAB_ITEMS = ["/dashboard", "/courses", "/routine", "/results"].map((to) => NAV_ITEMS.find((i) => i.to === to)!);
+
+/* ─── The teacher's side of the sandbox ──────────────────────────────────── */
+
+export const TEACH_NAV: NavGroup[] = [
+  {
+    label: "Overview",
+    items: [{ label: "Dashboard", to: "/teach", icon: LayoutDashboard, keywords: "home today section" }],
+  },
+  {
+    label: "Teaching",
+    items: [
+      { label: "My Courses", to: "/teach/courses", icon: BookOpen, keywords: "roll attendance marks discussion lectures materials assignments" },
+      { label: "Class Routine", to: "/teach/routine", icon: CalendarRange, keywords: "timetable schedule exam duty invigilation" },
+    ],
+  },
+  {
+    label: "Advising",
+    items: [
+      { label: `Section ${SECTION_LABEL}`, to: "/teach/advising", icon: UsersRound, keywords: "advisees students attendance backlog referred" },
+      { label: "Registration Approvals", to: "/teach/approvals", icon: BookCheck, keywords: "rib registration approve return remind" },
+    ],
+  },
+];
+
+export const TEACH_NAV_ITEMS = TEACH_NAV.flatMap((g) => g.items);
+export const TEACH_TAB_ITEMS = ["/teach", "/teach/courses", "/teach/routine", "/teach/advising"].map((to) => TEACH_NAV_ITEMS.find((i) => i.to === to)!);
+
+/** The teacher view is a place, not a setting: everything under /teach. */
+export const isTeachPath = (path: string) => path === "/teach" || path.startsWith("/teach/");
+
+export function useTeacherView() {
+  return isTeachPath(useLocation().pathname);
+}

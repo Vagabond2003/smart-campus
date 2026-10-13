@@ -35,8 +35,8 @@ export default defineConfig({
   },
   projects: [
     { name: "desktop", use: { ...devices["Desktop Chrome"], channel: browser } },
-    // The long journey drives the desktop account menu; phones get the notice, sandbox and accessibility checks.
-    { name: "phone", use: { ...devices["Pixel 7"], channel: browser }, testIgnore: /student-journey/ },
+    // The long journeys drive the desktop account menu; phones get the notice, sandbox, roll and accessibility checks.
+    { name: "phone", use: { ...devices["Pixel 7"], channel: browser }, testIgnore: /(student|teacher)-journey/ },
   ],
   webServer: [
     { command: "npm run dev:emulated -- --port 5176 --strictPort", url: EMULATED, reuseExistingServer: !CI, timeout: 120_000 },

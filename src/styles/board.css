@@ -114,6 +114,12 @@
   text-align: center;
 }
 
+/* An action in the place cell (the teacher's roll for the class now): amber, because it is now. */
+.board-cell.is-action { background: var(--amber); border-right-color: transparent; }
+.board-cell.is-action .board-label { color: rgb(18 19 20 / 0.72); }
+.board-cell.is-action .board-value { color: #121314; }
+.board-link:hover .board-cell.is-action { background: color-mix(in srgb, var(--amber) 88%, #fff); }
+
 /* Fixed widths keep the roll stable; the course cell (code + title) takes the rest */
 .board-w-kind { width: 8.25rem; flex: none; }
 .board-w-time { width: 7rem; flex: none; }

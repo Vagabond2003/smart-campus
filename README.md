@@ -19,8 +19,9 @@ Opening the site plays a short arrival, once per visit: the BAUST crest assemble
 
 - **Sample account** (shown on the sign-in page): ID `9999202600001042`, password `campus2026`. On the live site this opens a private copy of the sample student for you. What you change stays in your browser until you sign out.
 - **Your own account:** choose *Activate your account*, then enter any 16-digit ID, a name and a password. You don't need your real student ID. Your RIB registration, demo payments, course comments and read notifications are saved to your account and come back on any device.
+- **The teacher side:** choose *Explore as a teacher* on the sign-in page, or *Switch to teacher view* in the account menu. You play Arman Hossain, who teaches CSE 2101 and CSE 2102 to the sample student's section and advises it. Take the roll (everyone starts present; tap the absentees), enter and publish marks, post to course discussions, list lecture files, set and grade assignments, and approve or return RIB registrations. Both sides share one sandbox, so each of these shows up on the student's portal, and a student's registration or comment shows up for the teacher. Files are listed by name only for now.
 
-To demo a specific moment (for example a class in progress), pin the clock with a query string on any URL: `/?now=2026-10-05T10:20`. The academic calendar is anchored to "today", so the current term is always in its ninth week.
+To demo a specific moment (for example a class in progress), pin the clock with a query string on any URL: `/?now=2026-10-05T10:20` (CSE 2101, the sample teacher's class, is in progress then). The academic calendar is anchored to "today", so the current term is always in its ninth week.
 
 ## Run it
 
@@ -40,9 +41,9 @@ npm run build && npm run preview   # production build on http://localhost:4173
 | Command | What it checks | Needs |
 | --- | --- | --- |
 | `npm run check` | Lint (oxlint, with React hooks and accessibility rules), type checks, unit tests | Nothing extra |
-| `npm test` | Unit tests (Vitest): the ledger and balances, the CGPA rule, the attendance outlook, how saved records merge over the sample data, account helpers, money and time formatting | Nothing extra |
+| `npm test` | Unit tests (Vitest): the ledger and balances, the CGPA rule, the attendance outlook, how saved records merge over the sample data, the sandbox campus agreeing with the student's records and every teacher action reaching the student, account helpers, money and time formatting | Nothing extra |
 | `npm run test:rules` | The Firestore security rules, against the emulator: who may read and write what, field by field | Java 21+ |
-| `npm run test:e2e` | Browser tests (Playwright) on desktop and phone: the unofficial notice, sign-in errors, the sample sandbox, a whole student journey (activate, register for RIB, pay, comment, reload, sign out, sign back in), offline mode, and an automated WCAG 2.2 AA scan of every page | Java 21+ and Google Chrome |
+| `npm run test:e2e` | Browser tests (Playwright) on desktop and phone: the unofficial notice, sign-in errors, the sample sandbox, a whole student journey (activate, register for RIB, pay, comment, reload, sign out, sign back in), the teacher side (roll, marks, a post and a reminder reaching the student; the student's registration reaching the advisor and coming back approved; a teacher's work surviving a reload and a fresh sign-in), offline mode, and an automated WCAG 2.2 AA scan of every page | Java 21+ and Google Chrome |
 
 The rules and browser tests start the Firebase emulators themselves, so nothing reaches a real project. Locally the browser tests drive your installed Chrome; to use Playwright's own browser instead, run `npx playwright install chromium` and set `PW_CHANNEL=chromium`.
 
@@ -69,9 +70,21 @@ students/{uid}/notices/{id}       notifications those actions produced
 students/{uid}/comments/{id}      course discussion comments (postId says where)
 students/{uid}/state/rib          RIB registration for the open exam
 students/{uid}/state/notices      ids of notifications the student has read
+students/{uid}/submissions/{id}   work handed in for an assignment (file name only)
+
+The teacher side of the same visitor's sandbox campus:
+students/{uid}/rolls/{key}        rolls taken (absent and late roster IDs)
+students/{uid}/marks/{key}        mark sheets, draft or published
+students/{uid}/grades/{id}        assignment grade sheets
+students/{uid}/posts/{id}         course posts
+students/{uid}/bundles/{id}       lectures and materials (file names only)
+students/{uid}/assignments/{id}   assignments set
+students/{uid}/advising/{person}  RIB registration decisions
+students/{uid}/state/pins         posts pinned or unpinned
+students/{uid}/state/reminders    advisees reminded to register
 ```
 
-The courses, routine, marks and the rest are the shared synthetic seed in `src/data/seed.ts`. A student's saved records are merged over it at sign-in (`src/api/cloud.ts`, `src/api/store.ts`). Comments are deliberately private: on a public demo with open sign-up, a shared board would show strangers' posts to every visitor.
+The courses, routine, marks and the rest are the shared synthetic seed in `src/data/seed.ts`. The section behind both sides (45 classmates' rolls, marks, submissions and advisee records) is derived from it deterministically in `src/data/campus.ts`, so the teacher's view of the class and the student's own records always agree. A visitor's saved records, from either side, are merged over the seed at sign-in (`src/api/cloud.ts`, `src/api/store.ts`, `src/api/records.ts`). Comments are deliberately private: on a public demo with open sign-up, a shared board would show strangers' posts to every visitor.
 
 **Security rules** (`firestore.rules`):
 

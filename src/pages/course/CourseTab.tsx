@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Link, Navigate, useLocation, useParams } from "react-router";
-import { FileArchive, FileText, Info, Link2, Mail, NotebookPen, Paperclip, Phone, Pin, Search, Send, Users, Video } from "lucide-react";
-import { useAddComment, useAssessments, useAssignments, useAttendance, useLectures, useMaterials, usePeople, usePosts } from "../../api/hooks";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { ExternalLink, FileArchive, FileText, Info, Link2, Mail, NotebookPen, Paperclip, Phone, Pin, PinOff, Search, Send, Upload, Users, Video } from "lucide-react";
+import { useAddComment, useAssessments, useAssignments, useAttendance, useLectures, useMaterials, usePeople, usePosts, useSetPinned, useSubmitAssignment } from "../../api/hooks";
 import * as seed from "../../data/seed";
-import type { Bundle, Post, Resource } from "../../data/types";
+import { teacher as sampleTeacher } from "../../data/campus";
+import type { Assignment, Bundle, Post, Resource } from "../../data/types";
 import { PERIODS, now } from "../../lib/clock";
 import { cn } from "../../lib/cn";
 import { ago, fmt, pct, plural, until } from "../../lib/format";
@@ -91,10 +92,13 @@ function Discussion({ code }: { code: string }) {
   );
 }
 
-function PostView({ post, highlight }: { post: Post; highlight?: boolean }) {
+/** One course post. The teacher (`asTeacher`) also pins it and replies as themselves. */
+export function PostView({ post, highlight, asTeacher }: { post: Post; highlight?: boolean; asTeacher?: boolean }) {
   const t = seed.teachers[post.authorId];
   const [text, setText] = useState("");
-  const add = useAddComment();
+  const add = useAddComment(asTeacher);
+  const pin = useSetPinned();
+  const me = asTeacher ? sampleTeacher.name : seed.student.name;
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     const v = text.trim();
@@ -111,7 +115,19 @@ function PostView({ post, highlight }: { post: Post; highlight?: boolean }) {
             {t.designation} · <time dateTime={post.at.toISOString()}>{ago(post.at)}</time>
           </p>
         </div>
-        {post.pinned ? (
+        {asTeacher ? (
+          <Button
+            variant="ghost"
+            size="sm"
+            static
+            aria-pressed={post.pinned}
+            disabled={pin.isPending}
+            icon={post.pinned ? <PinOff size={15} strokeWidth={1.75} /> : <Pin size={15} strokeWidth={1.75} />}
+            onClick={() => pin.mutate({ postId: post.id, pinned: !post.pinned })}
+          >
+            {post.pinned ? "Unpin" : "Pin for all sections"}
+          </Button>
+        ) : post.pinned ? (
           <span className="inline-flex items-center gap-1.5 text-xs font-[600] text-ink-2">
             <Pin size={14} strokeWidth={1.75} aria-hidden />
             Pinned for all sections
@@ -121,6 +137,12 @@ function PostView({ post, highlight }: { post: Post; highlight?: boolean }) {
       <div className="px-4 pb-4 pt-3 lg:px-5">
         <h3 id={`${post.id}-t`} className="text-md font-[660] text-ink">
           {post.title}
+          {asTeacher && post.pinned ? (
+            <span className="ml-2 inline-flex items-center gap-1 align-middle text-xs font-[600] text-ink-2">
+              <Pin size={13} strokeWidth={1.75} aria-hidden />
+              Pinned
+            </span>
+          ) : null}
         </h3>
         <div className="mt-2 flex max-w-[68ch] flex-col gap-2.5 text-[0.9375rem] text-ink">
           {post.blocks.map((b, i) =>
@@ -146,7 +168,7 @@ function PostView({ post, highlight }: { post: Post; highlight?: boolean }) {
           <ul className="mb-3 flex flex-col gap-3">
             {post.comments.map((c) => (
               <li key={c.id} className="flex gap-2.5">
-                <Avatar name={c.author} size="sm" you={c.author === seed.student.name} />
+                <Avatar name={c.author} size="sm" you={c.author === me} />
                 <div className="min-w-0 text-sm">
                   <p>
                     <span className="font-[640] text-ink">{c.author}</span>
@@ -160,13 +182,13 @@ function PostView({ post, highlight }: { post: Post; highlight?: boolean }) {
           </ul>
         ) : null}
         <form onSubmit={onSubmit} className="flex items-center gap-2">
-          <Avatar name={seed.student.name} you size="sm" />
+          <Avatar name={me} you size="sm" />
           <label htmlFor={`${post.id}-c`} className="sr-only">
-            Write a comment
+            {asTeacher ? "Write a reply" : "Write a comment"}
           </label>
           <div className="field h-10 flex-1 rounded-full pr-1">
-            <input id={`${post.id}-c`} value={text} onChange={(e) => setText(e.target.value)} placeholder="Write a comment" autoComplete="off" />
-            <button type="submit" disabled={!text.trim() || add.isPending} aria-label="Send comment" className="grid size-8 shrink-0 place-items-center rounded-full text-primary transition-colors hover:bg-surface-2 disabled:text-ink-3">
+            <input id={`${post.id}-c`} value={text} onChange={(e) => setText(e.target.value)} placeholder={asTeacher ? "Reply as the course teacher" : "Write a comment"} autoComplete="off" />
+            <button type="submit" disabled={!text.trim() || add.isPending} aria-label={asTeacher ? "Send reply" : "Send comment"} className="grid size-8 shrink-0 place-items-center rounded-full text-primary transition-colors hover:bg-surface-2 disabled:text-ink-3">
               <Send size={16} strokeWidth={1.75} />
             </button>
           </div>
@@ -227,6 +249,8 @@ function Assessments({ code }: { code: string }) {
                         {r.obtained}
                         <span className="font-normal text-ink-3">/{r.max}</span>
                       </span>
+                    ) : r.state === "published" ? (
+                      <Signal tone="danger">Absent</Signal>
                     ) : r.state === "upcoming" ? (
                       <Signal tone="neutral" dot={false}>
                         {r.date ? until(r.date) : "Upcoming"}
@@ -360,7 +384,7 @@ function Bundles({ code, kind }: { code: string; kind: "lectures" | "materials" 
   );
 }
 
-function BundleRow({ bundle, defaultOpen, onDownload }: { bundle: Bundle; defaultOpen?: boolean; onDownload: () => void }) {
+export function BundleRow({ bundle, defaultOpen, onDownload }: { bundle: Bundle; defaultOpen?: boolean; onDownload: () => void }) {
   const t = seed.teachers[bundle.authorId];
   return (
     <Disclosure
@@ -388,9 +412,17 @@ function BundleRow({ bundle, defaultOpen, onDownload }: { bundle: Bundle; defaul
               <Icon size={16} strokeWidth={1.75} className="shrink-0 text-ink-3" aria-hidden />
               <span className="min-w-0 flex-1 truncate text-sm text-ink">{r.name}</span>
               {r.size ? <span className="num shrink-0 text-xs text-ink-3">{r.size}</span> : null}
-              <Button variant="ghost" size="sm" onClick={onDownload} aria-label={`${r.kind === "video" ? "Open" : "Download"} ${r.name}`}>
-                {r.kind === "video" ? "Open" : "Download"}
-              </Button>
+              {r.url ? (
+                <Button asChild variant="ghost" size="sm" trailing={<ExternalLink size={14} strokeWidth={1.75} aria-hidden />}>
+                  <a href={r.url} target="_blank" rel="noopener noreferrer" aria-label={`Open ${r.name} in a new tab`}>
+                    Open
+                  </a>
+                </Button>
+              ) : (
+                <Button variant="ghost" size="sm" onClick={onDownload} aria-label={`${r.kind === "video" ? "Open" : "Download"} ${r.name}`}>
+                  {r.kind === "video" ? "Open" : "Download"}
+                </Button>
+              )}
             </li>
           );
         })}
@@ -403,54 +435,17 @@ function BundleRow({ bundle, defaultOpen, onDownload }: { bundle: Bundle; defaul
 
 function Assignments({ code }: { code: string }) {
   const { data, isLoading, isError, refetch } = useAssignments();
-  const toast = useToast();
   if (isError) return <ErrorState what="assignments" onRetry={() => refetch()} />;
-  const list = (data ?? []).filter((a) => a.code === code);
+  const list = (data ?? []).filter((a) => a.code === code).sort((a, b) => b.due.getTime() - a.due.getTime());
   const o = seed.offeringByCode[code];
   return (
     <div className="mx-auto max-w-3xl">
       <Reveal loading={isLoading} skeleton={<Bars rows={3} />}>
         {list.length ? (
           <ul className="flex flex-col gap-4">
-            {list.map((a) => {
-              const overdue = a.state === "open" && a.due < now();
-              return (
-                <li key={a.id} className="panel p-4 lg:p-5">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <h3 className="text-md font-[660] text-ink">{a.title}</h3>
-                      <p className="mt-0.5 text-sm text-ink-2">
-                        Due {fmt.dayShort(a.due)}, {fmt.time(a.due)}
-                        {a.state === "open" ? ` · ${until(a.due)}` : ""}
-                        {a.max ? ` · ${a.max} marks` : ""}
-                      </p>
-                    </div>
-                    {a.state === "graded" ? (
-                      <Signal tone="ok">
-                        Graded · {a.marks}/{a.max}
-                      </Signal>
-                    ) : a.state === "submitted" ? (
-                      <Signal tone="ok">Submitted</Signal>
-                    ) : overdue ? (
-                      <Signal tone="danger">Overdue</Signal>
-                    ) : (
-                      <Signal tone="caution">Open</Signal>
-                    )}
-                  </div>
-                  <p className="mt-3 max-w-[68ch] text-[0.9375rem] text-ink">{a.brief}</p>
-                  {a.state === "open" ? (
-                    <div className="mt-4 flex flex-wrap items-center gap-3">
-                      <Button icon={<NotebookPen size={16} strokeWidth={1.75} />} onClick={() => toast({ title: "Submission is switched off", description: "This concept build doesn't accept files.", tone: "info" })}>
-                        Submit work
-                      </Button>
-                      <span className="text-xs text-ink-3">One PDF, up to 10 MB.</span>
-                    </div>
-                  ) : a.submittedAt ? (
-                    <p className="mt-3 text-xs text-ink-3">Submitted {fmt.dayShort(a.submittedAt)}, {fmt.time(a.submittedAt)}</p>
-                  ) : null}
-                </li>
-              );
-            })}
+            {list.map((a) => (
+              <AssignmentCard key={a.id} a={a} />
+            ))}
           </ul>
         ) : (
           <div className="panel">
@@ -461,6 +456,68 @@ function Assignments({ code }: { code: string }) {
         )}
       </Reveal>
     </div>
+  );
+}
+
+const sizeOf = (bytes: number) => (bytes >= 1_000_000 ? `${(bytes / 1_000_000).toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1000))} KB`);
+
+function AssignmentCard({ a }: { a: Assignment }) {
+  const submit = useSubmitAssignment();
+  const toast = useToast();
+  const file = useRef<HTMLInputElement>(null);
+  const overdue = a.state === "open" && a.due < now();
+  return (
+    <li className="panel p-4 lg:p-5">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h3 className="text-md font-[660] text-ink">{a.title}</h3>
+          <p className="mt-0.5 text-sm text-ink-2">
+            Due {fmt.dayShort(a.due)}, {fmt.time(a.due)}
+            {a.state === "open" ? ` · ${until(a.due)}` : ""}
+            {a.max ? ` · ${a.max} marks` : ""}
+          </p>
+        </div>
+        {a.state === "graded" ? (
+          <Signal tone="ok">
+            Graded · {a.marks}/{a.max}
+          </Signal>
+        ) : a.state === "submitted" ? (
+          <Signal tone="ok">Submitted</Signal>
+        ) : overdue ? (
+          <Signal tone="danger">Overdue</Signal>
+        ) : (
+          <Signal tone="caution">Open</Signal>
+        )}
+      </div>
+      <p className="mt-3 max-w-[68ch] text-[0.9375rem] text-ink">{a.brief}</p>
+      {a.state === "open" ? (
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <input
+            ref={file}
+            type="file"
+            accept=".pdf,application/pdf"
+            className="sr-only"
+            tabIndex={-1}
+            aria-hidden
+            onChange={(e) => {
+              const f = e.currentTarget.files?.[0];
+              e.currentTarget.value = "";
+              if (!f) return;
+              submit.mutate({ assignmentId: a.id, file: { name: f.name, size: sizeOf(f.size) } }, { onSuccess: () => toast({ title: "Work handed in", description: `${f.name} is recorded for ${a.code}. Your teacher sees it now.` }) });
+            }}
+          />
+          <Button icon={<Upload size={16} strokeWidth={1.75} />} disabled={submit.isPending} onClick={() => file.current?.click()}>
+            {submit.isPending ? "Handing in…" : overdue ? "Hand in late" : "Submit work"}
+          </Button>
+          <span className="text-xs text-ink-3">One PDF. In this concept build only its name is recorded; nothing is uploaded.</span>
+        </div>
+      ) : a.submittedAt ? (
+        <p className="mt-3 text-xs text-ink-3">
+          Submitted {fmt.dayShort(a.submittedAt)}, {fmt.time(a.submittedAt)}
+          {a.submittedAt > a.due ? " · late" : ""}
+        </p>
+      ) : null}
+    </li>
   );
 }
 

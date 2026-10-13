@@ -3,6 +3,7 @@ import * as seed from "../data/seed";
 import type { Adjustment, Bill, ClassSession, ExamResult, Payment } from "../data/types";
 import { addDays, atTime, calendar as C, now, sameDay, startOfDay } from "../lib/clock";
 import { pointFor } from "../lib/grades";
+import { myAssessments, myAssignments, myAttendance } from "./records";
 
 /* ─── Attendance ─────────────────────────────────────────────────────────── */
 
@@ -25,11 +26,11 @@ export interface AttendanceSummaryRow {
   advice: { kind: "can-miss"; n: number } | { kind: "need"; n: number } | { kind: "unreachable" };
 }
 
-export function attendanceSummary(): AttendanceSummaryRow[] {
+export function attendanceSummary(records = myAttendance()): AttendanceSummaryRow[] {
   const line = seed.ATTENDANCE_LINE / 100;
   const future = seed.sessionsBetween(now(), addDays(C.lastClass, 1)).filter((s) => s.start > now());
   return seed.offerings.map((o) => {
-    const recs = seed.attendance.filter((a) => a.code === o.code);
+    const recs = records.filter((a) => a.code === o.code);
     const present = recs.filter((a) => a.status === "P").length;
     const total = recs.length;
     const absent = total - present;
@@ -64,7 +65,7 @@ export function currentSession(at: Date = now()): ClassSession | undefined {
   return sessionsOn(at).find((s) => s.start <= at && at < s.end);
 }
 
-export type BoardKind = "class" | "exam" | "assignment" | "dues";
+export type BoardKind = "class" | "exam" | "assignment" | "dues" | "approval" | "marks" | "duty";
 
 export interface BoardItem {
   id: string;
@@ -79,6 +80,8 @@ export interface BoardItem {
   target: Date;
   countdownPrefix: "in" | "ends" | "due";
   to: string;
+  /** What following the board does, when it's an action (the teacher's roll for the class now). */
+  cta?: string;
 }
 
 export function boardItems(at: Date = now(), dues = ledgerTotals().due): BoardItem[] {
@@ -101,7 +104,9 @@ export function boardItems(at: Date = now(), dues = ledgerTotals().due): BoardIt
     items.push({ id: `exam-${exam.id}`, kind: "exam", label: exam.exam.startsWith("Mid") ? "Mid term" : "Exam", live: false, when: `${weekdayShort(exam.date)} ${dayMonth(exam.date)}`, code: exam.code, title: exam.title, place: `${roomShort(exam.room)} · ${exam.seat.row}-${exam.seat.col}`, placeLabel: "Room · seat", target: atTime(exam.date, exam.start), countdownPrefix: "in", to: "/exams" });
   }
 
-  const asg = seed.assignments.filter((a) => a.state === "open" && a.due > at).sort((a, b) => a.due.getTime() - b.due.getTime())[0];
+  const asg = myAssignments()
+    .filter((a) => a.state === "open" && a.due > at)
+    .sort((a, b) => a.due.getTime() - b.due.getTime())[0];
   if (asg) {
     items.push({ id: `asg-${asg.id}`, kind: "assignment", label: "Assignment", live: false, when: `${weekdayShort(asg.due)} ${hhmm(asg.due)}`, code: asg.code, title: asg.title.replace(/^Assignment \d+: /, ""), place: "Online", placeLabel: "Submit", target: asg.due, countdownPrefix: "due", to: `/courses/${seed.offeringByCode[asg.code].slug}/assignments` });
   }
@@ -116,9 +121,9 @@ export function boardItems(at: Date = now(), dues = ledgerTotals().due): BoardIt
 }
 
 const pad = (n: number) => String(n).padStart(2, "0");
-const hhmm = (d: Date) => `${pad(d.getHours())}:${pad(d.getMinutes())}`;
-const weekdayShort = (d: Date) => d.toLocaleDateString("en-GB", { weekday: "short" });
-const dayMonth = (d: Date) => d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+export const hhmm = (d: Date) => `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+export const weekdayShort = (d: Date) => d.toLocaleDateString("en-GB", { weekday: "short" });
+export const dayMonth = (d: Date) => d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
 export const roomShort = (room: string) => room.replace(" (Academic)", "");
 
 /* ─── Term line ──────────────────────────────────────────────────────────── */
@@ -251,8 +256,8 @@ export function billBalance(bill: Bill, payments: Payment[], adjustments: Adjust
 
 export function courseProgress(code: string) {
   const o = seed.offeringByCode[code];
-  const held = seed.attendance.filter((a) => a.code === code).length;
+  const held = myAttendance().filter((a) => a.code === code).length;
   const all = seed.sessionsBetween(C.classesBegin, addDays(C.lastClass, 1)).filter((s) => s.code === code).length;
-  const marks = seed.assessments.filter((a) => a.code === code && a.obtained != null);
+  const marks = myAssessments().filter((a) => a.code === code && a.obtained != null);
   return { offering: o, held, all, marks };
 }

@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { myAssignments } from "../api/records";
 import { ClipboardList, NotebookPen, Pin, TriangleAlert } from "lucide-react";
 import { useAttendance, useBills, usePosts, useResults } from "../api/hooks";
 import { nextSessions, roomShort, sessionsOn } from "../api/derive";
@@ -55,7 +56,7 @@ function TodayPanel() {
       .flatMap((e) => e.sittings)
       .filter((s) => s.date >= startOfDay(at) && s.date <= addDays(at, 12))
       .map((s) => ({ key: s.id, icon: ClipboardList, text: `${s.exam.startsWith("Mid") ? "Mid term" : "Exam"}: ${s.code}`, meta: `${fmt.dayShort(s.date)}, ${s.start} · Room ${roomShort(s.room)}, seat ${s.seat.row}-${s.seat.col}`, when: atTime(s.date, s.start), to: "/exams" })),
-    ...seed.assignments
+    ...myAssignments()
       .filter((a) => a.state === "open" && a.due > at && a.due <= addDays(at, 12))
       .map((a) => ({ key: a.id, icon: NotebookPen, text: `${a.code}: ${a.title.replace(/^Assignment \d+: /, "")}`, meta: `Due ${fmt.dayShort(a.due)}, ${fmt.time(a.due)}`, when: a.due, to: `/courses/${seed.offeringByCode[a.code].slug}/assignments` })),
   ].sort((a, b) => a.when.getTime() - b.when.getTime());

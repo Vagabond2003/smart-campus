@@ -5,9 +5,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { Dialog as RDialog } from "radix-ui";
-import { BookOpen, CornerDownLeft, FileClock, IdCard, Moon, Printer, ReceiptText, Search, Sun } from "lucide-react";
-import { NAV_ITEMS } from "../app/nav";
+import { ArrowLeftRight, BookCheck, BookOpen, ClipboardCheck, CornerDownLeft, FileClock, IdCard, Moon, NotebookPen, Printer, ReceiptText, Search, Sun } from "lucide-react";
+import { NAV_ITEMS, TEACH_NAV_ITEMS, useTeacherView } from "../app/nav";
 import { offerings } from "../data/seed";
+import { teachingOfferings } from "../data/campus";
+import { duties } from "../api/teach";
 import { cn } from "../lib/cn";
 import { useDisplay } from "../lib/display";
 import { usePresence } from "../lib/presence";
@@ -36,15 +38,10 @@ export function CommandMenu({ open, onOpenChange }: { open: boolean; onOpenChang
     nav(to);
   };
 
+  const teacher = useTeacherView();
   const all: Cmd[] = useMemo(
-    () => [
-      ...NAV_ITEMS.map((n) => ({ id: n.to, group: "Go to" as const, label: n.label, keywords: n.keywords, icon: n.icon, run: go(n.to) })),
-      ...offerings.map((o) => ({ id: o.slug, group: "Courses" as const, label: `${o.code} ${o.title}`, hint: o.type, keywords: "course", icon: BookOpen, run: go(`/courses/${o.slug}`) })),
-      { id: "pay", group: "Actions" as const, label: "Pay dues", keywords: "bill fee bkash nagad payment", icon: ReceiptText, run: go("/bills?pay=1") },
-      { id: "rib", group: "Actions" as const, label: "Register RIB courses", keywords: "backlog referred improvement", icon: FileClock, run: go("/registration/rib") },
-      { id: "admit", group: "Actions" as const, label: "Download admit card", keywords: "print exam", icon: IdCard, run: go("/admit-card") },
-      { id: "print", group: "Actions" as const, label: "Print class routine", keywords: "export pdf timetable", icon: Printer, run: go("/routine?print=1") },
-      {
+    () => {
+      const theme: Cmd = {
         id: "theme",
         group: "Actions" as const,
         label: display.resolvedTheme === "dark" ? "Switch to light theme" : "Switch to dark theme",
@@ -54,9 +51,32 @@ export function CommandMenu({ open, onOpenChange }: { open: boolean; onOpenChang
           display.setTheme(display.resolvedTheme === "dark" ? "light" : "dark");
           onOpenChange(false);
         },
-      },
-    ],
-    [display.resolvedTheme], // eslint-disable-line react-hooks/exhaustive-deps
+      };
+      if (teacher) {
+        const owed = open ? duties() : [];
+        const roll = owed.find((d) => d.kind === "roll");
+        return [
+          ...TEACH_NAV_ITEMS.map((n) => ({ id: n.to, group: "Go to" as const, label: n.label, keywords: n.keywords, icon: n.icon, run: go(n.to) })),
+          ...teachingOfferings.map((o) => ({ id: o.slug, group: "Courses" as const, label: `${o.code} ${o.title}`, hint: o.type, keywords: "course roll marks", icon: BookOpen, run: go(`/teach/courses/${o.slug}`) })),
+          ...(roll ? [{ id: "roll", group: "Actions" as const, label: `Take roll for ${roll.code}`, hint: roll.detail, keywords: "attendance present absent", icon: ClipboardCheck, run: go(roll.to) }] : []),
+          ...owed.filter((d) => d.kind !== "roll").map((d) => ({ id: d.id, group: "Actions" as const, label: `${d.kind === "grading" ? "Grade" : "Enter"} ${d.title} for ${d.code}`, hint: d.detail, keywords: "marks grades publish", icon: NotebookPen, run: go(d.to) })),
+          { id: "approve", group: "Actions" as const, label: "Review RIB registrations", keywords: "approve return advisor", icon: BookCheck, run: go("/teach/approvals") },
+          { id: "switch", group: "Actions" as const, label: "Switch to student view", keywords: "role student mahir", icon: ArrowLeftRight, run: go("/dashboard") },
+          theme,
+        ];
+      }
+      return [
+      ...NAV_ITEMS.map((n) => ({ id: n.to, group: "Go to" as const, label: n.label, keywords: n.keywords, icon: n.icon, run: go(n.to) })),
+      ...offerings.map((o) => ({ id: o.slug, group: "Courses" as const, label: `${o.code} ${o.title}`, hint: o.type, keywords: "course", icon: BookOpen, run: go(`/courses/${o.slug}`) })),
+      { id: "pay", group: "Actions" as const, label: "Pay dues", keywords: "bill fee bkash nagad payment", icon: ReceiptText, run: go("/bills?pay=1") },
+      { id: "rib", group: "Actions" as const, label: "Register RIB courses", keywords: "backlog referred improvement", icon: FileClock, run: go("/registration/rib") },
+      { id: "admit", group: "Actions" as const, label: "Download admit card", keywords: "print exam", icon: IdCard, run: go("/admit-card") },
+      { id: "print", group: "Actions" as const, label: "Print class routine", keywords: "export pdf timetable", icon: Printer, run: go("/routine?print=1") },
+      { id: "switch", group: "Actions" as const, label: "Switch to teacher view", keywords: "role teacher arman roll marks advisor", icon: ArrowLeftRight, run: go("/teach") },
+      theme,
+      ];
+    },
+    [display.resolvedTheme, teacher, open], // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   const results = useMemo(() => {

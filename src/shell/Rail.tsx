@@ -1,16 +1,16 @@
 import { NavLink } from "react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { NAV } from "../app/nav";
+import { NAV, TEACH_NAV, useTeacherView } from "../app/nav";
 import { prefetchRoute } from "../api/hooks";
 import { cn } from "../lib/cn";
 
-export function Brand({ compact }: { compact?: boolean }) {
+export function Brand({ compact, teacher }: { compact?: boolean; teacher?: boolean }) {
   return (
     <span className="flex items-center gap-3">
       <img src="/crest-96.webp" alt="" width={compact ? 30 : 38} height={compact ? 31 : 39} className="no-outline shrink-0" />
       <span className="flex min-w-0 flex-col leading-none">
         <span className={cn("font-[720] tracking-[-0.01em] text-rail-ink [font-stretch:92%]", compact ? "text-[1.0625rem]" : "text-[1.1875rem]")}>Smart Campus</span>
-        {!compact ? <span className="caps mt-1 text-rail-ink-2">BAUST · Student portal</span> : null}
+        {!compact ? <span className="caps mt-1 text-rail-ink-2">BAUST · {teacher ? "Teacher portal" : "Student portal"}</span> : null}
       </span>
     </span>
   );
@@ -19,15 +19,17 @@ export function Brand({ compact }: { compact?: boolean }) {
 /** Desktop rail: flag green, grouped modules, an amber "you are here" dot on the active module. */
 export function Rail() {
   const qc = useQueryClient();
+  const teacher = useTeacherView();
+  const home = teacher ? "/teach" : "/dashboard";
   return (
     <aside className="sticky top-0 z-30 flex h-dvh w-[var(--rail-w)] flex-col self-start bg-rail text-rail-ink" data-on-rail>
       <div className="flex h-[var(--topbar-h)] shrink-0 items-center px-5">
-        <NavLink to="/dashboard" className="rounded-md no-underline" aria-label="Smart Campus, go to Dashboard">
-          <Brand />
+        <NavLink to={home} className="rounded-md no-underline" aria-label="Smart Campus, go to Dashboard">
+          <Brand teacher={teacher} />
         </NavLink>
       </div>
       <nav aria-label="Modules" className="min-h-0 flex-1 overflow-y-auto px-3 pb-4 [scrollbar-color:var(--rail-line)_transparent]">
-        {NAV.map((g) => (
+        {(teacher ? TEACH_NAV : NAV).map((g) => (
           <div key={g.label} className="mt-5 first:mt-1">
             <p className="caps px-3 pb-1.5 text-rail-ink-2">{g.label}</p>
             <ul className="flex flex-col gap-0.5">
@@ -35,6 +37,7 @@ export function Rail() {
                 <li key={item.to}>
                   <NavLink
                     to={item.to}
+                    end={item.to === "/teach"}
                     onPointerEnter={() => prefetchRoute(qc, item.to)}
                     onFocus={() => prefetchRoute(qc, item.to)}
                     className={({ isActive }) =>
@@ -59,7 +62,7 @@ export function Rail() {
         ))}
       </nav>
       <div className="shrink-0 border-t border-rail-line px-5 py-3.5">
-        <p className="sample-mark text-2xs text-rail-ink-2">Concept build · synthetic sample data</p>
+        <p className="sample-mark text-2xs text-rail-ink-2">{teacher ? "Concept build · sample teacher" : "Concept build · synthetic sample data"}</p>
       </div>
     </aside>
   );

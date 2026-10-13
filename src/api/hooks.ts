@@ -4,12 +4,52 @@
  * to Firestore when a Firebase account is signed in.
  */
 import { useMutation, useQuery, useQueryClient, type QueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import * as seed from "../data/seed";
-import { addComment, markNoticesRead, pay, registerRib, store, subscribe } from "./store";
-import { persistComment, persistPayment, persistReadNotices, persistRib } from "./cloud";
+import * as campus from "../data/campus";
+import type { AdvisingDecision, Notice, Resource } from "../data/types";
+import {
+  addBundle,
+  addComment,
+  createAssignment,
+  createPost,
+  decideRegistration,
+  markNoticesRead,
+  pay,
+  registerRib,
+  remind,
+  saveGrades,
+  saveMarks,
+  saveRoll,
+  setPinned,
+  store,
+  storeVersion,
+  submitAssignment,
+  subscribe,
+  type NewPost,
+} from "./store";
+import {
+  persistAssignment,
+  persistBundle,
+  persistComment,
+  persistDecision,
+  persistGrades,
+  persistMarks,
+  persistNotice,
+  persistPayment,
+  persistPins,
+  persistPost,
+  persistReadNotices,
+  persistReminders,
+  persistRib,
+  persistRoll,
+  persistSubmission,
+} from "./cloud";
 import { trackEvent } from "../lib/firebase";
+import { now } from "../lib/clock";
 import { attendanceSummary, billBalance, ledger, ledgerTotals, standing } from "./derive";
+import { allLectures, allMaterials, myAssessments, myAssignments, myAttendance } from "./records";
+import { advisees, approvals, courseAttendance, courseMeetings, courseSheets, duties, sectionAttendance, teacherAssignments, teachingOn } from "./teach";
 
 function delay<T>(value: () => T, ms = 220 + Math.random() * 260): Promise<T> {
   return new Promise((resolve) => setTimeout(() => resolve(value()), ms));
@@ -19,12 +59,19 @@ export const queries = {
   student: { queryKey: ["student"], queryFn: () => delay(() => ({ student: seed.student, advisor: seed.teachers[seed.student.advisorId] })) },
   offerings: { queryKey: ["offerings"], queryFn: () => delay(() => seed.offerings) },
   routine: { queryKey: ["routine"], queryFn: () => delay(() => seed.routine) },
-  attendance: { queryKey: ["attendance"], queryFn: () => delay(() => ({ summary: attendanceSummary(), records: seed.attendance })) },
-  assessments: { queryKey: ["assessments"], queryFn: () => delay(() => seed.assessments) },
+  attendance: {
+    queryKey: ["attendance"],
+    queryFn: () =>
+      delay(() => {
+        const records = myAttendance();
+        return { summary: attendanceSummary(records), records };
+      }),
+  },
+  assessments: { queryKey: ["assessments"], queryFn: () => delay(() => myAssessments()) },
   posts: { queryKey: ["posts"], queryFn: () => delay(() => store.posts) },
-  lectures: { queryKey: ["lectures"], queryFn: () => delay(() => seed.lectures) },
-  materials: { queryKey: ["materials"], queryFn: () => delay(() => seed.materials) },
-  assignments: { queryKey: ["assignments"], queryFn: () => delay(() => seed.assignments) },
+  lectures: { queryKey: ["lectures"], queryFn: () => delay(() => allLectures()) },
+  materials: { queryKey: ["materials"], queryFn: () => delay(() => allMaterials()) },
+  assignments: { queryKey: ["assignments"], queryFn: () => delay(() => myAssignments()) },
   people: { queryKey: ["people"], queryFn: () => delay(() => seed.classmates) },
   results: { queryKey: ["results"], queryFn: () => delay(() => ({ results: seed.results, standing: standing(), backlog: seed.backlog })) },
   rib: { queryKey: ["rib"], queryFn: () => delay(() => ({ ...store.ribOffer })) },
@@ -45,6 +92,35 @@ export const queries = {
   notices: { queryKey: ["notices"], queryFn: () => delay(() => store.notices, 120) },
 } as const;
 
+/* ─── The teacher's reads ────────────────────────────────────────────────── */
+
+export const teachQueries = {
+  section: {
+    queryKey: ["t-section"],
+    queryFn: () =>
+      delay(() => {
+        const att = sectionAttendance();
+        const list = advisees(att);
+        return { advisees: list, approvals: approvals(list), attendance: att };
+      }),
+  },
+  today: { queryKey: ["t-today"], queryFn: () => delay(() => ({ meetings: teachingOn(now()), duties: duties() })) },
+  course: (code: string) => ({
+    queryKey: ["t-course", code],
+    queryFn: () =>
+      delay(() => ({
+        meetings: courseMeetings(code),
+        sheets: courseSheets(code),
+        attendance: courseAttendance(code),
+        assignments: teacherAssignments(code),
+      })),
+  }),
+} as const;
+
+export const useSection = () => useQuery(teachQueries.section);
+export const useTeachToday = () => useQuery(teachQueries.today);
+export const useTeachCourse = (code: string) => useQuery(teachQueries.course(code));
+
 export const useStudent = () => useQuery(queries.student);
 export const useOfferings = () => useQuery(queries.offerings);
 export const useRoutine = () => useQuery(queries.routine);
@@ -62,24 +138,28 @@ export const useExams = () => useQuery(queries.exams);
 export const useAdmitCards = () => useQuery(queries.admitCards);
 export const useNotices = () => useQuery(queries.notices);
 
-/** Re-read store-backed queries whenever a mutation changes the store. */
+/**
+ * Re-read store-backed queries whenever a mutation changes the store. Both sides of the sandbox
+ * read the same records, so any change can move any screen: a roll moves the student's attendance,
+ * a registration moves the advisor's queue.
+ */
 export function useStoreSync() {
   const qc = useQueryClient();
-  useEffect(
-    () =>
-      subscribe(() => {
-        for (const k of ["posts", "rib", "bills", "admit-cards", "notices"]) qc.invalidateQueries({ queryKey: [k] });
-      }),
-    [qc],
-  );
+  useEffect(() => subscribe(() => void qc.invalidateQueries({ predicate: (q) => q.queryKey[0] !== "student" && q.queryKey[0] !== "routine" && q.queryKey[0] !== "exams" })), [qc]);
 }
+
+/** Re-render whenever the sandbox changes (for derivations that don't go through a query). */
+export const useStoreVersion = () => useSyncExternalStore(subscribe, storeVersion);
+
+const persistNotices = (list: (Notice | undefined)[]) => list.forEach((n) => n && persistNotice(n));
 
 export function useRegisterRib() {
   return useMutation({
     mutationFn: (codes: string[]) =>
       delay(() => {
         const r = registerRib(codes);
-        persistRib(store.ribOffer, r.bill, store.notices[0]);
+        persistRib(store.ribOffer, r.bill, undefined);
+        persistNotices(r.notices);
         trackEvent("rib_register", { courses: codes.length });
         return r;
       }, 700),
@@ -91,6 +171,7 @@ export function usePay() {
     mutationFn: (v: { billId: string; amount: number; provider: string }) =>
       delay(() => {
         const p = pay(v.billId, v.amount, v.provider);
+        // the receipt notice is the newest one
         persistPayment(p, store.notices[0]);
         trackEvent("demo_payment", { method: v.provider });
         return p;
@@ -98,24 +179,152 @@ export function usePay() {
   });
 }
 
-export function useAddComment() {
+/** A comment by the student, or a reply by the teacher (`asTeacher`). */
+export function useAddComment(asTeacher = false) {
   return useMutation({
     mutationFn: (v: { postId: string; text: string }) =>
       delay(() => {
-        const c = addComment(v.postId, v.text, seed.student.name);
-        persistComment(v.postId, c);
-        return c;
+        const r = addComment(v.postId, v.text, asTeacher ? campus.teacher.name : seed.student.name, asTeacher ? "teacher" : "student");
+        persistComment(v.postId, r.comment);
+        persistNotices([r.notice]);
+        return r.comment;
       }, 260),
   });
 }
 
-export function useMarkNoticesRead() {
+export function useMarkNoticesRead(audience: Notice["audience"] = undefined) {
   return useMutation({
     mutationFn: () =>
       delay(() => {
-        markNoticesRead();
+        markNoticesRead(audience);
         persistReadNotices(store.notices.filter((n) => n.read).map((n) => n.id));
       }, 80),
+  });
+}
+
+export function useSubmitAssignment() {
+  return useMutation({
+    mutationFn: (v: { assignmentId: string; file: { name: string; size: string } }) =>
+      delay(() => {
+        const r = submitAssignment(v.assignmentId, v.file);
+        persistSubmission(r.submission);
+        persistNotices([r.notice]);
+        return r.submission;
+      }, 600),
+  });
+}
+
+/* ─── The teacher's actions ──────────────────────────────────────────────── */
+
+export function useSaveRoll() {
+  return useMutation({
+    mutationFn: (v: { key: string; absent: string[]; late: string[]; reason?: string }) =>
+      delay(() => {
+        const r = saveRoll(v.key, v.absent, v.late, v.reason);
+        persistRoll(r.roll);
+        persistNotices([r.notice]);
+        trackEvent("roll_taken", { absent: v.absent.length });
+        return r.roll;
+      }, 420),
+  });
+}
+
+export function useSaveMarks() {
+  return useMutation({
+    mutationFn: (v: { code: string; name: string; scores: Record<string, number>; publish: boolean }) =>
+      delay(() => {
+        const r = saveMarks(v.code, v.name, v.scores, v.publish);
+        persistMarks(r.sheet);
+        persistNotices([r.notice]);
+        if (v.publish) trackEvent("marks_published", { entered: Object.keys(v.scores).length });
+        return r.sheet;
+      }, 480),
+  });
+}
+
+export function useCreatePost() {
+  return useMutation({
+    mutationFn: (v: NewPost) =>
+      delay(() => {
+        const r = createPost(v);
+        persistPost(r.post);
+        persistNotices([r.notice]);
+        return r.post;
+      }, 420),
+  });
+}
+
+/** Seeded posts can't be rewritten, so their pins live in one state document. */
+export function useSetPinned() {
+  return useMutation({
+    mutationFn: (v: { postId: string; pinned: boolean }) =>
+      delay(() => {
+        setPinned(v.postId, v.pinned);
+        const post = store.posts.find((p) => p.id === v.postId);
+        if (post && !seed.posts.some((p) => p.id === post.id)) persistPost(post);
+        else persistPins(Object.fromEntries(store.posts.filter((p) => seed.posts.some((s) => s.id === p.id && s.pinned !== p.pinned)).map((p) => [p.id, p.pinned])));
+      }, 180),
+  });
+}
+
+export function useAddBundle() {
+  return useMutation({
+    mutationFn: (v: { code: string; section: "lectures" | "materials"; title: string; resources: Resource[] }) =>
+      delay(() => {
+        const r = addBundle(v);
+        persistBundle(r.bundle);
+        persistNotices([r.notice]);
+        return r.bundle;
+      }, 520),
+  });
+}
+
+export function useCreateAssignment() {
+  return useMutation({
+    mutationFn: (v: { code: string; title: string; brief: string; due: Date; max: number }) =>
+      delay(() => {
+        const r = createAssignment(v);
+        persistAssignment(r.assignment);
+        persistNotices([r.notice]);
+        return r.assignment;
+      }, 480),
+  });
+}
+
+export function useSaveGrades() {
+  return useMutation({
+    mutationFn: (v: { assignmentId: string; scores: Record<string, number>; publish: boolean }) =>
+      delay(() => {
+        const r = saveGrades(v.assignmentId, v.scores, v.publish);
+        persistGrades(r.grades);
+        persistNotices([r.notice]);
+        return r.grades;
+      }, 480),
+  });
+}
+
+export function useDecideRegistration() {
+  return useMutation({
+    mutationFn: (v: { personId: string; decision: AdvisingDecision["decision"]; note?: string }) =>
+      delay(() => {
+        const r = decideRegistration(v.personId, v.decision, v.note);
+        persistDecision(r.decision);
+        persistNotices([r.notice]);
+        trackEvent("rib_decision", { decision: v.decision });
+        return r.decision;
+      }, 380),
+  });
+}
+
+export function useRemind() {
+  return useMutation({
+    mutationFn: (personId: string) =>
+      delay(() => {
+        const r = remind(personId);
+        persistReminders(r.reminded);
+        persistNotices([r.notice]);
+        return r.reminded;
+      }, 300),
   });
 }
 
@@ -135,6 +344,11 @@ export const routeQueries: Record<string, (keyof typeof queries)[]> = {
 };
 
 export function prefetchRoute(qc: QueryClient, path: string) {
+  if (path.startsWith("/teach")) {
+    qc.prefetchQuery({ ...(teachQueries.section as Parameters<QueryClient["prefetchQuery"]>[0]), staleTime: 60_000 });
+    qc.prefetchQuery({ ...(teachQueries.today as Parameters<QueryClient["prefetchQuery"]>[0]), staleTime: 60_000 });
+    return;
+  }
   const keys = routeQueries[path] ?? (path.startsWith("/courses/") ? (["offerings", "posts", "assessments", "attendance", "lectures", "materials", "assignments", "people"] as const) : []);
   for (const k of keys) qc.prefetchQuery({ ...(queries[k] as Parameters<QueryClient["prefetchQuery"]>[0]), staleTime: 60_000 });
 }

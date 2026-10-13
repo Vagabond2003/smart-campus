@@ -50,6 +50,8 @@
   position: relative;
   inset: auto;
   grid-area: 1 / 1;
+  /* a grid item would otherwise grow to its widest table mid-reveal and widen the whole page */
+  min-width: 0;
 }
 
 /* Tooltip placed below its triggers (top-bar tools) */
@@ -362,4 +364,173 @@
     .ledger-split.is-zero { display: block; }
     .ledger-merged { display: none; }
   }
+}
+
+@layer components {
+  /* Roster grid: a section as whole cells, roll suffix large, state as a mark in the cell.
+     The teacher's dashboard reads it (who is slipping); the roll writes it (who is absent). */
+  .roster-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(4.375rem, 1fr));
+    gap: 0.375rem;
+  }
+  .roster-cell {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.25rem;
+    min-width: 0;
+    min-height: 3.5rem;
+    padding: 0.5rem 0.375rem 0.4375rem 0.4375rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--ink);
+    text-align: left;
+    text-decoration: none;
+    -webkit-user-select: none;
+    user-select: none;
+    transition:
+      background-color 220ms var(--ease-smooth-out),
+      border-color 220ms var(--ease-smooth-out),
+      color 220ms var(--ease-smooth-out),
+      scale 150ms var(--ease-smooth-out);
+  }
+  .roster-cell:hover { border-color: var(--line-strong); }
+  button.roster-cell:active { scale: 0.96; }
+  .roster-roll {
+    font-stretch: 80%;
+    font-weight: 720;
+    font-size: var(--text-md);
+    line-height: 1;
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+  /* names are sentences, not signs: normal width (the Two Widths Rule); cells are sized to fit them */
+  .roster-name {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: var(--text-2xs);
+    line-height: 0.875rem;
+    color: var(--ink-2);
+  }
+  .roster-flag {
+    position: absolute;
+    top: 0.375rem;
+    right: 0.375rem;
+    color: var(--ink-2);
+  }
+
+  /* Section watch: maroon under the line or carrying a course nobody has registered, caution close to it */
+  .roster-cell[data-mark="danger"] { background: var(--danger-wash); border-color: var(--danger-line); }
+  .roster-cell[data-mark="danger"] .roster-roll { color: var(--danger); }
+  .roster-cell[data-mark="caution"] { background: var(--caution-wash); border-color: color-mix(in srgb, var(--caution-fill) 40%, transparent); }
+  .roster-cell[data-mark="caution"] .roster-roll { color: var(--caution); }
+  .roster-cell[data-dim="true"] { opacity: 0.32; }
+
+  /* The roll: absent fills maroon, late takes the caution aspect */
+  .roster-cell[data-state="absent"] { background: var(--danger); border-color: var(--danger); color: #ffffff; }
+  .roster-cell[data-state="absent"] .roster-name { color: rgb(255 255 255 / 0.86); }
+  :root[data-theme="dark"] .roster-cell[data-state="absent"],
+  :root[data-theme="dark"] .roster-cell[data-state="absent"] .roster-name { color: #1c0b0a; }
+  .roster-cell[data-state="late"] { background: var(--caution-wash); border-color: var(--caution-fill); }
+  .roster-cell[data-state="late"] .roster-roll { color: var(--caution); }
+  .roster-cell[data-match="false"] { opacity: 0.32; }
+
+  /* Phones: one student per row, the full name beside the roll, rows ruled like a panel's */
+  .roster-list { display: flex; flex-direction: column; }
+  .roster-list .roster-cell {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.75rem;
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.5rem 1rem;
+    border-width: 0 0 1px;
+    border-radius: 0;
+  }
+  .roster-list > li:last-child > .roster-cell { border-bottom-width: 0; }
+  .roster-list .roster-cell:hover { border-color: var(--line); }
+  .roster-list button.roster-cell:active { scale: 1; }
+  .roster-list .roster-roll { width: 2.25rem; flex-shrink: 0; }
+  .roster-list .roster-who { flex: 1; min-width: 0; }
+  .roster-list .roster-name { white-space: normal; font-size: var(--text-sm); line-height: var(--text-sm--line-height); font-weight: 560; color: var(--ink); }
+  .roster-list .roster-note { display: block; margin-top: 0.125rem; font-size: var(--text-xs); line-height: var(--text-xs--line-height); color: var(--ink-2); }
+  .roster-list .roster-cell[data-mark="danger"] .roster-note { color: var(--danger); }
+  .roster-list .roster-cell[data-mark="caution"] .roster-note { color: var(--caution); }
+  .roster-list .roster-flag { position: static; flex-shrink: 0; }
+  .roster-list .roster-state { flex-shrink: 0; margin-left: auto; font-size: var(--text-sm); font-weight: 620; }
+  .roster-list .roster-cell[data-state="absent"] .roster-name { color: inherit; }
+  .roster-list .roster-cell[data-state="late"] .roster-state { color: var(--caution); }
+
+  /* A thin action bar that stays with the work on long sheets (roll, marks, grades) */
+  .action-bar {
+    position: sticky;
+    bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom) + 0.75rem);
+    z-index: 20;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.75rem 0.75rem 0.75rem 1rem;
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    box-shadow: var(--shadow-float);
+  }
+  @media (min-width: 64rem) {
+    .action-bar { bottom: 1.25rem; }
+  }
+
+  /* Marks entry: a compact numeric field that sits in a table cell */
+  .score-field {
+    width: 4.5rem;
+    height: 2.25rem;
+    padding: 0 0.625rem;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit;
+    font-variant-numeric: tabular-nums lining-nums;
+    text-align: right;
+    transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
+  }
+  .score-field:focus {
+    outline: none;
+    border-color: var(--ink);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent);
+  }
+  .score-field[aria-invalid="true"] { border-color: var(--danger); }
+  .score-field::-webkit-inner-spin-button,
+  .score-field::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  .score-field { -moz-appearance: textfield; appearance: textfield; }
+
+  textarea.field-area {
+    display: block;
+    width: 100%;
+    min-height: 7rem;
+    padding: 0.625rem 0.875rem;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit;
+    line-height: var(--text-base--line-height);
+    resize: vertical;
+    transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
+  }
+  textarea.field-area:focus {
+    outline: none;
+    border-color: var(--ink);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .roster-cell { transition: none; }
 }

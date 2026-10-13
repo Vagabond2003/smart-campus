@@ -114,12 +114,98 @@ describe("a student's own records", () => {
     await assertFails(write("c-4", comment("x".repeat(1001))));
   });
 
-  it("stores only the two known state documents", async () => {
+  it("stores only the known state documents", async () => {
     const write = (id: string, data: Record<string, unknown>) => setDoc(doc(student(ALICE), "students", ALICE.uid, "state", id), data);
     await assertSucceeds(write("rib", { exam: "RIB Exam of Summer 2026", registered: ["MATH 1243"], submittedAt: ts }));
     await assertSucceeds(write("notices", { ids: ["n-1", "n-2"] }));
+    await assertSucceeds(write("pins", { pins: { "p-2101-lab": true } }));
+    await assertSucceeds(write("reminders", { ids: ["me", "s-7"] }));
     await assertFails(write("rib", { exam: "RIB Exam of Summer 2026", registered: Array.from({ length: 21 }, (_, i) => `C ${i}`) }));
+    await assertFails(write("reminders", { ids: Array.from({ length: 61 }, (_, i) => `s-${i}`) }));
     await assertFails(write("preferences", { theme: "dark" }));
+  });
+
+  it("records handed-in work by file name only", async () => {
+    const ref = doc(student(ALICE), "students", ALICE.uid, "submissions", "asg-2101-1");
+    await assertSucceeds(setDoc(ref, { file: "Assignment1.pdf", size: "1.2 MB", at: ts }));
+    await assertSucceeds(setDoc(ref, { file: "Assignment1-v2.pdf", size: "1.3 MB", at: ts }));
+    await assertFails(setDoc(ref, { file: "Assignment1.pdf", size: "1.2 MB", at: ts, data: "base64…" }));
+  });
+});
+
+/* ─── The sandbox campus: the sample teacher's side of the same visitor's record ─── */
+
+describe("the sandbox campus", () => {
+  const at = (sub: string, id: string) => doc(student(ALICE), "students", ALICE.uid, sub, id);
+  const roll = { code: "CSE 2101", absent: ["me", "s-3"], late: [], takenAt: ts };
+  const sheet = (state: "draft" | "published") => ({ code: "CSE 2102", name: "Lab reports 5–8", scores: { me: 7, "s-1": 9 }, state, updatedAt: ts, ...(state === "published" ? { publishedAt: ts } : {}) });
+  const post = { code: "CSE 2101", title: "Class Test 03", blocks: [{ kind: "p", text: "Chapter 8." }], pinned: false, at: ts };
+
+  it("takes and corrects rolls for the teacher's own courses only", async () => {
+    await assertSucceeds(setDoc(at("rolls", "CSE2101-w9-d2-p3"), roll));
+    await assertSucceeds(setDoc(at("rolls", "CSE2101-w9-d2-p3"), { ...roll, absent: ["me"], editedAt: ts, reason: "Medical certificate" }));
+    await assertFails(setDoc(at("rolls", "CSE2105-w9-d2-p1"), { ...roll, code: "CSE 2105" }));
+    await assertFails(setDoc(at("rolls", "x"), { ...roll, absent: Array.from({ length: 61 }, (_, i) => `s-${i}`) }));
+    await assertFails(setDoc(at("rolls", "y"), { ...roll, approvedBy: "head" }));
+  });
+
+  it("lets marks be drafted, published and corrected, but never unpublished", async () => {
+    const ref = at("marks", "CSE2102-Lab-reports-5-8");
+    await assertSucceeds(setDoc(ref, sheet("draft")));
+    await assertSucceeds(setDoc(ref, sheet("published")));
+    await assertSucceeds(setDoc(ref, { ...sheet("published"), scores: { me: 8 } }));
+    await assertFails(setDoc(ref, sheet("draft")));
+    await assertFails(setDoc(at("marks", "CSE2105-CT-3"), { ...sheet("draft"), code: "CSE 2105" }));
+    await assertFails(setDoc(at("marks", "big"), { ...sheet("draft"), scores: Object.fromEntries(Array.from({ length: 61 }, (_, i) => [`s-${i}`, 1])) }));
+  });
+
+  it("keeps assignment grades published once published", async () => {
+    const ref = at("grades", "asg-2101-1");
+    await assertSucceeds(setDoc(ref, { scores: { me: 13 }, state: "published", updatedAt: ts, publishedAt: ts }));
+    await assertFails(setDoc(ref, { scores: { me: 13 }, state: "draft", updatedAt: ts }));
+  });
+
+  it("allows posting, and pinning as the only change after", async () => {
+    const ref = at("posts", "p-1");
+    await assertSucceeds(setDoc(ref, post));
+    await assertSucceeds(setDoc(ref, { ...post, pinned: true }));
+    await assertFails(setDoc(ref, { ...post, pinned: true, title: "Rewritten" }));
+    await assertFails(setDoc(at("posts", "p-2"), { ...post, blocks: [] }));
+    await assertFails(setDoc(at("posts", "p-3"), { ...post, code: "MATH 2145" }));
+  });
+
+  it("lists lectures and materials, ten items at most", async () => {
+    const bundle = { code: "CSE 2101", section: "lectures", title: "Week 9", at: ts, resources: [{ name: "L09.pdf", kind: "pdf", size: "1 MB" }] };
+    await assertSucceeds(setDoc(at("bundles", "b-1"), bundle));
+    await assertFails(setDoc(at("bundles", "b-2"), { ...bundle, section: "exams" }));
+    await assertFails(setDoc(at("bundles", "b-3"), { ...bundle, resources: Array.from({ length: 11 }, (_, i) => ({ name: `f${i}.pdf`, kind: "pdf" })) }));
+  });
+
+  it("sets assignments with sensible marks", async () => {
+    const asg = { code: "CSE 2101", title: "Assignment 2", brief: "Design a counter.", due: ts, max: 15, postedAt: ts };
+    await assertSucceeds(setDoc(at("assignments", "asg-1"), asg));
+    await assertFails(setDoc(at("assignments", "asg-2"), { ...asg, max: 101 }));
+    await assertFails(setDoc(at("assignments", "asg-3"), { ...asg, brief: "" }));
+  });
+
+  it("records advising decisions with a short note", async () => {
+    await assertSucceeds(setDoc(at("advising", "me"), { decision: "returned", note: "Add PHY 1131.", at: ts }));
+    await assertSucceeds(setDoc(at("advising", "me"), { decision: "approved", at: ts }));
+    await assertFails(setDoc(at("advising", "s-1"), { decision: "waived", at: ts }));
+    await assertFails(setDoc(at("advising", "s-2"), { decision: "returned", note: "x".repeat(401), at: ts }));
+  });
+
+  it("marks teacher replies and teacher notices, and nothing else", async () => {
+    await assertSucceeds(setDoc(at("comments", "c-t"), { ...comment("Yes, up to four variables."), role: "teacher" }));
+    await assertFails(setDoc(at("comments", "c-x"), { ...comment(), role: "head" }));
+    await assertSucceeds(setDoc(at("notices", "n-t"), { ...notice, to: "/teach/approvals", audience: "teacher" }));
+    await assertFails(setDoc(at("notices", "n-x"), { ...notice, audience: "office" }));
+  });
+
+  it("keeps one visitor's campus private from another", async () => {
+    await seedAs(`students/${ALICE.uid}/rolls/k`, roll);
+    await assertFails(getDoc(doc(student(BOB), "students", ALICE.uid, "rolls", "k")));
+    await assertFails(setDoc(doc(student(BOB), "students", ALICE.uid, "marks", "m"), sheet("draft")));
   });
 });
 

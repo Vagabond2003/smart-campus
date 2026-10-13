@@ -21,7 +21,39 @@ test("sign-in pages", async ({ page }) => {
   }
 });
 
+test("every teacher screen", async ({ page }) => {
+  test.setTimeout(120_000); // fifteen screens, each scanned in full
+  await open(page, "/login");
+  await page.getByRole("button", { name: "Explore as a teacher" }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(/^Good (morning|afternoon|evening), Arman$/);
+  for (const path of [
+    "/teach",
+    "/teach/courses",
+    "/teach/courses/cse-2101/roll",
+    "/teach/courses/cse-2101/marks",
+    "/teach/courses/cse-2101/discussion",
+    "/teach/courses/cse-2101/lectures",
+    "/teach/courses/cse-2101/assignments",
+    "/teach/courses/cse-2101/people",
+    `/teach/courses/cse-2102/marks/${encodeURIComponent("Lab reports 5–8")}`,
+    "/teach/courses/cse-2101/assignments/asg-2101-1",
+    "/teach/routine",
+    "/teach/advising",
+    "/teach/approvals",
+    "/teach/students/me",
+  ]) {
+    await open(page, path);
+    await scan(page, path);
+  }
+  // A past meeting's roll
+  await open(page, "/teach/courses/cse-2101/roll");
+  await page.getByRole("link", { name: /^Edit the roll for/ }).first().click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Edit roll");
+  await scan(page, "/teach/roll");
+});
+
 test("every module, signed in", async ({ page }) => {
+  test.setTimeout(120_000);
   await openSandbox(page);
   for (const path of ["/dashboard", "/profile", "/registration/regular", "/registration/rib", "/courses", "/courses/cse-2101/discussion", "/attendance", "/results", "/routine", "/bills", "/admit-card", "/exams"]) {
     await open(page, path);

@@ -1,7 +1,8 @@
 rules_version = '2';
 
 // Smart Campus security rules.
-// Everything lives under students/{uid} and is readable and writable by that student only.
+// Everything lives under students/{uid} and is readable and writable by that visitor only: their
+// student records and, since every visitor also plays the sample teacher, their sandbox campus.
 // Each collection accepts exactly the fields the portal writes, within sensible sizes, so an
 // account can't be used to store arbitrary data. Nothing can be deleted from the client.
 service cloud.firestore {
@@ -61,21 +62,115 @@ service cloud.firestore {
     }
 
     function validNotice(d) {
-      return d.keys().hasOnly(['at', 'title', 'body', 'to', 'tone', 'read'])
+      return d.keys().hasOnly(['at', 'title', 'body', 'to', 'tone', 'read', 'audience'])
         && d.at is timestamp
         && str(d.title, 120)
         && str(d.body, 400)
-        && str(d.to, 120) && d.to.matches('^/.*')
+        && str(d.to, 160) && d.to.matches('^/.*')
         && d.tone in ['info', 'caution', 'danger']
-        && d.read is bool;
+        && d.read is bool
+        && optional(d, 'audience', d.get('audience', '') == 'teacher');
     }
 
+    // Students comment; the teacher a visitor plays replies, marked with role 'teacher'.
     function validComment(d) {
-      return d.keys().hasOnly(['postId', 'author', 'text', 'at'])
+      return d.keys().hasOnly(['postId', 'author', 'text', 'at', 'role'])
         && str(d.postId, 64)
         && str(d.author, 80)
         && str(d.text, 1000)
-        && d.at == request.time;
+        && d.at == request.time
+        && optional(d, 'role', d.get('role', '') == 'teacher');
+    }
+
+    // Work handed in for an assignment: a file name and size only, nothing is uploaded.
+    function validSubmission(d) {
+      return d.keys().hasOnly(['file', 'size', 'at'])
+        && str(d.file, 160)
+        && str(d.size, 20)
+        && d.at is timestamp;
+    }
+
+    /* ── The sandbox campus: the sample teacher's two courses ── */
+
+    function teaching(code) {
+      return code in ['CSE 2101', 'CSE 2102'];
+    }
+
+    // A class list is 45 students; leave room, refuse anything that isn't a roster.
+    function roster(l) {
+      return l is list && l.size() <= 60;
+    }
+
+    function scores(m) {
+      return m is map && m.size() <= 60;
+    }
+
+    function validRoll(d) {
+      return d.keys().hasOnly(['code', 'absent', 'late', 'takenAt', 'editedAt', 'reason'])
+        && teaching(d.code)
+        && roster(d.absent)
+        && roster(d.late)
+        && d.takenAt is timestamp
+        && optional(d, 'editedAt', d.get('editedAt', null) is timestamp)
+        && optional(d, 'reason', str(d.get('reason', ''), 200));
+    }
+
+    function validSheet(d) {
+      return scores(d.scores)
+        && d.state in ['draft', 'published']
+        && d.updatedAt is timestamp
+        && optional(d, 'publishedAt', d.get('publishedAt', null) is timestamp);
+    }
+
+    function validMarks(d) {
+      return d.keys().hasOnly(['code', 'name', 'scores', 'state', 'updatedAt', 'publishedAt'])
+        && teaching(d.code)
+        && str(d.name, 60)
+        && validSheet(d);
+    }
+
+    function validGrades(d) {
+      return d.keys().hasOnly(['scores', 'state', 'updatedAt', 'publishedAt']) && validSheet(d);
+    }
+
+    // Published marks and grades stay published: they can be corrected, never taken back.
+    function staysPublished() {
+      return !(resource.data.state == 'published' && request.resource.data.state != 'published');
+    }
+
+    function validPost(d) {
+      return d.keys().hasOnly(['code', 'title', 'blocks', 'pinned', 'at'])
+        && teaching(d.code)
+        && str(d.title, 160)
+        && d.blocks is list && d.blocks.size() > 0 && d.blocks.size() <= 20
+        && d.pinned is bool
+        && d.at is timestamp;
+    }
+
+    function validBundle(d) {
+      return d.keys().hasOnly(['code', 'section', 'title', 'at', 'resources'])
+        && teaching(d.code)
+        && d.section in ['lectures', 'materials']
+        && str(d.title, 160)
+        && d.resources is list && d.resources.size() > 0 && d.resources.size() <= 10
+        && d.at is timestamp;
+    }
+
+    function validAssignment(d) {
+      return d.keys().hasOnly(['code', 'title', 'brief', 'due', 'max', 'postedAt'])
+        && teaching(d.code)
+        && str(d.title, 160)
+        && str(d.brief, 2000)
+        && d.due is timestamp
+        && d.max is number && d.max >= 0 && d.max <= 100
+        && d.postedAt is timestamp;
+    }
+
+    function validDecision(d) {
+      return d.keys().hasOnly(['decision', 'note', 'at'])
+        && d.decision in ['approved', 'returned']
+        && optional(d, 'note', str(d.get('note', ''), 400))
+        && d.at is timestamp;
     }
 
     function validState(docId, d) {
@@ -86,7 +181,13 @@ service cloud.firestore {
           && optional(d, 'submittedAt', d.get('submittedAt', null) is timestamp))
         || (docId == 'notices'
           && d.keys().hasOnly(['ids'])
-          && d.ids is list && d.ids.size() <= 500);
+          && d.ids is list && d.ids.size() <= 500)
+        || (docId == 'pins'
+          && d.keys().hasOnly(['pins'])
+          && d.pins is map && d.pins.size() <= 200)
+        || (docId == 'reminders'
+          && d.keys().hasOnly(['ids'])
+          && roster(d.ids));
     }
 
     match /students/{uid} {
@@ -113,6 +214,45 @@ service cloud.firestore {
       match /state/{docId} {
         allow read: if isOwner(uid);
         allow create, update: if isOwner(uid) && validState(docId, request.resource.data);
+      }
+      match /submissions/{id} {
+        allow read: if isOwner(uid);
+        // handing in again replaces the earlier file
+        allow create, update: if isOwner(uid) && validSubmission(request.resource.data);
+      }
+
+      // The sandbox campus
+      match /rolls/{key} {
+        allow read: if isOwner(uid);
+        allow create, update: if isOwner(uid) && validRoll(request.resource.data);
+      }
+      match /marks/{key} {
+        allow read: if isOwner(uid);
+        allow create: if isOwner(uid) && validMarks(request.resource.data);
+        allow update: if isOwner(uid) && validMarks(request.resource.data) && staysPublished();
+      }
+      match /grades/{id} {
+        allow read: if isOwner(uid);
+        allow create: if isOwner(uid) && validGrades(request.resource.data);
+        allow update: if isOwner(uid) && validGrades(request.resource.data) && staysPublished();
+      }
+      match /posts/{id} {
+        allow read: if isOwner(uid);
+        // pinning is the only change after posting
+        allow create: if isOwner(uid) && validPost(request.resource.data);
+        allow update: if isOwner(uid) && validPost(request.resource.data) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['pinned']);
+      }
+      match /bundles/{id} {
+        allow read: if isOwner(uid);
+        allow create: if isOwner(uid) && validBundle(request.resource.data);
+      }
+      match /assignments/{id} {
+        allow read: if isOwner(uid);
+        allow create: if isOwner(uid) && validAssignment(request.resource.data);
+      }
+      match /advising/{personId} {
+        allow read: if isOwner(uid);
+        allow create, update: if isOwner(uid) && validDecision(request.resource.data);
       }
     }
   }

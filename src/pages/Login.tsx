@@ -4,6 +4,7 @@ import { Eye, EyeOff, KeyRound, UserRound } from "lucide-react";
 import { useAuth } from "../app/auth";
 import type { SignInError } from "../app/accounts";
 import { SAMPLE_PASSWORD, SAMPLE_STUDENT } from "../data/seed";
+import { teacher as sampleTeacher } from "../data/campus";
 import { cn } from "../lib/cn";
 import { useTitle } from "../lib/useTitle";
 import { Button } from "../components/Button";
@@ -32,9 +33,11 @@ function failure(reason: SignInError, mode: "firebase" | "local"): [Field, strin
 
 export default function Login() {
   useTitle("Sign in");
-  const { mode, signedIn, signIn } = useAuth();
+  const { mode, signedIn, signIn, explore } = useAuth();
   const [params] = useSearchParams();
   const next = params.get("next") || "/dashboard";
+  // Set when the visitor chooses the teacher side; the sandbox is the same one either way.
+  const [dest, setDest] = useState<string | null>(null);
 
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
@@ -52,7 +55,7 @@ export default function Login() {
     if ((location.state as { focus?: string } | null)?.focus === "sid") idInput.current?.focus();
   }, [location.state]);
 
-  if (signedIn) return <Navigate to={next} replace />;
+  if (signedIn) return <Navigate to={dest ?? next} replace />;
 
   const shake = (field: Field) => {
     const el = field === "id" ? idBox.current : pwBox.current;
@@ -80,6 +83,16 @@ export default function Login() {
     setBusy(false);
     const [field, message] = failure(res.reason, mode);
     fail(field, message);
+  };
+
+  const exploreAsTeacher = async () => {
+    setDest("/teach");
+    setBusy(true);
+    const res = await explore();
+    if (res.ok) return;
+    setBusy(false);
+    setDest(null);
+    fail("password", failure(res.reason, mode)[1]);
   };
 
   const clearError = (field: Field) => {
@@ -194,6 +207,15 @@ export default function Login() {
         >
           Use sample account
         </Button>
+        <div className="mt-4 border-t border-line pt-4">
+          <p className="text-sm font-[620] text-ink">Teacher side</p>
+          <p className="mt-1 text-sm text-ink-2">
+            Take the roll, publish marks and approve registrations as {sampleTeacher.name}, the sample student's teacher and advisor. Both sides share one sandbox.
+          </p>
+          <Button variant="secondary" size="sm" className="mt-3" disabled={busy} onClick={exploreAsTeacher}>
+            Explore as a teacher
+          </Button>
+        </div>
       </div>
 
       <p className="mt-8 text-center text-xs text-ink-3 lg:hidden">Discipline · Knowledge · Morality</p>

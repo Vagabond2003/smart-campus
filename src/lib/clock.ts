@@ -10,28 +10,35 @@ export const MINUTE = 60_000;
 export const HOUR = 60 * MINUTE;
 export const DAY = 24 * HOUR;
 
-const pinned = (() => {
+/**
+ * The pin and the real moment it was set. Both survive reloads in the tab, so pinned time keeps
+ * running forward across page loads instead of restarting at the pin (a record saved a minute in
+ * must not look older than one saved after the next reload). Pinning a different moment restarts it.
+ */
+const { pinned, pinnedAt } = (() => {
+  const fresh = Date.now();
   try {
     const raw = new URLSearchParams(window.location.search).get("now");
+    const stored = sessionStorage.getItem("sc.now");
+    const storedAt = Number(sessionStorage.getItem("sc.nowAt"));
     if (raw) {
       const d = new Date(raw);
       if (!Number.isNaN(d.getTime())) {
+        if (raw === stored && storedAt > 0) return { pinned: d, pinnedAt: storedAt };
         sessionStorage.setItem("sc.now", raw);
-        return d;
+        sessionStorage.setItem("sc.nowAt", String(fresh));
+        return { pinned: d, pinnedAt: fresh };
       }
     }
-    const stored = sessionStorage.getItem("sc.now");
     if (stored) {
       const d = new Date(stored);
-      if (!Number.isNaN(d.getTime())) return d;
+      if (!Number.isNaN(d.getTime())) return { pinned: d, pinnedAt: storedAt > 0 ? storedAt : fresh };
     }
   } catch {
     /* storage can be unavailable; fall back to the real clock */
   }
-  return null;
+  return { pinned: null as Date | null, pinnedAt: fresh };
 })();
-
-const pinnedAt = Date.now();
 
 /** Current time. When pinned, time still advances from the pinned moment. */
 export function now(): Date {

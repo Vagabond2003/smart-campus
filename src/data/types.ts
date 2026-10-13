@@ -123,6 +123,8 @@ export interface Resource {
   name: string;
   kind: "pdf" | "slides" | "zip" | "link" | "video";
   size?: string;
+  /** Links open for real; files are listed by name only in this concept build. */
+  url?: string;
 }
 
 export interface Bundle {
@@ -132,6 +134,8 @@ export interface Bundle {
   at: Date;
   authorId: string;
   resources: Resource[];
+  /** Which tab a teacher-posted bundle belongs to (seed bundles live in their own lists). */
+  section?: "lectures" | "materials";
 }
 
 export interface Assignment {
@@ -144,6 +148,10 @@ export interface Assignment {
   state: "open" | "submitted" | "graded";
   marks?: number;
   submittedAt?: Date;
+  /** The assessment its grades fill when they're published (e.g. "Assignment"). */
+  assessment?: string;
+  authorId?: string;
+  postedAt?: Date;
 }
 
 export interface Person {
@@ -278,4 +286,48 @@ export interface Notice {
   to: string;
   tone: "info" | "caution" | "danger";
   read: boolean;
+  /** Notices for the teacher view; everything else is the student's. */
+  audience?: "teacher";
+}
+
+/* ─── The teacher's side of the sandbox campus ────────────────────────────── */
+
+/** One class meeting's roll. Absent and late hold roster person IDs; everyone else was present. */
+export interface Roll {
+  key: string;
+  code: string;
+  absent: string[];
+  late: string[];
+  takenAt: Date;
+  /** Set when a roll is changed after it was first saved. */
+  editedAt?: Date;
+  reason?: string;
+}
+
+/** A teacher's marks for one assessment, by roster person ID. A missing ID is an absence. */
+export interface MarkSheet {
+  key: string;
+  code: string;
+  name: string;
+  scores: Record<string, number>;
+  state: "draft" | "published";
+  updatedAt: Date;
+  publishedAt?: Date;
+}
+
+/** Grades for one assignment's submissions, by roster person ID. */
+export interface GradeSheet {
+  assignmentId: string;
+  scores: Record<string, number>;
+  state: "draft" | "published";
+  updatedAt: Date;
+  publishedAt?: Date;
+}
+
+/** The advisor's decision on an advisee's RIB registration. */
+export interface AdvisingDecision {
+  personId: string;
+  decision: "approved" | "returned";
+  note?: string;
+  at: Date;
 }

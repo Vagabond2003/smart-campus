@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, type ReactNode } from "react";
+import { useCallback, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { NavLink } from "react-router";
 import { cn } from "../lib/cn";
 
@@ -87,11 +87,44 @@ interface RouteTabsProps {
   className?: string;
 }
 
-/** Navigation tabs backed by routes, with the sliding underline. */
+/**
+ * Navigation tabs backed by routes, with the sliding underline. When the strip is wider than its
+ * column (phones), the active tab is scrolled into view and the clipped edge fades, so it reads
+ * as a strip that continues rather than one that ends.
+ */
 export function RouteTabs({ label, tabs, activeKey, className }: RouteTabsProps) {
   const { bar, pill } = usePill(activeKey);
+  const strip = useRef<HTMLElement>(null);
+  const [edges, setEdges] = useState({ left: false, right: false });
+
+  const measure = useCallback(() => {
+    const el = strip.current;
+    if (!el) return;
+    const left = el.scrollLeft > 1;
+    const right = el.scrollLeft + el.clientWidth < el.scrollWidth - 1;
+    setEdges((e) => (e.left === left && e.right === right ? e : { left, right }));
+  }, []);
+
+  useLayoutEffect(() => {
+    const el = strip.current;
+    const tab = el?.querySelector<HTMLElement>('[aria-current="page"]');
+    if (el && tab && el.scrollWidth > el.clientWidth) {
+      el.scrollLeft = Math.max(0, tab.offsetLeft - (el.clientWidth - tab.offsetWidth) / 2);
+    }
+    measure();
+  }, [activeKey, measure]);
+
+  useLayoutEffect(() => {
+    const el = strip.current;
+    if (!el) return;
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [measure]);
+
+  const fade = edges.left || edges.right ? `linear-gradient(to right, ${edges.left ? "transparent, #000 2rem" : "#000"}, ${edges.right ? "#000 calc(100% - 2rem), transparent" : "#000"})` : undefined;
   return (
-    <nav aria-label={label} className={cn("scroll-x", className)}>
+    <nav ref={strip} aria-label={label} className={cn("scroll-x", className)} onScroll={measure} style={fade ? { maskImage: fade, WebkitMaskImage: fade } : undefined}>
       <div ref={bar} className="t-tabs is-underline min-w-max">
         <span ref={pill} className="t-tabs-pill" aria-hidden />
         {tabs.map((t) => (
