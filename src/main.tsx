@@ -10,9 +10,11 @@ import { DisplayProvider } from "./lib/display";
 import { ToastProvider } from "./components/Toast";
 import { loadFeatures, MotionProvider } from "./components/Motion";
 import { initAnalytics } from "./lib/firebase";
+import { installPrint } from "./lib/print";
 
 void initAnalytics();
 void loadFeatures();
+installPrint();
 
 // A tab opened before a redeploy can ask for a code chunk that no longer exists. Reload to pick up
 // the new build, at most once a minute so a real outage can't turn into a reload loop.

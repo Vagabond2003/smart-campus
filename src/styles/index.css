@@ -234,6 +234,8 @@
   html, body { background: #fff !important; color: #000 !important; }
   .no-print { display: none !important; }
   .print-only { display: block !important; }
+  .doc { box-shadow: none !important; border-radius: 0 !important; }
+  .doc-print-area { margin: 0 !important; padding: 0 !important; max-width: none !important; }
   .doc, .doc * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .print-landscape { page: landscape; }
   /* a scroll region prints whole rather than clipped at its edge */
@@ -243,3 +245,8 @@
   #main [style*="opacity"] { opacity: 1 !important; transform: none !important; }
 }
 .print-only { display: none; }
+/* The same shaping rules, applied for the instant src/lib/print.ts measures a document to fit it on one sheet */
+:root.measuring .no-print { display: none !important; }
+:root.measuring .print-only { display: block !important; }
+:root.measuring .doc-print-area { margin: 0 !important; padding: 0 !important; max-width: none !important; }
+:root.measuring .scroll-x { overflow: visible !important; }

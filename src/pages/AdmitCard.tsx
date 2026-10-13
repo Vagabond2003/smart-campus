@@ -6,6 +6,7 @@ import { useAdmitCards, useStudent } from "../api/hooks";
 import type { AdmitCard as Card } from "../data/types";
 import { credits, fmt } from "../lib/format";
 import { useTitle } from "../lib/useTitle";
+import { printDensity } from "../lib/print";
 import { Button } from "../components/Button";
 import { Avatar, PageHeader, Signal } from "../components/Data";
 import { Bars, EmptyState, ErrorState, Reveal } from "../components/Feedback";
@@ -59,62 +60,7 @@ export default function AdmitCard() {
             </div>
 
             {card.status === "Approved" && s ? (
-              <article className="doc doc-print-area mx-auto w-full max-w-3xl p-5 sm:p-8" aria-label={`Admit card, ${card.exam}`}>
-                <DocHead
-                  title="Admit card"
-                  subtitle={card.exam}
-                  right={
-                    <div className="hidden w-24 shrink-0 flex-col items-center gap-1 sm:flex">
-                      <Avatar name={s.name} you size="xl" className="rounded-md" />
-                      <span className="text-center text-2xs text-[var(--doc-ink-2)]">Photo on file</span>
-                    </div>
-                  }
-                />
-                <p className="mt-4 text-sm font-[600] text-[var(--doc-ink)]">
-                  {s.department} · {s.programLong}
-                </p>
-                <DocFields
-                  className="mt-4"
-                  items={[
-                    { k: "Student name", v: s.name },
-                    { k: "Student ID", v: <span className="num">{s.id}</span> },
-                    { k: "Batch", v: s.batch },
-                    { k: "Syllabus year", v: s.syllabus.split(" - ")[1] },
-                    { k: "Level-Term", v: s.levelTerm },
-                    { k: "Section", v: s.section },
-                  ]}
-                />
-                <h3 className="mt-6 text-sm font-[700] uppercase tracking-[0.06em] text-[var(--doc-ink)] [font-stretch:82%]">Registered courses</h3>
-                <div className="mt-2">
-                  <DocTable
-                    colClass={[undefined, undefined, "max-sm:hidden", "max-sm:hidden", "max-sm:hidden", undefined]}
-                    head={["SL", "Course", "Title", "Type", "Registration", <span className="block text-right">Credit</span>]}
-                    rows={card.courses.map((c, i) => [
-                      <span className="num">{i + 1}</span>,
-                      <span>
-                        <span className="whitespace-nowrap font-[650]">{c.code}</span>
-                        <span className="block text-xs sm:hidden">{c.title}</span>
-                        <span className="block text-xs text-[var(--doc-ink-2)] sm:hidden">
-                          {c.type} · {c.regType}
-                        </span>
-                      </span>,
-                      c.title,
-                      c.type,
-                      c.regType,
-                      <span className="num block text-right">{credits(c.credit)}</span>,
-                    ])}
-                    foot={["", <span className="whitespace-nowrap">Total credits</span>, "", "", "", <span className="num block text-right">{credits(card.courses.reduce((x, c) => x + c.credit, 0))}</span>]}
-                  />
-                </div>
-                <ul className="mt-5 list-disc pl-5 text-xs text-[var(--doc-ink-2)]">
-                  <li>Be seated 15 minutes before the exam starts. Phones and smart watches stay outside the hall.</li>
-                  <li>Check your room and seat in Exam Routine before each exam.</li>
-                </ul>
-                <div className="mt-10 grid grid-cols-2 gap-10 text-center text-xs text-[var(--doc-ink-2)]">
-                  <p className="border-t border-[var(--doc-line)] pt-1.5">Student's signature</p>
-                  <p className="border-t border-[var(--doc-line)] pt-1.5">Controller of Examinations</p>
-                </div>
-              </article>
+              <AdmitCardDoc card={card} student={s} />
             ) : (
               <div className="panel">
                 <EmptyState scene="signal" title={card.status === "Awaiting registration" ? "Register to get this admit card" : "Not issued yet"}>
@@ -127,5 +73,69 @@ export default function AdmitCard() {
         ) : null}
       </Reveal>
     </>
+  );
+}
+
+type Student = NonNullable<ReturnType<typeof useStudent>["data"]>["student"];
+
+/** The admit card as it prints: always one sheet, its course table tightening as the list grows. */
+export function AdmitCardDoc({ card, student }: { card: Card; student: Student }) {
+  return (
+    <article className="doc doc-print-area mx-auto w-full max-w-3xl p-5 sm:p-8" data-print-fit data-density={printDensity(card.courses.length)} aria-label={`Admit card, ${card.exam}`}>
+      <DocHead
+        title="Admit card"
+        subtitle={card.exam}
+        right={
+          <div className="hidden w-24 shrink-0 flex-col items-center gap-1 sm:flex">
+            <Avatar name={student.name} you size="xl" className="rounded-md" />
+            <span className="text-center text-2xs text-[var(--doc-ink-2)]">Photo on file</span>
+          </div>
+        }
+      />
+      <p className="mt-4 text-sm font-[600] text-[var(--doc-ink)]">
+        {student.department} · {student.programLong}
+      </p>
+      <DocFields
+        className="mt-4"
+        items={[
+          { k: "Student name", v: student.name },
+          { k: "Student ID", v: <span className="num">{student.id}</span> },
+          { k: "Batch", v: student.batch },
+          { k: "Syllabus year", v: student.syllabus.split(" - ")[1] },
+          { k: "Level-Term", v: student.levelTerm },
+          { k: "Section", v: student.section },
+        ]}
+      />
+      <h3 className="mt-6 text-sm font-[700] uppercase tracking-[0.06em] text-[var(--doc-ink)] [font-stretch:82%]">Registered courses</h3>
+      <div className="mt-2">
+        <DocTable
+          colClass={[undefined, undefined, "max-sm:hidden", "max-sm:hidden", "max-sm:hidden", undefined]}
+          head={["SL", "Course", "Title", "Type", "Registration", <span className="block text-right">Credit</span>]}
+          rows={card.courses.map((c, i) => [
+            <span className="num">{i + 1}</span>,
+            <span>
+              <span className="whitespace-nowrap font-[650]">{c.code}</span>
+              <span className="block text-xs sm:hidden">{c.title}</span>
+              <span className="block text-xs text-[var(--doc-ink-2)] sm:hidden">
+                {c.type} · {c.regType}
+              </span>
+            </span>,
+            c.title,
+            c.type,
+            c.regType,
+            <span className="num block text-right">{credits(c.credit)}</span>,
+          ])}
+          foot={["", <span className="whitespace-nowrap">Total credits</span>, "", "", "", <span className="num block text-right">{credits(card.courses.reduce((x, c) => x + c.credit, 0))}</span>]}
+        />
+      </div>
+      <ul className="mt-5 list-disc pl-5 text-xs text-[var(--doc-ink-2)]">
+        <li>Be seated 15 minutes before the exam starts. Phones and smart watches stay outside the hall.</li>
+        <li>Check your room and seat in Exam Routine before each exam.</li>
+      </ul>
+      <div className="mt-10 grid grid-cols-2 gap-10 text-center text-xs text-[var(--doc-ink-2)]">
+        <p className="border-t border-[var(--doc-line)] pt-1.5">Student's signature</p>
+        <p className="border-t border-[var(--doc-line)] pt-1.5">Controller of Examinations</p>
+      </div>
+    </article>
   );
 }

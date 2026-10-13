@@ -8,6 +8,7 @@ import { atTime, now } from "../lib/clock";
 import { cn } from "../lib/cn";
 import { fmt, until } from "../lib/format";
 import { useTitle } from "../lib/useTitle";
+import { printDensity } from "../lib/print";
 import { Button } from "../components/Button";
 import { PageHeader, Signal } from "../components/Data";
 import { Bars, EmptyState, ErrorState, Reveal } from "../components/Feedback";
@@ -29,7 +30,7 @@ export default function ExamRoutine() {
 
   return (
     <>
-      {schedule?.published && st ? <PrintedRoutine schedule={schedule} student={st.student} /> : null}
+      {schedule?.published && st ? <ExamRoutineDoc schedule={schedule} student={st.student} /> : null}
       <div className="no-print">
         <PageHeader
           title="Exam Routine"
@@ -122,10 +123,11 @@ type Student = NonNullable<ReturnType<typeof useStudent>["data"]>["student"];
 /**
  * What prints: the routine as an official paper, every exam in one table with its room and seat,
  * instead of the screen's list of drop-downs (which would print one seat plan and blank gaps).
+ * Always one sheet: the table tightens as the list grows.
  */
-function PrintedRoutine({ schedule, student }: { schedule: ExamSchedule; student: Student }) {
+export function ExamRoutineDoc({ schedule, student }: { schedule: ExamSchedule; student: Student }) {
   return (
-    <article className="print-only doc">
+    <article className="print-only doc" data-print-fit data-density={printDensity(schedule.sittings.length)}>
       <DocHead title="Exam routine" subtitle={schedule.exam} />
       <DocFields
         className="mt-4"

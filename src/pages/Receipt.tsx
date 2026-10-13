@@ -40,7 +40,7 @@ export default function Receipt() {
       </div>
       <Reveal loading={isLoading} skeleton={<Bars rows={8} />}>
         {p && bill ? (
-          <article className="doc doc-print-area mx-auto max-w-3xl p-5 sm:p-8" aria-label="Payment receipt document">
+          <article className="doc doc-print-area mx-auto max-w-3xl p-5 sm:p-8" data-print-fit aria-label="Payment receipt document">
             <DocHead
               title="Payment receipt"
               subtitle="Accounts Office"

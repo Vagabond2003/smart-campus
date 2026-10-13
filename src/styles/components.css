@@ -231,10 +231,13 @@
   pointer-events: none;
   white-space: nowrap;
 }
-@media print {
-  .doc { box-shadow: none; border-radius: 0; }
-  .doc-print-area { margin: 0 !important; padding: 0 !important; }
-}
+/* Documents tighten as their tables grow (printDensity in src/lib/print.ts), so a long list
+   still fits one sheet at a readable size: 13px rows up to 10, 12px to 18, 11px beyond. */
+.doc[data-density="compact"] :is(td, th) { padding: 0.25rem 0.5rem; }
+.doc[data-density="compact"] td { font-size: 0.75rem; line-height: 1.05rem; }
+.doc[data-density="tight"] :is(td, th) { padding: 0.125rem 0.4375rem; }
+.doc[data-density="tight"] td { font-size: 0.6875rem; line-height: 0.95rem; }
+.doc[data-density="tight"] th { font-size: 0.625rem; }
 
 @layer components {
   /* The unofficial-concept plate on the sign-in frame: a caution-aspect station notice that sits

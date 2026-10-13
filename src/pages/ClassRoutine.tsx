@@ -34,7 +34,7 @@ export default function ClassRoutine() {
 
   return (
     // prints on a landscape sheet: nine periods don't fit across a portrait one
-    <div className="print-landscape">
+    <div className="print-landscape" data-print-fit="landscape">
       <PageHeader
         title="Class Routine"
         description={`${seed.SEMESTER} · ${seed.student.levelTerm} · Section ${seed.student.section}. Break ${BREAK.start}–${BREAK.end}.`}
