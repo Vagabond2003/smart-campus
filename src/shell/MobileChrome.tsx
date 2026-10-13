@@ -16,7 +16,7 @@ import { DisplayMenu, NoticesButton, ProfileMenu } from "./ShellMenus";
 export function MobileHeader({ onSearch }: { onSearch: () => void }) {
   const teacher = useTeacherView();
   return (
-    <header className="sticky top-0 z-40 bg-rail text-rail-ink pt-safe lg:hidden" data-on-rail>
+    <header className="no-print sticky top-0 z-40 bg-rail text-rail-ink pt-safe lg:hidden" data-on-rail>
       <div className="flex h-14 items-center gap-1 pl-3 pr-1.5">
         <NavLink to={teacher ? "/teach" : "/dashboard"} className="mr-auto rounded-md no-underline" aria-label="Smart Campus, go to Dashboard">
           <Brand compact teacher={teacher} />
@@ -45,7 +45,7 @@ export function TabBar() {
 
   return (
     <>
-      <nav aria-label="Primary" className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface pb-safe lg:hidden">
+      <nav aria-label="Primary" className="no-print fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface pb-safe lg:hidden">
         <ul className="grid h-[var(--tabbar-h)] grid-cols-5">
           {tabs.map((t) => (
             <li key={t.to}>

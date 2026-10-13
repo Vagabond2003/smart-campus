@@ -225,9 +225,21 @@
   .pt-safe { padding-top: env(safe-area-inset-top); }
 }
 
+/* Printing: only the document. The shell (rail, top bar, phone bars, toasts) stays on screen,
+   pages arrive already in place, and documents keep their colours (the BAUST green band, the
+   table heads) whatever the browser's "background graphics" setting. */
+@page { size: A4; margin: 14mm 12mm; }
+@page landscape { size: A4 landscape; margin: 10mm; }
 @media print {
   html, body { background: #fff !important; color: #000 !important; }
   .no-print { display: none !important; }
   .print-only { display: block !important; }
+  .doc, .doc * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .print-landscape { page: landscape; }
+  /* a scroll region prints whole rather than clipped at its edge */
+  .scroll-x { overflow: visible !important; }
+  /* entrance animations would otherwise print mid-flight */
+  #main * { animation: none !important; transition: none !important; }
+  #main [style*="opacity"] { opacity: 1 !important; transform: none !important; }
 }
 .print-only { display: none; }

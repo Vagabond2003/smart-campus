@@ -22,7 +22,7 @@ export function Rail() {
   const teacher = useTeacherView();
   const home = teacher ? "/teach" : "/dashboard";
   return (
-    <aside className="sticky top-0 z-30 flex h-dvh w-[var(--rail-w)] flex-col self-start bg-rail text-rail-ink" data-on-rail>
+    <aside className="no-print sticky top-0 z-30 flex h-dvh w-[var(--rail-w)] flex-col self-start bg-rail text-rail-ink" data-on-rail>
       <div className="flex h-[var(--topbar-h)] shrink-0 items-center px-5">
         <NavLink to={home} className="rounded-md no-underline" aria-label="Smart Campus, go to Dashboard">
           <Brand teacher={teacher} />

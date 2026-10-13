@@ -33,7 +33,8 @@ export default function ClassRoutine() {
   if (isError) return <ErrorState what="the class routine" onRetry={() => refetch()} />;
 
   return (
-    <>
+    // prints on a landscape sheet: nine periods don't fit across a portrait one
+    <div className="print-landscape">
       <PageHeader
         title="Class Routine"
         description={`${seed.SEMESTER} · ${seed.student.levelTerm} · Section ${seed.student.section}. Break ${BREAK.start}–${BREAK.end}.`}
@@ -43,7 +44,13 @@ export default function ClassRoutine() {
           </Button>
         }
       />
-      <Reveal loading={isLoading} skeleton={<Bars rows={7} />}>
+      {/* the printed routine is always the whole week, without today's marks */}
+      {data ? (
+        <div className="print-only">
+          <RoutineGrid slots={data} label={`Weekly class routine, ${seed.SEMESTER}`} today={-1} linkFor={(sl) => `/courses/${seed.offeringByCode[sl.code].slug}`} />
+        </div>
+      ) : null}
+      <Reveal loading={isLoading} skeleton={<Bars rows={7} />} className="no-print">
         {data ? (
           phone ? (
             <RoutineDayView
@@ -63,7 +70,7 @@ export default function ClassRoutine() {
       <p className="mt-4 text-xs text-ink-3 no-print">
         Lab sessions span three periods. Rooms are in the Academic Building unless marked as a lab. Need the dates? <Link to="/exams" className="link">Exam Routine</Link>
       </p>
-    </>
+    </div>
   );
 }
 

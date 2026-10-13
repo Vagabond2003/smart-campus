@@ -103,7 +103,7 @@ export default function AdmitCard() {
                       c.regType,
                       <span className="num block text-right">{credits(c.credit)}</span>,
                     ])}
-                    foot={["", "Total credits", "", "", "", <span className="num block text-right">{credits(card.courses.reduce((x, c) => x + c.credit, 0))}</span>]}
+                    foot={["", <span className="whitespace-nowrap">Total credits</span>, "", "", "", <span className="num block text-right">{credits(card.courses.reduce((x, c) => x + c.credit, 0))}</span>]}
                   />
                 </div>
                 <ul className="mt-5 list-disc pl-5 text-xs text-[var(--doc-ink-2)]">
